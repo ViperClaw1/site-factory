@@ -1,0 +1,14 @@
+{
+  "name": "@repo/config",
+  "version": "0.0.0",
+  "private": true,
+  "files": [
+    "tsconfig.base.json",
+    "eslint.config.js",
+    "tailwind.preset.js"
+  ],
+  "dependencies": {
+    "eslint-plugin-boundaries": "^4.2.2",
+    "eslint-plugin-jsx-a11y": "^6.10.0"
+  }
+}
