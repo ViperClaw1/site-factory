@@ -29,3 +29,24 @@ export interface Block {
   sort: number;
   data: Record<string, unknown>;
 }
+
+// Editorial CMS entries for catalog browsing (collections/characters pages).
+// Actual products live in Supabase — these just carry the story/imagery Directus authors edit.
+export interface Collection {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  hero_image: string | null;
+  series: string | null;
+  status: "draft" | "published";
+}
+
+export interface Character {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  image: string | null;
+  status: "draft" | "published";
+}
