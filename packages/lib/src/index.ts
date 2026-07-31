@@ -7,3 +7,4 @@ export * from "./animations";
 export * from "./seo";
 export * from "./analytics";
 export * from "./format";
+export * from "./media";

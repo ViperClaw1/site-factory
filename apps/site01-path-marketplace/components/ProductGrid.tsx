@@ -1,4 +1,5 @@
 import type { Product } from "@repo/types";
+import { EmptyState } from "./EmptyState";
 import { ProductCard } from "./ProductCard";
 
 export interface ProductGridProps {
@@ -9,7 +10,7 @@ export interface ProductGridProps {
 // ProductCard uses for its badge.
 export function ProductGrid({ products }: ProductGridProps) {
   if (products.length === 0) {
-    return <p className="py-12 text-center text-black/50">No products found.</p>;
+    return <EmptyState message="No products found." />;
   }
 
   return (

@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  lint-typecheck-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Filters build/lint/type-check to packages actually touched by the PR
+      # (plus anything downstream of a changed `packages/*`), so a one-line
+      # fix in a single site doesn't force a full 20-app monorepo build.
+      - name: Lint
+        run: pnpm exec turbo run lint --filter='...[origin/main]'
+
+      - name: Type-check
+        run: pnpm exec turbo run type-check --filter='...[origin/main]'
+
+      - name: Build
+        run: pnpm exec turbo run build --filter='...[origin/main]'

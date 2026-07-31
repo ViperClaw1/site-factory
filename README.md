@@ -35,4 +35,6 @@ Copy `.env.example` to `.env.local` in the target app and fill in credentials.
 
 ## Documentation
 
-Full architecture, ADRs, and specs: [`obsidian-docs/site-factory/`](https://github.com/Path-animation/obsidian-docs)
+- In-repo, verified against code: [`docs/`](./docs) — architecture, conventions,
+  Directus schema, API contracts, env vars, deployment, glossary.
+- Full architecture, ADRs, and specs: [`obsidian-docs/site-factory/`](https://github.com/Path-animation/obsidian-docs)
