@@ -2,10 +2,15 @@ import { getCharacters, getCollections, getProducts } from "@/lib/api-client";
 import { CharacterCard } from "@/components/CharacterCard";
 import { CollectionCard } from "@/components/CollectionCard";
 import { HorizontalScroll } from "@/components/HorizontalScroll";
-import { PlaceholderCard, placeholderIcon } from "@/components/PlaceholderCard";
+import { PlaceholderCard } from "@/components/PlaceholderCard";
 import { ProductCard } from "@/components/ProductCard";
 import { Reveal } from "@/components/Reveal";
 import { RevealGrid } from "@/components/RevealGrid";
+import {
+  placeholderCharacterCardProps,
+  placeholderIcon,
+  placeholderProductCardProps,
+} from "@/lib/placeholders";
 import { formatPrice } from "@repo/lib";
 import { Button, Container, ImageWithFallback, Section } from "@repo/ui";
 import Link from "next/link";
@@ -67,8 +72,12 @@ export default async function HomePage() {
                   <p className="text-xs uppercase tracking-wide text-[var(--color-primary)]">Coming Soon</p>
                   <h1 className="mt-2 font-heading text-4xl font-bold">Path Animation Marketplace</h1>
                   <p className="mt-4 max-w-xl text-black/70">
-                    Collectible toys, art, and digital drops — coming soon.
+                    Collectible toys, art, and digital drops — coming soon. Browse a placeholder drop below
+                    to try the shopping flow.
                   </p>
+                  <Link href="/p/placeholder-0">
+                    <Button className="mt-6">Preview a sample product</Button>
+                  </Link>
                 </div>
               </div>
             )}
@@ -76,7 +85,7 @@ export default async function HomePage() {
         </Container>
       </Section>
 
-      {/* New arrivals: horizontal, swipeable via Embla on touch devices — or placeholder cards while the catalog is empty. */}
+      {/* New arrivals: horizontal, swipeable via Embla on touch devices — or placeholder cards (linking to a real PDP) while the catalog is empty. */}
       <Section>
         <Container>
           <Reveal>
@@ -92,7 +101,7 @@ export default async function HomePage() {
             ) : (
               <RevealGrid className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                 {Array.from({ length: 4 }).map((_, index) => (
-                  <PlaceholderCard key={index} icon={placeholderIcon(index)} />
+                  <PlaceholderCard key={index} {...placeholderProductCardProps(index)} />
                 ))}
               </RevealGrid>
             )}
@@ -107,24 +116,23 @@ export default async function HomePage() {
             <h2 className="font-heading text-2xl font-bold">Collections</h2>
           </Reveal>
           <RevealGrid className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {(collections.length > 0
+            {collections.length > 0
               ? collections.map((collection) => <CollectionCard key={collection.id} collection={collection} />)
               : Array.from({ length: 3 }).map((_, index) => (
                   <PlaceholderCard key={index} icon={placeholderIcon(index + 3)} />
-                ))
-            )}
+                ))}
           </RevealGrid>
         </Container>
       </Section>
 
-      {/* Character browser strip — or placeholder avatars while none are published. */}
+      {/* Character browser strip — or placeholder avatars (linking to a real character page) while none are published. */}
       <Section>
         <Container>
           <Reveal>
             <h2 className="font-heading text-2xl font-bold">Characters</h2>
           </Reveal>
           <RevealGrid className="mt-6 flex gap-6 overflow-x-auto pb-2">
-            {(characters.length > 0
+            {characters.length > 0
               ? characters.map((character) => (
                   <div key={character.id} className="w-28 shrink-0">
                     <CharacterCard character={character} />
@@ -132,10 +140,9 @@ export default async function HomePage() {
                 ))
               : Array.from({ length: 6 }).map((_, index) => (
                   <div key={index} className="w-28 shrink-0">
-                    <PlaceholderCard icon={placeholderIcon(index + 6)} rounded />
+                    <PlaceholderCard {...placeholderCharacterCardProps(index)} rounded />
                   </div>
-                ))
-            )}
+                ))}
           </RevealGrid>
         </Container>
       </Section>

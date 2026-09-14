@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import PlausibleProvider from "next-plausible";
+import { SiteHeader } from "@/components/SiteHeader";
 import "./globals.css";
 
 const body = Inter({
@@ -35,7 +36,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           selfHosted
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <SiteHeader />
+        {children}
+      </body>
     </html>
   );
 }

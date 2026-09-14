@@ -1,6 +1,7 @@
 import { getCollections } from "@/lib/api-client";
 import { CollectionCard } from "@/components/CollectionCard";
-import { PlaceholderCard, placeholderIcon } from "@/components/PlaceholderCard";
+import { PlaceholderCard } from "@/components/PlaceholderCard";
+import { placeholderIcon } from "@/lib/placeholders";
 import { Reveal } from "@/components/Reveal";
 import { RevealGrid } from "@/components/RevealGrid";
 import { Container, Section } from "@repo/ui";

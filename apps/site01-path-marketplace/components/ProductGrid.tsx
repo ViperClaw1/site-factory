@@ -1,6 +1,7 @@
 import type { Product } from "@repo/types";
+import { placeholderProductCardProps } from "@/lib/placeholders";
 import { EmptyState } from "./EmptyState";
-import { PlaceholderCard, placeholderIcon } from "./PlaceholderCard";
+import { PlaceholderCard } from "./PlaceholderCard";
 import { ProductCard } from "./ProductCard";
 import { RevealGrid } from "./RevealGrid";
 
@@ -19,7 +20,7 @@ export function ProductGrid({ products }: ProductGridProps) {
         <EmptyState message="No products yet — check back soon." />
         <RevealGrid className={`${GRID_CLASSES} mt-6`}>
           {Array.from({ length: 8 }).map((_, index) => (
-            <PlaceholderCard key={index} icon={placeholderIcon(index)} />
+            <PlaceholderCard key={index} {...placeholderProductCardProps(index)} />
           ))}
         </RevealGrid>
       </div>

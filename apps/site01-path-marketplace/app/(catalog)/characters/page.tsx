@@ -1,8 +1,9 @@
 import { getCharacters } from "@/lib/api-client";
 import { CharacterCard } from "@/components/CharacterCard";
-import { PlaceholderCard, placeholderIcon } from "@/components/PlaceholderCard";
+import { PlaceholderCard } from "@/components/PlaceholderCard";
 import { Reveal } from "@/components/Reveal";
 import { RevealGrid } from "@/components/RevealGrid";
+import { placeholderCharacterCardProps } from "@/lib/placeholders";
 import { Container, Section } from "@repo/ui";
 
 export const revalidate = 0;
@@ -20,7 +21,7 @@ export default async function CharactersPage() {
           {characters.length > 0
             ? characters.map((character) => <CharacterCard key={character.id} character={character} />)
             : Array.from({ length: 8 }).map((_, index) => (
-                <PlaceholderCard key={index} icon={placeholderIcon(index)} rounded />
+                <PlaceholderCard key={index} {...placeholderCharacterCardProps(index)} rounded />
               ))}
         </RevealGrid>
       </Container>

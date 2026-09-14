@@ -1,15 +1,41 @@
 import { getCharacter, getProducts } from "@/lib/api-client";
 import { ProductGrid } from "@/components/ProductGrid";
 import { Reveal } from "@/components/Reveal";
+import {
+  PLACEHOLDER_CHARACTER_DESCRIPTION,
+  placeholderCharacterName,
+  placeholderIndexFromSlug,
+} from "@/lib/placeholders";
 import { Container, ImageWithFallback, Section } from "@repo/ui";
+import type { Character } from "@repo/types";
 import { notFound } from "next/navigation";
 
 export const revalidate = 0;
 
-export default async function CharacterDetailPage({ params }: { params: { slug: string } }) {
-  const character = await getCharacter(params.slug);
-  if (!character) notFound();
+// Same "placeholder-N" convention as products — lets a placeholder character
+// card link somewhere real instead of a dead end while Directus has none yet.
+function buildPlaceholderCharacter(slug: string): Character {
+  const index = placeholderIndexFromSlug(slug);
+  return {
+    id: slug,
+    slug,
+    name: placeholderCharacterName(index),
+    description: PLACEHOLDER_CHARACTER_DESCRIPTION,
+    image: null,
+    status: "published",
+  };
+}
 
+export default async function CharacterDetailPage({ params }: { params: { slug: string } }) {
+  let character = await getCharacter(params.slug);
+
+  if (!character) {
+    if (!params.slug.startsWith("placeholder-")) notFound();
+    character = buildPlaceholderCharacter(params.slug);
+  }
+
+  // No real product is ever tagged with a "placeholder-N" character slug, so
+  // this naturally returns [] for placeholder characters — no extra branch needed.
   const products = await getProducts({ character: character.slug });
 
   return (

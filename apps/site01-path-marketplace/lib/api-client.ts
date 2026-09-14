@@ -142,3 +142,24 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
 export function getProductsByCategory(category: string, filters: ProductFilters = {}) {
   return getProducts({ ...filters, category });
 }
+
+export async function getProduct(slug: string): Promise<Product | null> {
+  const supabase = createSupabasePublicClient();
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("slug", slug)
+      .eq("status", "active")
+      .abortSignal(AbortSignal.timeout(FETCH_TIMEOUT_MS))
+      .maybeSingle();
+    if (error) {
+      console.error("getProduct failed", error);
+      return null;
+    }
+    return data ?? null;
+  } catch (error) {
+    console.error("getProduct threw", error);
+    return null;
+  }
+}
