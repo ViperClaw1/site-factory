@@ -1,6 +1,7 @@
 import { getCharacters, getCollections, getProductsByCategory } from "@/lib/api-client";
 import { FilterBar } from "@/components/FilterBar";
 import { ProductGrid } from "@/components/ProductGrid";
+import { Reveal } from "@/components/Reveal";
 import type { PillGroup } from "@/components/CategoryPills";
 import { Container, Section } from "@repo/ui";
 
@@ -32,9 +33,11 @@ export default async function ShopCategoryPage({ params, searchParams }: ShopCat
   return (
     <Section>
       <Container>
-        <h1 className="font-heading text-3xl font-bold capitalize">
-          {params.category.replace(/_/g, " ")}
-        </h1>
+        <Reveal>
+          <h1 className="font-heading text-3xl font-bold capitalize">
+            {params.category.replace(/_/g, " ")}
+          </h1>
+        </Reveal>
         <div className="mt-6">
           <FilterBar groups={groups} />
         </div>

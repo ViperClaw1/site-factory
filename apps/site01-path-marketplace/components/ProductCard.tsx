@@ -21,13 +21,17 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
     <Link href={`/p/${product.slug}`} className="group block">
       <Card className={`overflow-hidden ${featured ? "sm:col-span-2" : ""}`}>
         <div className="relative aspect-square w-full overflow-hidden bg-black/5">
-          {cover && (
+          {cover ? (
             <ImageWithFallback
               src={cover.url}
               alt={cover.alt ?? product.title}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-105"
             />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center">
+              <i className="fa-solid fa-box-open text-4xl text-black/20" aria-hidden="true" />
+            </div>
           )}
           <div className="absolute left-3 top-3">
             <CollectibleBadge isCollectible={product.is_collectible} isBlindBox={isBlindBox} />

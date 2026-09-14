@@ -18,13 +18,17 @@ export function CollectionCard({ collection, stats }: CollectionCardProps) {
     <Link href={`/collections/${collection.slug}`} className="group block">
       <Card className="overflow-hidden">
         <div className="relative aspect-[4/5] w-full overflow-hidden bg-black/5">
-          {collection.hero_image && (
+          {collection.hero_image ? (
             <ImageWithFallback
               src={collection.hero_image}
               alt={collection.name}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-105"
             />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center">
+              <i className="fa-solid fa-images text-4xl text-black/20" aria-hidden="true" />
+            </div>
           )}
         </div>
         <div className="space-y-2 p-5">
