@@ -3,7 +3,7 @@ tags: [project/task-4-site-factory, type/index, status/approved]
 project: "Task 4 - Site Factory"
 status: approved
 created: 2026-07-17
-updated: 2026-07-27
+updated: 2026-09-21
 aliases: [Task 4, Site Factory, 20 Sites]
 ---
 
@@ -20,7 +20,8 @@ In progress — architecture approved. Infrastructure setup in Phase 1.
 | # | Site | Domain | Status |
 |---|------|--------|--------|
 | 01 | Path Animation Marketplace | TBD | Spec in progress |
-| 02-20 | TBD | TBD | Planned |
+| 02 | Edu Marketplace (`site02-edu-marketplace`) | TBD | Spec in [[Implementation_Plan_v2\|Implementation Plan v2]] |
+| 03-20 | TBD | TBD | Planned |
 
 ## Key Documents
 
@@ -28,7 +29,8 @@ In progress — architecture approved. Infrastructure setup in Phase 1.
 - [[Site Template Spec|Site Template Spec]] — Next.js template conventions for all sites
 - [[Path Animation Marketplace|Path Animation Marketplace]] — Spec for Site 01 (e-commerce, popmart.com reference)
 - [[Environment Setup|Environment Setup]] — Required env vars, secrets, deployment checklist
-- [[Implementation Plan|Implementation Plan]] — Phased timeline
+- [[Implementation Plan|Implementation Plan]] — Phased timeline (v1)
+- [[Implementation_Plan_v2|Implementation Plan v2]] — v2.1: PayMesh + Dashboard + site01 toys + site02 edu marketplace
 - [[Site Factory TZ v2|Site Factory TZ v2]] — v2.0: PayMesh Gateway payment integration + Dashboard/CRM integration (supersedes payment sections of the above)
 
 ## Architecture Decisions
