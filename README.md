@@ -35,6 +35,8 @@ Copy `.env.example` to `.env.local` in the target app and fill in credentials.
 
 ## Documentation
 
+- Index: [`_index.md`](./_index.md) — project overview, site list, and links to specs and ADRs.
+- Specs: [`specs/`](./specs) — architecture, template, marketplace, environment, implementation plans.
+- ADRs: [`adr/`](./adr) — architecture decision records.
 - In-repo, verified against code: [`docs/`](./docs) — architecture, conventions,
   Directus schema, API contracts, env vars, deployment, glossary.
-- Full architecture, ADRs, and specs: [`obsidian-docs/site-factory/`](https://github.com/Path-animation/obsidian-docs)

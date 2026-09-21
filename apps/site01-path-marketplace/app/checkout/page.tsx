@@ -40,7 +40,7 @@ export default function CheckoutPage() {
     // payment (fiat + crypto via PayMesh Gateway, webhook-driven order
     // status, sync to the ops dashboard) is Phase 3 of ТЗ v2.0 and is
     // currently blocked on API keys from the Gateway team — see
-    // obsidian-docs/site-factory/specs/Implementation_Plan_v2.md.
+    // specs/Implementation_Plan_v2.md.
     const order = {
       id: `mock_${Date.now().toString(36)}`,
       email,
