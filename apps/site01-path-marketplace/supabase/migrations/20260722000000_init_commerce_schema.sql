@@ -131,7 +131,8 @@ create table subscription_plans (
   price_yearly numeric(12, 2),
   currency text not null default 'USD',
   features jsonb,
-  is_active boolean not null default true,
+  -- Plans stay hidden until Phase 5 seeds them and flips this on explicitly.
+  is_active boolean not null default false,
   created_at timestamptz not null default now()
 );
 
@@ -216,3 +217,9 @@ create policy "users can remove from their own wishlist"
 create policy "users can view their own subscriptions"
   on subscriptions for select
   using (auth.uid() = user_id);
+
+-- Realtime ------------------------------------------------------------------
+
+-- Required by StockCounter / EditionCounter: without this publication the
+-- product_variants channel never emits stock changes.
+alter publication supabase_realtime add table product_variants;

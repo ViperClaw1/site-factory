@@ -1,0 +1,21 @@
+import type { MetadataRoute } from "next";
+import { getCourses } from "@/features/catalog/api/courses";
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const base = process.env.BASE_URL ?? "http://localhost:3002";
+
+  const courses = await getCourses();
+
+  const staticRoutes: MetadataRoute.Sitemap = [
+    { url: base, changeFrequency: "daily", priority: 1 },
+    { url: `${base}/courses`, changeFrequency: "daily", priority: 0.9 },
+  ];
+
+  const courseRoutes: MetadataRoute.Sitemap = courses.map((course) => ({
+    url: `${base}/courses/${course.slug}`,
+    changeFrequency: "weekly",
+    priority: 0.8,
+  }));
+
+  return [...staticRoutes, ...courseRoutes];
+}

@@ -50,3 +50,14 @@ export interface Character {
   image: string | null;
   status: "draft" | "published";
 }
+
+/** Editorial instructor bios (Directus). Course SKUs live in Supabase. */
+export interface Instructor {
+  id: string;
+  site: string;
+  slug: string;
+  name: string;
+  bio: string | null;
+  image: string | null;
+  status: "draft" | "published";
+}

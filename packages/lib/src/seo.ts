@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import type { Product } from "@repo/types";
+import type { Course, Product } from "@repo/types";
 
 export function generateMetadata(
   title: string,
@@ -55,6 +55,28 @@ export function generateProductJsonLd(product: Product, url: string): string {
           ? "https://schema.org/InStock"
           : "https://schema.org/OutOfStock",
       url,
+    },
+  });
+}
+
+export function generateCourseJsonLd(course: Course, url: string): string {
+  return toJsonLdScript({
+    "@context": "https://schema.org",
+    "@type": "Course",
+    name: course.title,
+    description: course.description ?? course.subtitle ?? undefined,
+    url,
+    image: course.cover_image ?? undefined,
+    inLanguage: course.language,
+    offers: {
+      "@type": "Offer",
+      priceCurrency: course.currency,
+      price: course.price,
+      url,
+      availability:
+        course.status === "active"
+          ? "https://schema.org/InStock"
+          : "https://schema.org/Discontinued",
     },
   });
 }

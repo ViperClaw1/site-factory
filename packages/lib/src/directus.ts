@@ -1,5 +1,5 @@
 import { createDirectus, readItems, rest, staticToken } from "@directus/sdk";
-import type { Block, Character, Collection, Page, Site } from "@repo/types";
+import type { Block, Character, Collection, Instructor, Page, Site } from "@repo/types";
 
 export interface DirectusSchema {
   sites: Site[];
@@ -7,6 +7,7 @@ export interface DirectusSchema {
   blocks: Block[];
   collections: Collection[];
   characters: Character[];
+  instructors: Instructor[];
 }
 
 export function createDirectusClient(token?: string) {
