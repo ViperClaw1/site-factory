@@ -1,67 +1,50 @@
 import { getCharacter, getProducts } from "@/lib/api-client";
+import { PageHeader } from "@/components/PageHeader";
 import { ProductGrid } from "@/components/ProductGrid";
-import { Reveal } from "@/components/Reveal";
 import {
-  PLACEHOLDER_CHARACTER_DESCRIPTION,
-  placeholderCharacterName,
+  placeholderCharacter,
   placeholderIndexFromSlug,
+  showcaseItemsForCharacter,
 } from "@/lib/placeholders";
-import { Container, ImageWithFallback, Section } from "@repo/ui";
-import type { Character } from "@repo/types";
+import { Container, ImageWithFallback } from "@repo/ui";
 import { notFound } from "next/navigation";
 
 export const revalidate = 0;
 
-// Same "placeholder-N" convention as products — lets a placeholder character
-// card link somewhere real instead of a dead end while Directus has none yet.
-function buildPlaceholderCharacter(slug: string): Character {
-  const index = placeholderIndexFromSlug(slug);
-  return {
-    id: slug,
-    slug,
-    name: placeholderCharacterName(index),
-    description: PLACEHOLDER_CHARACTER_DESCRIPTION,
-    image: null,
-    status: "published",
-  };
-}
-
 export default async function CharacterDetailPage({ params }: { params: { slug: string } }) {
+  // Same "placeholder-N" convention as products — showcase IPs resolve to a
+  // real page instead of a dead end while Directus has none yet.
   let character = await getCharacter(params.slug);
-
   if (!character) {
     if (!params.slug.startsWith("placeholder-")) notFound();
-    character = buildPlaceholderCharacter(params.slug);
+    character = placeholderCharacter(placeholderIndexFromSlug(params.slug));
   }
 
-  // No real product is ever tagged with a "placeholder-N" character slug, so
-  // this naturally returns [] for placeholder characters — no extra branch needed.
+  // No real product is tagged with a "placeholder-N" slug, so placeholder
+  // characters fall through to their showcase items via fallbackItems.
   const products = await getProducts({ character: character.slug });
+  const showcase = showcaseItemsForCharacter(character.name);
 
   return (
-    <Section>
-      <Container>
-        <Reveal>
-          <div className="flex items-center gap-6">
-            <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full bg-black/5">
-              {character.image ? (
-                <ImageWithFallback src={character.image} alt={character.name} fill className="object-cover" />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center">
-                  <i className="fa-solid fa-user text-2xl text-black/20" aria-hidden="true" />
-                </div>
-              )}
+    <>
+      <PageHeader eyebrow="page.character" titleText={character.name}>
+        {character.description && <p className="mt-3 max-w-xl text-black/65">{character.description}</p>}
+      </PageHeader>
+
+      <Container className="py-10">
+        {/* Avatar strip */}
+        <div className="relative -mt-20 mb-10 h-28 w-28 overflow-hidden rounded-full bg-white ring-4 ring-pink ring-offset-4">
+          {character.image ? (
+            <ImageWithFallback src={character.image} alt={character.name} fill sizes="112px" className="object-cover" />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center">
+              <i className="fa-solid fa-user text-3xl text-black/20" aria-hidden="true" />
             </div>
-            <div>
-              <h1 className="font-heading text-3xl font-bold">{character.name}</h1>
-              {character.description && <p className="mt-2 max-w-xl text-black/70">{character.description}</p>}
-            </div>
-          </div>
-        </Reveal>
-        <div className="mt-10">
-          <ProductGrid products={products} />
+          )}
         </div>
+
+        <ProductGrid products={products} fallbackItems={showcase.length > 0 ? showcase : undefined} />
       </Container>
-    </Section>
+    </>
   );
 }

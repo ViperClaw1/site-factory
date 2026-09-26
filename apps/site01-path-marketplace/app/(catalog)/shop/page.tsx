@@ -1,22 +1,13 @@
 import { getCharacters, getCollections, getProducts } from "@/lib/api-client";
 import { FilterBar } from "@/components/FilterBar";
+import { PageHeader } from "@/components/PageHeader";
 import { ProductGrid } from "@/components/ProductGrid";
-import { Reveal } from "@/components/Reveal";
 import type { PillGroup } from "@/components/CategoryPills";
-import { Container, Section } from "@repo/ui";
+import { SHOWCASE_ITEMS } from "@/lib/placeholders";
+import { SHOP_CATEGORY_OPTIONS } from "@/lib/shop-categories";
+import { Container } from "@repo/ui";
 
 export const revalidate = 0;
-
-// Fixed taxonomy matching the seeded product categories (see Phase 1 schema).
-const CATEGORY_OPTIONS = [
-  { label: "Toys", value: "toys" },
-  { label: "Collectible Toys", value: "collectible_toys" },
-  { label: "Books", value: "books" },
-  { label: "Artbooks", value: "artbooks" },
-  { label: "Designs", value: "designs" },
-  { label: "Merch", value: "merch" },
-  { label: "Figures", value: "figures" },
-];
 
 interface ShopPageProps {
   searchParams: {
@@ -42,24 +33,26 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   ]);
 
   const groups: PillGroup[] = [
-    { key: "category", options: CATEGORY_OPTIONS },
+    { key: "category", options: SHOP_CATEGORY_OPTIONS },
     { key: "collection", options: collections.map((c) => ({ label: c.name, value: c.slug })) },
     { key: "character", options: characters.map((c) => ({ label: c.name, value: c.slug })) },
   ];
 
+  // Showcase preview honours the category pill too (whole showcase otherwise).
+  const categoryShowcase = SHOWCASE_ITEMS.filter((item) => item.category === searchParams.category);
+
   return (
-    <Section>
-      <Container>
-        <Reveal>
-          <h1 className="font-heading text-3xl font-bold">Shop</h1>
-        </Reveal>
-        <div className="mt-6">
-          <FilterBar groups={groups} />
-        </div>
-        <div className="mt-8">
-          <ProductGrid products={products} />
+    <>
+      <PageHeader title="page.shop" />
+      <Container className="py-10">
+        <FilterBar groups={groups} />
+        <div className="mt-10">
+          <ProductGrid
+            products={products}
+            fallbackItems={categoryShowcase.length > 0 ? categoryShowcase : SHOWCASE_ITEMS}
+          />
         </div>
       </Container>
-    </Section>
+    </>
   );
 }

@@ -1,0 +1,219 @@
+"use client";
+
+import { useCartStore } from "@/lib/cart";
+import { LOCALE_LABELS, LOCALES, localeTag, useLocaleStore, useT, type MessageKey } from "@/lib/i18n";
+import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+
+const NAV_LINKS: { key: MessageKey; href: string }[] = [
+  { key: "nav.new", href: "/shop?sort=newest" },
+  { key: "nav.characters", href: "/characters" },
+  { key: "nav.categories", href: "/shop" },
+  { key: "nav.collabs", href: "/collections" },
+  { key: "nav.digital", href: "/shop/designs" },
+];
+
+// Wordmark: black "TOY" + pink "VERSE" in heavy Fraunces.
+export function Logo() {
+  return (
+    <Link href="/" className="font-display text-xl tracking-tight" aria-label="ToyVerse home">
+      TOY<span className="text-pink">VERSE</span>
+    </Link>
+  );
+}
+
+// Sticky site nav: wordmark, animated-underline links, language dropdown,
+// search/wishlist/cart icons, and a hamburger panel below `lg`.
+export function NavBar() {
+  const { t, locale } = useT();
+  const setLocale = useLocaleStore((state) => state.setLocale);
+  const pathname = usePathname();
+  const [hydrated, setHydrated] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
+  const langRef = useRef<HTMLDivElement>(null);
+  const itemCount = useCartStore((state) => state.items.reduce((sum, item) => sum + item.qty, 0));
+
+  // Both persisted stores skip SSR hydration; the nav is on every page, so it
+  // owns the one-time rehydrate for the cart and the saved locale.
+  useEffect(() => {
+    useCartStore.persist.rehydrate();
+    useLocaleStore.persist.rehydrate();
+    setHydrated(true);
+  }, []);
+
+  // Keep <html lang> in sync so screen readers/fonts pick the right language.
+  useEffect(() => {
+    document.documentElement.lang = localeTag(locale);
+  }, [locale]);
+
+  // Close the mobile panel on navigation.
+  useEffect(() => setMenuOpen(false), [pathname]);
+
+  // Language dropdown: dismiss on outside click or Escape.
+  useEffect(() => {
+    if (!langOpen) return;
+    function onPointerDown(event: MouseEvent) {
+      if (!langRef.current?.contains(event.target as Node)) setLangOpen(false);
+    }
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setLangOpen(false);
+    }
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [langOpen]);
+
+  const iconClass =
+    "flex h-9 w-9 items-center justify-center text-ink transition-colors hover:text-pink";
+
+  return (
+    <header className="sticky top-0 z-40 border-b border-black/5 bg-white/95 backdrop-blur">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
+        <Logo />
+
+        {/* Desktop links — pink underline grows from the left on hover. */}
+        <nav className="hidden items-center gap-8 lg:flex" aria-label="Main">
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.key}
+              href={link.href}
+              className="group relative py-2 text-sm font-medium text-ink/80 transition-colors hover:text-ink"
+            >
+              {t(link.key)}
+              <span className="absolute inset-x-0 -bottom-0.5 h-0.5 origin-left scale-x-0 bg-pink transition-transform duration-300 group-hover:scale-x-100" />
+            </Link>
+          ))}
+        </nav>
+
+        <div className="flex items-center gap-1">
+          {/* Language dropdown */}
+          <div ref={langRef} className="relative hidden sm:block">
+            <button
+              type="button"
+              onClick={() => setLangOpen((open) => !open)}
+              aria-haspopup="listbox"
+              aria-expanded={langOpen}
+              aria-label={t("nav.language")}
+              className="flex h-9 items-center gap-1.5 px-2 text-xs font-semibold text-ink hover:text-pink"
+            >
+              <i className="fa-solid fa-globe" aria-hidden="true" />
+              {LOCALE_LABELS[locale]}
+              <i
+                className={`fa-solid fa-chevron-down text-[9px] transition-transform ${langOpen ? "rotate-180" : ""}`}
+                aria-hidden="true"
+              />
+            </button>
+            <AnimatePresence>
+              {langOpen && (
+                <motion.ul
+                  role="listbox"
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute right-0 top-full mt-2 w-32 border-2 border-ink bg-white py-1 shadow-[4px_4px_0_0_#FF2D55]"
+                >
+                  {LOCALES.map((code) => (
+                    <li key={code}>
+                      <button
+                        type="button"
+                        role="option"
+                        aria-selected={code === locale}
+                        onClick={() => {
+                          setLocale(code);
+                          setLangOpen(false);
+                        }}
+                        className={`flex w-full items-center justify-between px-3 py-2 text-left text-xs font-semibold hover:bg-pink-soft ${
+                          code === locale ? "text-pink" : "text-ink"
+                        }`}
+                      >
+                        {LOCALE_LABELS[code]}
+                        {code === locale && <i className="fa-solid fa-check text-[10px]" aria-hidden="true" />}
+                      </button>
+                    </li>
+                  ))}
+                </motion.ul>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Utility icons: search goes to the shop; wishlist is not built yet. */}
+          <Link href="/shop" className={iconClass} aria-label={t("nav.search")}>
+            <i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
+          </Link>
+          <button type="button" className={`${iconClass} hidden sm:flex`} aria-label={t("nav.wishlist")} title={t("nav.wishlist")}>
+            <i className="fa-regular fa-heart" aria-hidden="true" />
+          </button>
+          <Link href="/cart" className={`${iconClass} relative`} aria-label={t("nav.cart")}>
+            <i className="fa-solid fa-bag-shopping" aria-hidden="true" />
+            {hydrated && itemCount > 0 && (
+              <motion.span
+                key={itemCount}
+                initial={{ scale: 0.4 }}
+                animate={{ scale: 1 }}
+                className="absolute -right-0.5 top-0 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-pink px-1 text-[10px] font-bold text-white"
+              >
+                {itemCount}
+              </motion.span>
+            )}
+          </Link>
+
+          {/* Hamburger (mobile/tablet only) */}
+          <button
+            type="button"
+            className={`${iconClass} lg:hidden`}
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-expanded={menuOpen}
+            aria-label={t("nav.menu")}
+          >
+            <i className={`fa-solid ${menuOpen ? "fa-xmark" : "fa-bars"}`} aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile panel: stacked links + language chips. */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden border-t border-black/5 bg-white lg:hidden"
+          >
+            <nav className="flex flex-col px-4 py-4 sm:px-6" aria-label="Mobile">
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.key}
+                  href={link.href}
+                  className="font-display border-b border-black/5 py-3 text-2xl text-ink hover:text-pink"
+                >
+                  {t(link.key)}
+                </Link>
+              ))}
+              <div className="mt-4 flex flex-wrap gap-2">
+                {LOCALES.map((code) => (
+                  <button
+                    key={code}
+                    type="button"
+                    onClick={() => setLocale(code)}
+                    className={`px-3 py-1.5 text-xs font-semibold ${
+                      code === locale ? "bg-ink text-white" : "bg-black/5 text-ink"
+                    }`}
+                  >
+                    {LOCALE_LABELS[code]}
+                  </button>
+                ))}
+              </div>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
+  );
+}

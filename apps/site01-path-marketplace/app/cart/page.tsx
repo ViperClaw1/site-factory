@@ -1,12 +1,15 @@
 "use client";
 
+import { buttonClass } from "@/components/buttons";
 import { cartTotal, useCartStore } from "@/lib/cart";
-import { formatPrice } from "@repo/lib";
-import { Button, Container, Section } from "@repo/ui";
+import { useT } from "@/lib/i18n";
+import { Container } from "@repo/ui";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function CartPage() {
+  const { t, price } = useT();
   const [hydrated, setHydrated] = useState(false);
   const items = useCartStore((state) => state.items);
   const updateQty = useCartStore((state) => state.updateQty);
@@ -20,76 +23,82 @@ export default function CartPage() {
   // Avoid flashing an "empty cart" state before localStorage has loaded.
   if (!hydrated) return null;
 
-  return (
-    <Section>
-      <Container className="max-w-2xl">
-        <h1 className="font-heading text-3xl font-bold">Your Cart</h1>
+  const qtyButton =
+    "flex h-8 w-8 items-center justify-center border-2 border-ink text-sm font-bold transition-colors hover:bg-ink hover:text-white";
 
-        {items.length === 0 ? (
-          <div className="mt-8 flex flex-col items-center gap-3 py-16 text-center text-black/50">
-            <i className="fa-solid fa-cart-shopping text-3xl text-black/20" aria-hidden="true" />
-            <p className="text-sm">Your cart is empty.</p>
-            <Link href="/shop">
-              <Button className="mt-2">Browse the shop</Button>
-            </Link>
-          </div>
-        ) : (
-          <div className="mt-8 space-y-4">
+  return (
+    <Container className="max-w-3xl py-14">
+      <h1 className="font-display text-4xl text-ink md:text-5xl">{t("cart.title")}</h1>
+
+      {items.length === 0 ? (
+        /* Empty state */
+        <div className="mt-10 flex flex-col items-center gap-4 bg-cream py-20 text-center">
+          <i className="fa-solid fa-bag-shopping text-4xl text-pink" aria-hidden="true" />
+          <p className="text-black/60">{t("cart.empty")}</p>
+          <Link href="/shop" className={buttonClass("primary", "md", "mt-2")}>
+            {t("cart.browse")}
+          </Link>
+        </div>
+      ) : (
+        <div className="mt-10">
+          {/* Line items */}
+          <ul className="divide-y divide-black/10 border-y border-black/10">
             {items.map((item) => (
-              <div
-                key={item.productId}
-                className="flex items-center gap-4 rounded-2xl border border-black/5 p-4"
-              >
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-black/5">
-                  <i className="fa-solid fa-box-open text-xl text-black/20" aria-hidden="true" />
-                </div>
+              <li key={item.productId} className="flex items-center gap-4 py-5">
+                <Link href={`/p/${item.slug}`} className="relative h-20 w-20 shrink-0 overflow-hidden bg-black/5">
+                  {item.image ? (
+                    <Image src={item.image} alt={item.title} fill sizes="80px" className="object-cover" />
+                  ) : (
+                    <span className="flex h-full w-full items-center justify-center">
+                      <i className="fa-solid fa-box-open text-xl text-black/20" aria-hidden="true" />
+                    </span>
+                  )}
+                </Link>
                 <div className="flex-1">
-                  <p className="font-heading text-sm font-semibold">{item.title}</p>
-                  <p className="text-sm text-black/50">{formatPrice(item.price, item.currency)}</p>
+                  <p className="font-semibold text-ink">{item.title}</p>
+                  <p className="text-sm text-black/50">{price(item.price, item.currency)}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    className="h-8 w-8 rounded-full border border-black/10 text-sm"
+                    className={qtyButton}
                     onClick={() => updateQty(item.productId, item.qty - 1)}
-                    aria-label={`Decrease quantity of ${item.title}`}
+                    aria-label={t("cart.decrease", { title: item.title })}
                   >
                     −
                   </button>
-                  <span className="w-6 text-center text-sm">{item.qty}</span>
+                  <span className="w-6 text-center text-sm font-semibold">{item.qty}</span>
                   <button
                     type="button"
-                    className="h-8 w-8 rounded-full border border-black/10 text-sm"
+                    className={qtyButton}
                     onClick={() => updateQty(item.productId, item.qty + 1)}
-                    aria-label={`Increase quantity of ${item.title}`}
+                    aria-label={t("cart.increase", { title: item.title })}
                   >
                     +
                   </button>
                 </div>
                 <button
                   type="button"
-                  className="text-black/40 hover:text-[var(--color-primary)]"
+                  className="ml-2 text-black/35 transition-colors hover:text-pink"
                   onClick={() => removeItem(item.productId)}
-                  aria-label={`Remove ${item.title} from cart`}
+                  aria-label={t("cart.remove", { title: item.title })}
                 >
                   <i className="fa-solid fa-trash" aria-hidden="true" />
                 </button>
-              </div>
+              </li>
             ))}
+          </ul>
 
-            <div className="flex items-center justify-between border-t border-black/10 pt-4">
-              <p className="font-heading text-lg font-semibold">Subtotal</p>
-              <p className="font-heading text-lg font-semibold">
-                {formatPrice(cartTotal(items), items[0]?.currency ?? "USD")}
-              </p>
-            </div>
-
-            <Link href="/checkout">
-              <Button className="w-full">Checkout</Button>
-            </Link>
+          {/* Subtotal + checkout */}
+          <div className="mt-6 flex items-center justify-between">
+            <p className="font-display text-2xl">{t("cart.subtotal")}</p>
+            <p className="font-display text-2xl text-pink">{price(cartTotal(items), items[0]?.currency ?? "USD")}</p>
           </div>
-        )}
-      </Container>
-    </Section>
+          <Link href="/checkout" className={buttonClass("primary", "lg", "mt-6 w-full")}>
+            {t("cart.checkout")}
+          </Link>
+        </div>
+      )}
+    </Container>
   );
 }

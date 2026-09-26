@@ -4,6 +4,7 @@ node_modules/
 dist/
 .env
 .env.local
+.next-verify
 *.tsbuildinfo
 .DS_Store
 next-env.d.ts

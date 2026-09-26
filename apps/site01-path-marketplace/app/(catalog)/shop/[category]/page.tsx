@@ -1,9 +1,11 @@
 import { getCharacters, getCollections, getProductsByCategory } from "@/lib/api-client";
 import { FilterBar } from "@/components/FilterBar";
+import { PageHeader } from "@/components/PageHeader";
 import { ProductGrid } from "@/components/ProductGrid";
-import { Reveal } from "@/components/Reveal";
 import type { PillGroup } from "@/components/CategoryPills";
-import { Container, Section } from "@repo/ui";
+import { SHOWCASE_ITEMS } from "@/lib/placeholders";
+import { categoryLabelKey } from "@/lib/shop-categories";
+import { Container } from "@repo/ui";
 
 export const revalidate = 0;
 
@@ -30,21 +32,25 @@ export default async function ShopCategoryPage({ params, searchParams }: ShopCat
     { key: "character", options: characters.map((c) => ({ label: c.name, value: c.slug })) },
   ];
 
+  // Showcase preview limited to this category (whole showcase if none match).
+  const categoryShowcase = SHOWCASE_ITEMS.filter((item) => item.category === params.category);
+  const labelKey = categoryLabelKey(params.category);
+
   return (
-    <Section>
-      <Container>
-        <Reveal>
-          <h1 className="font-heading text-3xl font-bold capitalize">
-            {params.category.replace(/_/g, " ")}
-          </h1>
-        </Reveal>
-        <div className="mt-6">
-          <FilterBar groups={groups} />
-        </div>
-        <div className="mt-8">
-          <ProductGrid products={products} />
+    <>
+      <PageHeader
+        title={labelKey ?? undefined}
+        titleText={labelKey ? undefined : params.category.replace(/_/g, " ")}
+      />
+      <Container className="py-10">
+        <FilterBar groups={groups} />
+        <div className="mt-10">
+          <ProductGrid
+            products={products}
+            fallbackItems={categoryShowcase.length > 0 ? categoryShowcase : SHOWCASE_ITEMS}
+          />
         </div>
       </Container>
-    </Section>
+    </>
   );
 }

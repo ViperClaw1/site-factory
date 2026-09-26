@@ -8,7 +8,11 @@
     "start": "next start",
     "lint": "eslint .",
     "type-check": "tsc --noEmit",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "images:pregen": "node scripts/backfill-product-image-pregen.mjs",
+    "images:thumbs": "node scripts/backfill-product-image-thumbs.mjs",
+    "images:blurhash": "node scripts/backfill-product-image-blurhashes.mjs",
+    "images:optimize": "node scripts/backfill-product-image-pregen.mjs && node scripts/backfill-product-image-blurhashes.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.1",
@@ -21,6 +25,7 @@
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.110.8",
     "@tanstack/react-query": "^5.59.0",
+    "blurhash": "^2.0.5",
     "embla-carousel-react": "^8.3.0",
     "framer-motion": "^11.11.1",
     "next": "^14.2.35",
@@ -38,6 +43,7 @@
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.47",
+    "sharp": "^0.35.4",
     "tailwindcss": "^3.4.13",
     "typescript": "^5.6.3"
   }

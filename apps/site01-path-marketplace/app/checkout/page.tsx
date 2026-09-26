@@ -1,12 +1,14 @@
 "use client";
 
+import { buttonClass } from "@/components/buttons";
 import { cartTotal, useCartStore } from "@/lib/cart";
-import { formatPrice } from "@repo/lib";
-import { Button, Container, Section } from "@repo/ui";
+import { useT } from "@/lib/i18n";
+import { Container } from "@repo/ui";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 
 export default function CheckoutPage() {
+  const { t, price } = useT();
   const router = useRouter();
   const [hydrated, setHydrated] = useState(false);
   const [email, setEmail] = useState("");
@@ -55,49 +57,48 @@ export default function CheckoutPage() {
   }
 
   return (
-    <Section>
-      <Container className="max-w-xl">
-        <h1 className="font-heading text-3xl font-bold">Checkout</h1>
-        <p className="mt-3 rounded-xl bg-[var(--color-primary)]/10 p-3 text-xs text-[var(--color-primary-dark)]">
-          Payment is not wired up yet — placing an order here only mocks a confirmation, nothing is
-          charged. Real payment (fiat and crypto via PayMesh Gateway) lands in a later phase.
-        </p>
+    <Container className="max-w-xl py-14">
+      <h1 className="font-display text-4xl text-ink md:text-5xl">{t("checkout.title")}</h1>
+      <p className="mt-4 border-l-4 border-pink bg-pink-soft p-3 text-xs leading-relaxed text-pink-dark">
+        {t("checkout.notice")}
+      </p>
 
-        <div className="mt-6 space-y-2 rounded-2xl border border-black/5 p-4">
-          {items.map((item) => (
-            <div key={item.productId} className="flex justify-between text-sm">
-              <span>
-                {item.title} × {item.qty}
-              </span>
-              <span>{formatPrice(item.price * item.qty, item.currency)}</span>
-            </div>
-          ))}
-          <div className="flex justify-between border-t border-black/10 pt-2 font-heading font-semibold">
-            <span>Total</span>
-            <span>{formatPrice(cartTotal(items), items[0]?.currency ?? "USD")}</span>
+      {/* Order summary */}
+      <div className="mt-8 space-y-2 border-2 border-ink p-5">
+        {items.map((item) => (
+          <div key={item.productId} className="flex justify-between gap-4 text-sm">
+            <span>
+              {item.title} × {item.qty}
+            </span>
+            <span>{price(item.price * item.qty, item.currency)}</span>
           </div>
+        ))}
+        <div className="flex justify-between border-t border-black/10 pt-3 font-semibold">
+          <span>{t("checkout.total")}</span>
+          <span className="text-pink">{price(cartTotal(items), items[0]?.currency ?? "USD")}</span>
         </div>
+      </div>
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-          <div>
-            <label htmlFor="email" className="text-sm font-medium">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              className="mt-1 w-full rounded-xl border border-black/10 px-4 py-2 text-sm"
-              placeholder="you@example.com"
-            />
-          </div>
-          <Button type="submit" className="w-full" disabled={submitting}>
-            {submitting ? "Placing order…" : "Place order"}
-          </Button>
-        </form>
-      </Container>
-    </Section>
+      {/* Contact + submit */}
+      <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+        <div>
+          <label htmlFor="email" className="eyebrow text-ink">
+            {t("checkout.email")}
+          </label>
+          <input
+            id="email"
+            type="email"
+            required
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            className="mt-2 w-full border-2 border-black/15 px-4 py-3 text-sm outline-none focus:border-pink"
+            placeholder="you@example.com"
+          />
+        </div>
+        <button type="submit" className={buttonClass("primary", "lg", "w-full")} disabled={submitting}>
+          {submitting ? t("checkout.placing") : t("checkout.place")}
+        </button>
+      </form>
+    </Container>
   );
 }

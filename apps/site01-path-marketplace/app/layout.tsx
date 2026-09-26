@@ -1,31 +1,53 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Fraunces, Onest, Outfit, Playfair_Display } from "next/font/google";
 import PlausibleProvider from "next-plausible";
-import { SiteHeader } from "@/components/SiteHeader";
+import { Footer } from "@/components/Footer";
+import { NavBar } from "@/components/NavBar";
 import "./globals.css";
 
-const body = Inter({
+// Outfit for body copy, Fraunces (variable, with its SOFT/WONK axes) for the
+// heavy display headlines.
+const body = Outfit({
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",
 });
 
-const heading = Space_Grotesk({
+const heading = Fraunces({
   subsets: ["latin"],
   variable: "--font-heading",
+  display: "swap",
+  axes: ["SOFT", "WONK", "opsz"],
+});
+
+// Cyrillic-only fallbacks for the ru locale — Outfit and Fraunces ship no
+// Cyrillic glyphs. Onest is a close geometric match for Outfit; Playfair
+// Display 900 stands in for heavy Fraunces. Their cyrillic-subset
+// unicode-range means Latin text never pulls these files.
+const bodyCyrillic = Onest({
+  subsets: ["cyrillic"],
+  variable: "--font-body-cyrillic",
+  display: "swap",
+});
+
+const headingCyrillic = Playfair_Display({
+  subsets: ["cyrillic"],
+  weight: "900",
+  variable: "--font-heading-cyrillic",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Path Animation Marketplace",
-  description: "Collectible toys, art, and digital drops from Path Animation.",
+  title: "ToyVerse — Collectibles Marketplace",
+  description:
+    "A multilingual marketplace for designer toys, blind boxes, figures, art books and digital collectibles.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${body.variable} ${heading.variable}`}>
+    <html lang="en" className={`${body.variable} ${heading.variable} ${bodyCyrillic.variable} ${headingCyrillic.variable}`}>
       <head>
-        {/* Icon set for placeholder cards (no product photo yet) — CDN, no bundled dependency. */}
+        {/* Icon set (nav, footer socials, placeholders) — CDN, no bundled dependency. */}
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
@@ -36,9 +58,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           selfHosted
         />
       </head>
-      <body>
-        <SiteHeader />
-        {children}
+      <body className="flex min-h-screen flex-col">
+        <NavBar />
+        <main className="flex-1">{children}</main>
+        <Footer />
       </body>
     </html>
   );

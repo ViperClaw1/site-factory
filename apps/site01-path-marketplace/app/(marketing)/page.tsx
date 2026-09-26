@@ -1,151 +1,61 @@
-import { getCharacters, getCollections, getProducts } from "@/lib/api-client";
-import { CharacterCard } from "@/components/CharacterCard";
-import { CollectionCard } from "@/components/CollectionCard";
-import { HorizontalScroll } from "@/components/HorizontalScroll";
-import { PlaceholderCard } from "@/components/PlaceholderCard";
+import { getCharacters, getProducts } from "@/lib/api-client";
+import { toCardItem } from "@/lib/to-card-item";
+import { SHOWCASE_FLASH_SALE, SHOWCASE_ITEMS, SHOWCASE_NEW_ARRIVALS, placeholderCharacters } from "@/lib/placeholders";
+import { CategoryGrid } from "@/components/home/CategoryGrid";
+import { CharacterShowcase } from "@/components/home/CharacterShowcase";
+import { FlashSale } from "@/components/home/FlashSale";
+import { HeroCarousel } from "@/components/home/HeroCarousel";
 import { ProductCard } from "@/components/ProductCard";
-import { Reveal } from "@/components/Reveal";
 import { RevealGrid } from "@/components/RevealGrid";
-import {
-  placeholderCharacterCardProps,
-  placeholderIcon,
-  placeholderProductCardProps,
-} from "@/lib/placeholders";
-import { formatPrice } from "@repo/lib";
-import { Button, Container, ImageWithFallback, Section } from "@repo/ui";
-import Link from "next/link";
+import { SectionHeading } from "@/components/SectionHeading";
 
 export const revalidate = 0;
 
 export default async function HomePage() {
-  const [products, collections, characters] = await Promise.all([
-    getProducts({ sort: "newest" }),
-    getCollections(),
-    getCharacters(),
-  ]);
+  // Catalog (Supabase) + character IPs (Directus), fetched in parallel.
+  const [products, characters] = await Promise.all([getProducts({ sort: "newest" }), getCharacters()]);
 
-  const featuredDrop = products.find((product) => product.is_collectible) ?? products[0];
-  const newArrivals = products.slice(0, 8);
+  // Fall back to the showcase catalog while the real one is empty, so the
+  // storefront is fully populated and every card leads to a working PDP.
+  const isShowcase = products.length === 0;
+  const items = isShowcase ? SHOWCASE_ITEMS : products.slice(0, 12).map(toCardItem);
+  const newArrivals = isShowcase ? SHOWCASE_NEW_ARRIVALS : products.slice(0, 6).map(toCardItem);
+  // Character tabs: Directus characters when published, otherwise the distinct
+  // `character` values on the products themselves (capitalised for display).
+  const productCharacters = Array.from(new Set(items.map((item) => item.characterKey).filter(Boolean) as string[]));
+  const tabs = isShowcase
+    ? placeholderCharacters().map((character) => ({ key: character.name.toLowerCase(), name: character.name }))
+    : characters.length > 0
+      ? characters.map((character) => ({ key: character.slug, name: character.name }))
+      : productCharacters.map((key) => ({ key, name: key.charAt(0).toUpperCase() + key.slice(1) }));
 
   return (
     <>
-      {/* Hero: the current featured drop, or a placeholder headline while the catalog is still empty. */}
-      <Section className="pt-8">
-        <Container>
-          <Reveal>
-            {featuredDrop ? (
-              <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
-                <div className="relative aspect-square w-full overflow-hidden rounded-3xl bg-black/5">
-                  {featuredDrop.images[0] ? (
-                    <ImageWithFallback
-                      src={featuredDrop.images[0].url}
-                      alt={featuredDrop.images[0].alt ?? featuredDrop.title}
-                      fill
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center">
-                      <i className="fa-solid fa-gift text-6xl text-black/20" aria-hidden="true" />
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-wide text-[var(--color-primary)]">Featured Drop</p>
-                  <h1 className="mt-2 font-heading text-4xl font-bold">{featuredDrop.title}</h1>
-                  {featuredDrop.description && (
-                    <p className="mt-4 text-black/70">{featuredDrop.description}</p>
-                  )}
-                  <p className="mt-4 text-lg font-semibold">
-                    {formatPrice(featuredDrop.base_price, featuredDrop.currency)}
-                  </p>
-                  <Link href={`/p/${featuredDrop.slug}`}>
-                    <Button className="mt-6">View drop</Button>
-                  </Link>
-                </div>
-              </div>
-            ) : (
-              <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
-                <div className="flex aspect-square w-full items-center justify-center rounded-3xl bg-black/5">
-                  <i className="fa-solid fa-shop text-6xl text-black/20" aria-hidden="true" />
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-wide text-[var(--color-primary)]">Coming Soon</p>
-                  <h1 className="mt-2 font-heading text-4xl font-bold">Path Animation Marketplace</h1>
-                  <p className="mt-4 max-w-xl text-black/70">
-                    Collectible toys, art, and digital drops — coming soon. Browse a placeholder drop below
-                    to try the shopping flow.
-                  </p>
-                  <Link href="/p/placeholder-0">
-                    <Button className="mt-6">Preview a sample product</Button>
-                  </Link>
-                </div>
-              </div>
-            )}
-          </Reveal>
-        </Container>
-      </Section>
+      <HeroCarousel />
 
-      {/* New arrivals: horizontal, swipeable via Embla on touch devices — or placeholder cards (linking to a real PDP) while the catalog is empty. */}
-      <Section>
-        <Container>
-          <Reveal>
-            <h2 className="font-heading text-2xl font-bold">New Arrivals</h2>
-          </Reveal>
-          <div className="mt-6">
-            {newArrivals.length > 0 ? (
-              <HorizontalScroll>
-                {newArrivals.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </HorizontalScroll>
-            ) : (
-              <RevealGrid className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-                {Array.from({ length: 4 }).map((_, index) => (
-                  <PlaceholderCard key={index} {...placeholderProductCardProps(index)} />
-                ))}
-              </RevealGrid>
-            )}
-          </div>
-        </Container>
-      </Section>
+      <CharacterShowcase items={items} tabs={tabs} />
 
-      {/* Collections grid: editorial entry points into the catalog — or placeholder cards while none are published. */}
-      <Section>
-        <Container>
-          <Reveal>
-            <h2 className="font-heading text-2xl font-bold">Collections</h2>
-          </Reveal>
-          <RevealGrid className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {collections.length > 0
-              ? collections.map((collection) => <CollectionCard key={collection.id} collection={collection} />)
-              : Array.from({ length: 3 }).map((_, index) => (
-                  <PlaceholderCard key={index} icon={placeholderIcon(index + 3)} />
-                ))}
+      <CategoryGrid />
+
+      {/* The schema has no sale pricing yet, so the flash sale only runs on
+          the showcase catalog — never a fake discount on a real product. */}
+      {isShowcase && <FlashSale item={SHOWCASE_FLASH_SALE} />}
+
+      {/* New Arrivals: 6-column strip of the newest items. */}
+      <section className="py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeading
+            eyebrow="section.newArrivals.eyebrow"
+            title="section.newArrivals.title"
+            viewAllHref="/shop?sort=newest"
+          />
+          <RevealGrid className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-6">
+            {newArrivals.map((item) => (
+              <ProductCard key={item.id} item={item} compact />
+            ))}
           </RevealGrid>
-        </Container>
-      </Section>
-
-      {/* Character browser strip — or placeholder avatars (linking to a real character page) while none are published. */}
-      <Section>
-        <Container>
-          <Reveal>
-            <h2 className="font-heading text-2xl font-bold">Characters</h2>
-          </Reveal>
-          <RevealGrid className="mt-6 flex gap-6 overflow-x-auto pb-2">
-            {characters.length > 0
-              ? characters.map((character) => (
-                  <div key={character.id} className="w-28 shrink-0">
-                    <CharacterCard character={character} />
-                  </div>
-                ))
-              : Array.from({ length: 6 }).map((_, index) => (
-                  <div key={index} className="w-28 shrink-0">
-                    <PlaceholderCard {...placeholderCharacterCardProps(index)} rounded />
-                  </div>
-                ))}
-          </RevealGrid>
-        </Container>
-      </Section>
+        </div>
+      </section>
     </>
   );
 }

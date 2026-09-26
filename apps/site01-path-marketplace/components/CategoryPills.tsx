@@ -1,8 +1,14 @@
+"use client";
+
+import { useT, type MessageKey } from "@/lib/i18n";
 import Link from "next/link";
 
 export interface PillOption {
   label: string;
   value: string;
+  // Translated label for fixed taxonomy values; CMS names (collections,
+  // characters) fall back to `label` as-is.
+  labelKey?: MessageKey;
 }
 
 export interface PillGroup {
@@ -16,9 +22,11 @@ export interface CategoryPillsProps {
   basePath: string;
 }
 
-// Server-rendered filter pills — each one is a plain link to the same page
-// with an updated query string, so filtering works with no client JS.
+// Filter pills — each one is a plain link to the same page with an updated
+// query string, so filters stay shareable/bookmarkable.
 export function CategoryPills({ groups, activeParams, basePath }: CategoryPillsProps) {
+  const { t } = useT();
+
   return (
     <div className="flex flex-wrap gap-2">
       {groups.flatMap((group) =>
@@ -42,13 +50,11 @@ export function CategoryPills({ groups, activeParams, basePath }: CategoryPillsP
             <Link
               key={`${group.key}-${option.value}`}
               href={href}
-              className={`rounded-full border px-4 py-1.5 text-xs font-medium transition-colors ${
-                isActive
-                  ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-white"
-                  : "border-black/10 text-black/70 hover:border-[var(--color-primary)]"
+              className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-colors ${
+                isActive ? "bg-ink text-white" : "bg-black/5 text-ink hover:bg-pink-soft hover:text-pink"
               }`}
             >
-              {option.label}
+              {option.labelKey ? t(option.labelKey) : option.label}
             </Link>
           );
         })

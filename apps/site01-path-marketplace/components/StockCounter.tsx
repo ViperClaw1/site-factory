@@ -13,6 +13,8 @@ export function StockCounter({ productId, editionSize }: StockCounterProps) {
 
   useEffect(() => {
     const supabase = createSupabaseBrowserClient();
+    // Ignore a stock query that resolves after unmount.
+    let active = true;
 
     // Sum current stock across every variant of this product.
     async function loadStock() {
@@ -21,15 +23,20 @@ export function StockCounter({ productId, editionSize }: StockCounterProps) {
         .select("stock")
         .eq("product_id", productId);
       const total = (data ?? []).reduce((sum: number, row: { stock: number }) => sum + row.stock, 0);
-      setStock(total);
+      if (active) setStock(total);
     }
 
     loadStock();
 
     // Keep the total live — any insert/update/delete on this product's
     // variants (e.g. a purchase decrementing stock) re-triggers the sum.
+    // The topic is unique per mount: the browser client is a singleton and
+    // `channel(topic)` returns an existing channel for a reused topic, so the
+    // same product rendered twice (home grid + New Arrivals), or a Strict Mode
+    // remount before the old channel is removed, would call `.on()` on an
+    // already-subscribed channel and throw.
     const channel = supabase
-      .channel(`product-variants-${productId}`)
+      .channel(`product-variants-${productId}-${Math.random().toString(36).slice(2)}`)
       .on(
         "postgres_changes",
         {
@@ -43,6 +50,7 @@ export function StockCounter({ productId, editionSize }: StockCounterProps) {
       .subscribe();
 
     return () => {
+      active = false;
       supabase.removeChannel(channel);
     };
   }, [productId]);

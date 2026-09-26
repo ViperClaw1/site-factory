@@ -1,61 +1,24 @@
-import { Card } from "@repo/ui";
-import Link from "next/link";
-import type { ReactNode } from "react";
+import { Shape, type ShapeKind } from "./Shape";
 
 export interface PlaceholderCardProps {
-  icon?: string;
-  rounded?: boolean;
-  // When set, the card becomes a link (to a placeholder detail page) and
-  // shows real placeholder copy instead of grey skeleton bars — used for
-  // product/character placeholders, which need somewhere to navigate to.
-  // Collection placeholders (no detail page yet) omit these and keep the
-  // plain skeleton look.
-  href?: string;
-  title?: string;
-  description?: string;
+  index: number;
 }
 
-function PlaceholderCardBody({ icon, rounded, title, description }: PlaceholderCardProps) {
-  return (
-    <Card className={`overflow-hidden transition-shadow group-hover:shadow-md ${rounded ? "rounded-full" : ""}`}>
-      <div className="flex aspect-square w-full items-center justify-center bg-black/5">
-        <i className={`${icon} text-4xl text-black/20`} aria-hidden="true" />
-      </div>
-      {!rounded &&
-        (title ? (
-          <div className="space-y-1 p-4">
-            <h3 className="font-heading text-sm font-semibold text-black/70">{title}</h3>
-            {description && <p className="text-sm text-black/50">{description}</p>}
-          </div>
-        ) : (
-          <div className="space-y-2 p-4">
-            <div className="h-3 w-3/4 rounded bg-black/10" />
-            <div className="h-3 w-1/3 rounded bg-black/10" />
-          </div>
-        ))}
-    </Card>
-  );
-}
+const TINTS = ["bg-pink-soft text-pink", "bg-sun-soft text-sun", "bg-electric-soft text-electric"];
+const KINDS: ShapeKind[] = ["circle", "triangle", "square", "ring", "diamond", "dots"];
 
-export function PlaceholderCard({ icon = "fa-solid fa-gift", rounded = false, href, title, description }: PlaceholderCardProps) {
-  const body = <PlaceholderCardBody icon={icon} rounded={rounded} title={title} description={description} />;
-  const name: ReactNode = rounded && title && (
-    <p className="mt-2 text-center font-heading text-sm font-semibold text-black/70">{title}</p>
-  );
-
-  if (href) {
-    return (
-      <Link href={href} className="group block">
-        {body}
-        {name}
-      </Link>
-    );
-  }
-
+// Non-linking skeleton tile for content types with no placeholder detail page
+// yet (collections): a tinted panel with one Memphis shape and grey text bars.
+export function PlaceholderCard({ index }: PlaceholderCardProps) {
   return (
     <div>
-      {body}
-      {name}
+      <div className={`relative aspect-[4/5] overflow-hidden ${TINTS[index % TINTS.length]}`}>
+        <Shape kind={KINDS[index % KINDS.length]!} className="left-1/2 top-1/2 h-1/3 w-1/3 -translate-x-1/2 -translate-y-1/2 opacity-60" />
+      </div>
+      <div className="space-y-2 pt-4">
+        <div className="h-3 w-3/4 bg-black/10" />
+        <div className="h-3 w-1/3 bg-black/10" />
+      </div>
     </div>
   );
 }

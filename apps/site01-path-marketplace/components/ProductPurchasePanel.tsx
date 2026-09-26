@@ -1,19 +1,21 @@
 "use client";
 
 import { useCartStore } from "@/lib/cart";
-import { formatPrice } from "@repo/lib";
-import { Button } from "@repo/ui";
+import { useT } from "@/lib/i18n";
 import type { Product } from "@repo/types";
 import Link from "next/link";
 import { useState } from "react";
+import { buttonClass } from "./buttons";
 
 export interface ProductPurchasePanelProps {
   product: Product;
+  soldOut?: boolean;
 }
 
-// Client island: everything above (title, description, gallery) is server
-// rendered — only "add to cart" needs the browser-only Zustand store.
-export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
+// Client island: everything around it (title, description, gallery) is server
+// rendered — only price formatting and "add to cart" need the browser stores.
+export function ProductPurchasePanel({ product, soldOut = false }: ProductPurchasePanelProps) {
+  const { t, price } = useT();
   const addItem = useCartStore((state) => state.addItem);
   const [added, setAdded] = useState(false);
 
@@ -31,15 +33,21 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
 
   return (
     <div>
-      <p className="text-lg font-semibold">{formatPrice(product.base_price, product.currency)}</p>
-      <Button className="mt-6" onClick={handleAddToCart}>
-        Add to Cart
-      </Button>
+      <p className="font-display text-4xl text-pink">{price(product.base_price, product.currency)}</p>
+      {soldOut ? (
+        <button type="button" disabled className={buttonClass("muted", "lg", "mt-6 w-full sm:w-auto")}>
+          {t("pdp.soldOut")}
+        </button>
+      ) : (
+        <button type="button" onClick={handleAddToCart} className={buttonClass("primary", "lg", "mt-6 w-full sm:w-auto")}>
+          {t("pdp.addToCart")}
+        </button>
+      )}
       {added && (
         <p className="mt-3 text-sm text-black/70">
-          Added to cart.{" "}
-          <Link href="/cart" className="font-medium text-[var(--color-primary)] underline">
-            View cart
+          {t("pdp.added")}{" "}
+          <Link href="/cart" className="font-semibold text-pink underline">
+            {t("pdp.viewCart")}
           </Link>
         </p>
       )}

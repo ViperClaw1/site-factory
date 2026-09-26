@@ -2,15 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Theme tokens consumed by the shared @repo/ui preset (primary/bg) — the
+   font variables themselves are set on <html> by next/font in layout.tsx. */
 :root {
-  --color-primary: #e8462f;
-  --color-primary-dark: #b8331e;
-  --color-bg: #fdfbf8;
-  --font-heading: "Clash Display", var(--font-body), sans-serif;
-  --font-body: "Inter", system-ui, sans-serif;
+  --color-primary: #ff2d55;
+  --color-primary-dark: #d6153f;
+  --color-bg: #ffffff;
 }
 
 body {
   background-color: var(--color-bg);
-  font-family: var(--font-body);
+  color: #111111;
+  /* Outfit/Fraunces are Latin-only: Cyrillic (ru) falls through to the
+     next/font fallback, zh/ja copy to the platform's native CJK faces. */
+  font-family: var(--font-body), var(--font-body-cyrillic), "PingFang SC", "Hiragino Sans",
+    "Noto Sans CJK SC", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer utilities {
+  /* Heavy, slightly soft Fraunces used for every display headline. */
+  .font-display {
+    font-family: var(--font-heading), var(--font-heading-cyrillic), "Songti SC", "Hiragino Mincho ProN", "Noto Serif CJK SC", serif;
+    font-weight: 900;
+    font-variation-settings: "SOFT" 50, "WONK" 0;
+    letter-spacing: -0.01em;
+  }
+
+  /* Small spaced-out caps label used above section titles and on cards. */
+  .eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
 }

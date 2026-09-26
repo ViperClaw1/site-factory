@@ -1,30 +1,27 @@
 import { getCharacters } from "@/lib/api-client";
 import { CharacterCard } from "@/components/CharacterCard";
-import { PlaceholderCard } from "@/components/PlaceholderCard";
-import { Reveal } from "@/components/Reveal";
+import { PageHeader } from "@/components/PageHeader";
 import { RevealGrid } from "@/components/RevealGrid";
-import { placeholderCharacterCardProps } from "@/lib/placeholders";
-import { Container, Section } from "@repo/ui";
+import { placeholderCharacters } from "@/lib/placeholders";
+import { Container } from "@repo/ui";
 
 export const revalidate = 0;
 
 export default async function CharactersPage() {
-  const characters = await getCharacters();
+  // Published characters from Directus — or the showcase IPs while none exist.
+  const fetched = await getCharacters();
+  const characters = fetched.length > 0 ? fetched : placeholderCharacters();
 
   return (
-    <Section>
-      <Container>
-        <Reveal>
-          <h1 className="font-heading text-3xl font-bold">Characters</h1>
-        </Reveal>
-        <RevealGrid className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {characters.length > 0
-            ? characters.map((character) => <CharacterCard key={character.id} character={character} />)
-            : Array.from({ length: 8 }).map((_, index) => (
-                <PlaceholderCard key={index} {...placeholderCharacterCardProps(index)} rounded />
-              ))}
+    <>
+      <PageHeader title="page.characters" />
+      <Container className="py-14">
+        <RevealGrid className="grid grid-cols-2 gap-x-8 gap-y-12 sm:grid-cols-3 lg:grid-cols-6">
+          {characters.map((character, index) => (
+            <CharacterCard key={character.id} character={character} index={index} />
+          ))}
         </RevealGrid>
       </Container>
-    </Section>
+    </>
   );
 }

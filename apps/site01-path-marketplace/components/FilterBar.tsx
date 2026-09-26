@@ -1,5 +1,6 @@
 "use client";
 
+import { useT, type MessageKey } from "@/lib/i18n";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { ChangeEvent } from "react";
 import { CategoryPills, type PillGroup } from "./CategoryPills";
@@ -8,16 +9,17 @@ export interface FilterBarProps {
   groups: PillGroup[];
 }
 
-const SORT_OPTIONS = [
-  { value: "newest", label: "Newest" },
-  { value: "price_asc", label: "Price: Low to High" },
-  { value: "price_desc", label: "Price: High to Low" },
+const SORT_OPTIONS: { value: string; key: MessageKey }[] = [
+  { value: "newest", key: "sort.newest" },
+  { value: "price_asc", key: "sort.price_asc" },
+  { value: "price_desc", key: "sort.price_desc" },
 ];
 
 // Client island: reads/writes the URL's query string directly so filters and
-// sort stay shareable/bookmarkable, while the ISR page around it stays server
+// sort stay shareable/bookmarkable, while the page around it stays server
 // rendered.
 export function FilterBar({ groups }: FilterBarProps) {
+  const { t } = useT();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -30,16 +32,16 @@ export function FilterBar({ groups }: FilterBarProps) {
   }
 
   return (
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-4 border-y border-black/5 py-4 sm:flex-row sm:items-center sm:justify-between">
       <CategoryPills groups={groups} activeParams={activeParams} basePath={pathname} />
       <select
         value={activeParams.sort ?? "newest"}
         onChange={handleSortChange}
-        className="rounded-full border border-black/10 bg-transparent px-4 py-1.5 text-xs font-medium"
+        className="border-2 border-ink bg-white px-3 py-1.5 text-xs font-semibold outline-none focus:border-pink"
       >
         {SORT_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>
-            {option.label}
+            {t(option.key)}
           </option>
         ))}
       </select>
