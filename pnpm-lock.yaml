@@ -74,6 +74,9 @@ importers:
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
+      sharp:
+        specifier: ^0.35.4
+        version: 0.35.4(@types/node@20.19.43)
       zustand:
         specifier: ^4.5.5
         version: 4.5.7(@types/react@18.3.31)(react@18.3.1)
@@ -99,9 +102,6 @@ importers:
       postcss:
         specifier: ^8.4.47
         version: 8.5.21
-      sharp:
-        specifier: ^0.35.4
-        version: 0.35.4(@types/node@20.19.43)
       tailwindcss:
         specifier: ^3.4.13
         version: 3.4.19
