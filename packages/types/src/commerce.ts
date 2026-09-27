@@ -2,9 +2,18 @@ export type ProductType = "physical" | "digital";
 
 export type ProductStatus = "active" | "draft" | "archived";
 
+/** Pregenerated resized copies stored next to the original (`name_thumb.webp`, …). */
+export type ProductImageVariant = "thumb" | "gallery" | "hero";
+
 export interface ProductImage {
   url: string;
   alt?: string;
+  /** Low-res placeholder hash, written by the image backfill scripts. */
+  blurhash?: string;
+  /** Which pregenerated variants exist for this image. */
+  variants?: ProductImageVariant[];
+  /** Variants version — changes whenever the variants are re-rendered (cache busting). */
+  v?: string;
 }
 
 export interface CollectibleChapter {
