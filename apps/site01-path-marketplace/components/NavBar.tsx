@@ -1,5 +1,6 @@
 "use client";
 
+import { initAuth, useAuthStore } from "@/lib/auth";
 import { useCartStore } from "@/lib/cart";
 import { LOCALE_LABELS, LOCALES, localeTag, useLocaleStore, useT, type MessageKey } from "@/lib/i18n";
 import { AnimatePresence, motion } from "framer-motion";
@@ -36,12 +37,16 @@ export function NavBar() {
   const langRef = useRef<HTMLDivElement>(null);
   const itemCount = useCartStore((state) => state.items.reduce((sum, item) => sum + item.qty, 0));
 
+  const signedIn = useAuthStore((state) => state.role !== "guest");
+
   // Both persisted stores skip SSR hydration; the nav is on every page, so it
-  // owns the one-time rehydrate for the cart and the saved locale.
+  // owns the one-time rehydrate for the cart and the saved locale, plus the
+  // Supabase auth subscription.
   useEffect(() => {
     useCartStore.persist.rehydrate();
     useLocaleStore.persist.rehydrate();
     setHydrated(true);
+    return initAuth();
   }, []);
 
   // Keep <html lang> in sync so screen readers/fonts pick the right language.
@@ -143,13 +148,22 @@ export function NavBar() {
             </AnimatePresence>
           </div>
 
-          {/* Utility icons: search goes to the shop; wishlist is not built yet. */}
+          {/* Utility icons: search goes to the shop; favorites + account are
+              gated by middleware, so guests land on /login. */}
           <Link href="/shop" className={iconClass} aria-label={t("nav.search")}>
             <i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
           </Link>
-          <button type="button" className={`${iconClass} hidden sm:flex`} aria-label={t("nav.wishlist")} title={t("nav.wishlist")}>
+          <Link href="/favorites" className={`${iconClass} hidden sm:flex`} aria-label={t("nav.wishlist")} title={t("nav.wishlist")}>
             <i className="fa-regular fa-heart" aria-hidden="true" />
-          </button>
+          </Link>
+          <Link
+            href={signedIn ? "/account" : "/login"}
+            className={iconClass}
+            aria-label={t(signedIn ? "nav.account" : "nav.signIn")}
+            title={t(signedIn ? "nav.account" : "nav.signIn")}
+          >
+            <i className={`fa-${signedIn ? "solid" : "regular"} fa-user`} aria-hidden="true" />
+          </Link>
           <Link href="/cart" className={`${iconClass} relative`} aria-label={t("nav.cart")}>
             <i className="fa-solid fa-bag-shopping" aria-hidden="true" />
             {hydrated && itemCount > 0 && (

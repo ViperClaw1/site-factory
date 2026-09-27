@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { buttonClass } from "./buttons";
 import { CatalogImage } from "./CatalogImage";
+import { FavoriteButton } from "./FavoriteButton";
 import { StockCounter } from "./StockCounter";
 
 const BADGE_STYLES: Record<BadgeKind, { key: MessageKey; className: string }> = {
@@ -98,6 +99,7 @@ export function ProductCard({ item, compact = false }: ProductCardProps) {
         </Link>
 
         {item.badge && !item.soldOut && <ItemBadge kind={item.badge} className="absolute left-2.5 top-2.5" />}
+        <FavoriteButton productId={item.id} className="absolute right-2 top-2" />
 
         {item.soldOut ? (
           <span className="eyebrow pointer-events-none absolute inset-0 flex items-center justify-center text-black/50">

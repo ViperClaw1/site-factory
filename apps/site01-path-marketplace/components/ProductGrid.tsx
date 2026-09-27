@@ -13,7 +13,7 @@ export interface ProductGridProps {
   fallbackItems?: CardItem[];
 }
 
-const GRID_CLASSES = "grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-4";
+export const GRID_CLASSES = "grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-4";
 
 export function ProductGrid({ products, fallbackItems = SHOWCASE_ITEMS }: ProductGridProps) {
   // Empty catalog: say so, then preview the showcase items (real PDP links).
