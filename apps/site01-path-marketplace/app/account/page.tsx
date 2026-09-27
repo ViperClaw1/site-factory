@@ -1,4 +1,5 @@
-import { ProfileForm } from "@/components/ProfileForm";
+import { ProfileForm, type AvatarMeta } from "@/components/ProfileForm";
+import { blurhashToDataUrl } from "@/lib/blurhash";
 import { createSupabaseServerClient } from "@repo/lib/supabase-server";
 import { Container } from "@repo/ui";
 import { redirect } from "next/navigation";
@@ -12,11 +13,10 @@ export default async function AccountPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/account");
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("full_name, phone, avatar_url")
-    .eq("id", user.id)
-    .maybeSingle();
+  // select("*") rather than naming avatar_meta: keeps working if that column
+  // hasn't been migrated yet (it's then simply absent).
+  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
+  const avatarMeta = (profile?.avatar_meta as AvatarMeta | null | undefined) ?? null;
 
   return (
     <Container className="max-w-xl py-14">
@@ -28,7 +28,9 @@ export default async function AccountPage() {
           fullName: profile?.full_name ?? user.user_metadata?.full_name ?? "",
           phone: profile?.phone ?? "",
           avatarUrl: profile?.avatar_url ?? null,
+          avatarMeta,
         }}
+        avatarBlurDataUrl={blurhashToDataUrl(avatarMeta?.blurhash)}
       />
     </Container>
   );

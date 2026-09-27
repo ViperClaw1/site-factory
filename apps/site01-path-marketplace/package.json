@@ -12,6 +12,7 @@
     "images:pregen": "node scripts/backfill-product-image-pregen.mjs",
     "images:thumbs": "node scripts/backfill-product-image-thumbs.mjs",
     "images:blurhash": "node scripts/backfill-product-image-blurhashes.mjs",
+    "images:avatars": "node scripts/backfill-avatar-thumbs.mjs",
     "images:optimize": "node scripts/backfill-product-image-pregen.mjs && node scripts/backfill-product-image-blurhashes.mjs"
   },
   "dependencies": {
@@ -34,6 +35,7 @@
     "react-dom": "^18.3.1",
     "react-phone-number-input": "^3.4.18",
     "server-only": "^0.0.1",
+    "sharp": "^0.35.4",
     "zustand": "^4.5.5"
   },
   "devDependencies": {
@@ -44,7 +46,6 @@
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.47",
-    "sharp": "^0.35.4",
     "tailwindcss": "^3.4.13",
     "typescript": "^5.6.3"
   }

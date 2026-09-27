@@ -1,6 +1,8 @@
 "use client";
 
 import { supabaseBrowser } from "@/lib/auth";
+import { variantUrl } from "@/lib/image-variants";
+import type { ProductImageVariant } from "@repo/types";
 import { useT, type MessageKey } from "@/lib/i18n";
 import { AVATAR_TYPES, validateEmail, validateName, validatePhone, validatePhoto } from "@/lib/validation";
 import Image from "next/image";
@@ -13,15 +15,24 @@ import { FormField, INPUT_CLASS } from "./FormField";
 
 type Field = "photo" | "name" | "email" | "phone";
 
+// profiles.avatar_meta — written after upload by app/api/avatar.
+export interface AvatarMeta {
+  blurhash: string;
+  variants: ProductImageVariant[];
+  v: string;
+}
+
 export interface ProfileFormProps {
   userId: string;
   email: string;
-  initial: { fullName: string; phone: string; avatarUrl: string | null };
+  initial: { fullName: string; phone: string; avatarUrl: string | null; avatarMeta: AvatarMeta | null };
+  // Decoded server-side from avatarMeta.blurhash (lib/blurhash is server-only).
+  avatarBlurDataUrl?: string;
 }
 
 // Profile editor: photo (avatars bucket), name + phone (profiles table),
 // email (Supabase Auth — a change only applies after the confirmation link).
-export function ProfileForm({ userId, email: currentEmail, initial }: ProfileFormProps) {
+export function ProfileForm({ userId, email: currentEmail, initial, avatarBlurDataUrl }: ProfileFormProps) {
   const { t } = useT();
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -65,21 +76,35 @@ export function ProfileForm({ userId, email: currentEmail, initial }: ProfileFor
     setSaving(true);
     const supabase = supabaseBrowser();
     try {
-      // 1. New photo → upload under "<uid>/", then drop the previous file.
+      // 1. New photo → upload under "<uid>/", pregen variants + blurhash
+      //    (app/api/avatar), then drop the previous file and its variants.
       let avatarUrl = initial.avatarUrl;
+      let avatarMeta = initial.avatarMeta;
       if (photo) {
         const path = `${userId}/${Date.now()}.${photo.type.split("/")[1]}`;
         const upload = await supabase.storage.from("avatars").upload(path, photo, { contentType: photo.type });
         if (upload.error) throw upload.error;
         avatarUrl = supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl;
+        // Processing failure isn't fatal — the original still works, just unoptimized.
+        const processed = await fetch("/api/avatar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ path }),
+        });
+        avatarMeta = processed.ok ? ((await processed.json()) as AvatarMeta) : null;
+
         const oldPath = initial.avatarUrl?.split("/avatars/")[1];
-        if (oldPath) void supabase.storage.from("avatars").remove([oldPath]);
+        if (oldPath) {
+          const base = oldPath.replace(/\.[^./]+$/, "");
+          void supabase.storage.from("avatars").remove([oldPath, `${base}_thumb.webp`, `${base}_hero.webp`]);
+        }
       }
 
       // 2. Profile row (created on first save).
-      const { error } = await supabase
-        .from("profiles")
-        .upsert({ id: userId, full_name: name.trim(), phone: phone ?? null, avatar_url: avatarUrl });
+      const profile = { id: userId, full_name: name.trim(), phone: phone ?? null, avatar_url: avatarUrl };
+      let { error } = await supabase.from("profiles").upsert({ ...profile, avatar_meta: avatarMeta });
+      // ponytail: tolerates the avatar_meta column not being migrated yet (PGRST204); drop once it's applied everywhere.
+      if (error?.code === "PGRST204") ({ error } = await supabase.from("profiles").upsert(profile));
       if (error) throw error;
 
       // 3. Email lives in Supabase Auth and needs confirmation.
@@ -118,7 +143,22 @@ export function ProfileForm({ userId, email: currentEmail, initial }: ProfileFor
         <div className="flex items-center gap-5">
           <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full bg-black/5">
             {preview ? (
-              <Image src={preview} alt="" fill sizes="80px" className="object-cover" unoptimized={preview.startsWith("blob:")} />
+              // Saved photo with a pregenerated thumb → serve that directly
+              // (already 160px) behind its blurhash; local blob previews as-is.
+              preview === initial.avatarUrl && initial.avatarMeta?.variants.includes("thumb") ? (
+                <Image
+                  src={`${variantUrl(preview, "thumb")}?v=${initial.avatarMeta.v}`}
+                  alt=""
+                  fill
+                  sizes="80px"
+                  unoptimized
+                  placeholder={avatarBlurDataUrl ? "blur" : "empty"}
+                  blurDataURL={avatarBlurDataUrl}
+                  className="object-cover"
+                />
+              ) : (
+                <Image src={preview} alt="" fill sizes="80px" className="object-cover" unoptimized={preview.startsWith("blob:")} />
+              )
             ) : (
               <span className="flex h-full w-full items-center justify-center">
                 <i className="fa-solid fa-user text-2xl text-black/20" aria-hidden="true" />
