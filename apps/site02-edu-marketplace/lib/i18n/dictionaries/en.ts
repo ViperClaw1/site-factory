@@ -1,5 +1,8 @@
 export const en = {
   nav: {
+    profile: "Profile",
+    favorites: "Favorites",
+    cart: "Cart",
     courses: "Courses",
     how: "How it works",
     instructors: "Instructors",
@@ -142,6 +145,43 @@ export const en = {
     ],
     rights: "All rights reserved.",
     languages: "Language",
+  },
+  auth: {
+    loginTitle: "Welcome back",
+    loginSubtitle: "Log in to continue learning.",
+    signupTitle: "Create your account",
+    signupSubtitle: "Start learning in a minute.",
+    email: "Email",
+    password: "Password",
+    showPassword: "Show password",
+    hidePassword: "Hide password",
+    google: "Continue with Google",
+    or: "or",
+    submitLogin: "Log in",
+    submitSignup: "Create account",
+    noAccount: "No account yet?",
+    toSignup: "Sign up",
+    haveAccount: "Already have an account?",
+    toLogin: "Log in",
+    checkEmail: "Check your inbox — we sent a confirmation link to finish signing up.",
+    errors: {
+      emailRequired: "Enter your email",
+      email: "Enter a valid email address",
+      passwordRequired: "Enter your password",
+      passwordWeak: "Password doesn't meet the requirements",
+      oauth: "Google sign-in failed. Please try again.",
+    },
+    rules: {
+      length: "8+ characters",
+      lower: "Lowercase letter",
+      upper: "Uppercase letter",
+      digit: "Number",
+    },
+  },
+  account: {
+    title: "My profile",
+    signOut: "Sign out",
+    favoritesEmpty: "No favorite courses yet.",
   },
 };
 

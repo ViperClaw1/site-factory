@@ -2,6 +2,9 @@ import type { Dict } from "./en";
 
 export const zh: Dict = {
   nav: {
+    profile: "个人资料",
+    favorites: "收藏",
+    cart: "购物车",
     courses: "课程",
     how: "学习流程",
     instructors: "讲师",
@@ -129,5 +132,42 @@ export const zh: Dict = {
     ],
     rights: "保留所有权利。",
     languages: "语言",
+  },
+  auth: {
+    loginTitle: "欢迎回来",
+    loginSubtitle: "登录以继续学习。",
+    signupTitle: "创建账户",
+    signupSubtitle: "一分钟即可开始学习。",
+    email: "邮箱",
+    password: "密码",
+    showPassword: "显示密码",
+    hidePassword: "隐藏密码",
+    google: "使用 Google 继续",
+    or: "或",
+    submitLogin: "登录",
+    submitSignup: "创建账户",
+    noAccount: "还没有账户？",
+    toSignup: "注册",
+    haveAccount: "已有账户？",
+    toLogin: "登录",
+    checkEmail: "请查收邮件 — 我们已发送确认链接以完成注册。",
+    errors: {
+      emailRequired: "请输入邮箱",
+      email: "请输入有效的邮箱地址",
+      passwordRequired: "请输入密码",
+      passwordWeak: "密码不符合要求",
+      oauth: "Google 登录失败，请重试。",
+    },
+    rules: {
+      length: "至少 8 个字符",
+      lower: "小写字母",
+      upper: "大写字母",
+      digit: "数字",
+    },
+  },
+  account: {
+    title: "我的资料",
+    signOut: "退出登录",
+    favoritesEmpty: "还没有收藏的课程。",
   },
 };

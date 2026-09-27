@@ -2,6 +2,9 @@ import type { Dict } from "./en";
 
 export const ja: Dict = {
   nav: {
+    profile: "プロフィール",
+    favorites: "お気に入り",
+    cart: "カート",
     courses: "コース",
     how: "学び方",
     instructors: "講師",
@@ -130,5 +133,42 @@ export const ja: Dict = {
     ],
     rights: "All rights reserved.",
     languages: "言語",
+  },
+  auth: {
+    loginTitle: "おかえりなさい",
+    loginSubtitle: "ログインして学習を続けましょう。",
+    signupTitle: "アカウントを作成",
+    signupSubtitle: "1分で学習を始められます。",
+    email: "メールアドレス",
+    password: "パスワード",
+    showPassword: "パスワードを表示",
+    hidePassword: "パスワードを隠す",
+    google: "Google で続行",
+    or: "または",
+    submitLogin: "ログイン",
+    submitSignup: "アカウント作成",
+    noAccount: "アカウントをお持ちでない方",
+    toSignup: "新規登録",
+    haveAccount: "すでにアカウントをお持ちの方",
+    toLogin: "ログイン",
+    checkEmail: "受信トレイをご確認ください。登録を完了するための確認リンクを送信しました。",
+    errors: {
+      emailRequired: "メールアドレスを入力してください",
+      email: "有効なメールアドレスを入力してください",
+      passwordRequired: "パスワードを入力してください",
+      passwordWeak: "パスワードが要件を満たしていません",
+      oauth: "Google ログインに失敗しました。もう一度お試しください。",
+    },
+    rules: {
+      length: "8文字以上",
+      lower: "小文字",
+      upper: "大文字",
+      digit: "数字",
+    },
+  },
+  account: {
+    title: "マイプロフィール",
+    signOut: "ログアウト",
+    favoritesEmpty: "お気に入りのコースはまだありません。",
   },
 };

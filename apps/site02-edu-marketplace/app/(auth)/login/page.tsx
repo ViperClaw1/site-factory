@@ -1,7 +1,11 @@
-import { ComingSoon } from "@/components/ComingSoon";
+import { AuthForm } from "@/features/auth/components/AuthForm";
+import { Suspense } from "react";
 
+// Suspense: AuthForm reads ?next / ?error via useSearchParams.
 export default function LoginPage() {
   return (
-    <ComingSoon title="Вход" description="Supabase Auth (email + Google) подключается в фазе E3." />
+    <Suspense>
+      <AuthForm mode="login" />
+    </Suspense>
   );
 }

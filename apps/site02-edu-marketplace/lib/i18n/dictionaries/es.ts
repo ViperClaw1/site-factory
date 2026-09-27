@@ -2,6 +2,9 @@ import type { Dict } from "./en";
 
 export const es: Dict = {
   nav: {
+    profile: "Perfil",
+    favorites: "Favoritos",
+    cart: "Carrito",
     courses: "Cursos",
     how: "Cómo funciona",
     instructors: "Instructores",
@@ -144,5 +147,42 @@ export const es: Dict = {
     ],
     rights: "Todos los derechos reservados.",
     languages: "Idioma",
+  },
+  auth: {
+    loginTitle: "Bienvenido de nuevo",
+    loginSubtitle: "Inicia sesión para seguir aprendiendo.",
+    signupTitle: "Crea tu cuenta",
+    signupSubtitle: "Empieza a aprender en un minuto.",
+    email: "Correo electrónico",
+    password: "Contraseña",
+    showPassword: "Mostrar contraseña",
+    hidePassword: "Ocultar contraseña",
+    google: "Continuar con Google",
+    or: "o",
+    submitLogin: "Iniciar sesión",
+    submitSignup: "Crear cuenta",
+    noAccount: "¿Aún no tienes cuenta?",
+    toSignup: "Regístrate",
+    haveAccount: "¿Ya tienes cuenta?",
+    toLogin: "Inicia sesión",
+    checkEmail: "Revisa tu correo: te enviamos un enlace de confirmación.",
+    errors: {
+      emailRequired: "Introduce tu correo",
+      email: "Introduce un correo válido",
+      passwordRequired: "Introduce tu contraseña",
+      passwordWeak: "La contraseña no cumple los requisitos",
+      oauth: "Error al iniciar sesión con Google. Inténtalo de nuevo.",
+    },
+    rules: {
+      length: "8+ caracteres",
+      lower: "Minúscula",
+      upper: "Mayúscula",
+      digit: "Número",
+    },
+  },
+  account: {
+    title: "Mi perfil",
+    signOut: "Cerrar sesión",
+    favoritesEmpty: "Aún no tienes cursos favoritos.",
   },
 };

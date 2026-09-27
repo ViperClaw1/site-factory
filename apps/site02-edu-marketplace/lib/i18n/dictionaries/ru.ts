@@ -2,6 +2,9 @@ import type { Dict } from "./en";
 
 export const ru: Dict = {
   nav: {
+    profile: "Профиль",
+    favorites: "Избранное",
+    cart: "Корзина",
     courses: "Курсы",
     how: "Как это работает",
     instructors: "Преподаватели",
@@ -144,5 +147,42 @@ export const ru: Dict = {
     ],
     rights: "Все права защищены.",
     languages: "Язык",
+  },
+  auth: {
+    loginTitle: "С возвращением",
+    loginSubtitle: "Войдите, чтобы продолжить обучение.",
+    signupTitle: "Создайте аккаунт",
+    signupSubtitle: "Начните учиться за минуту.",
+    email: "Email",
+    password: "Пароль",
+    showPassword: "Показать пароль",
+    hidePassword: "Скрыть пароль",
+    google: "Продолжить с Google",
+    or: "или",
+    submitLogin: "Войти",
+    submitSignup: "Создать аккаунт",
+    noAccount: "Ещё нет аккаунта?",
+    toSignup: "Зарегистрироваться",
+    haveAccount: "Уже есть аккаунт?",
+    toLogin: "Войти",
+    checkEmail: "Проверьте почту — мы отправили ссылку для завершения регистрации.",
+    errors: {
+      emailRequired: "Введите email",
+      email: "Введите корректный email",
+      passwordRequired: "Введите пароль",
+      passwordWeak: "Пароль не соответствует требованиям",
+      oauth: "Не удалось войти через Google. Попробуйте ещё раз.",
+    },
+    rules: {
+      length: "Не менее 8 символов",
+      lower: "Строчная буква",
+      upper: "Заглавная буква",
+      digit: "Цифра",
+    },
+  },
+  account: {
+    title: "Мой профиль",
+    signOut: "Выйти",
+    favoritesEmpty: "Пока нет избранных курсов.",
   },
 };

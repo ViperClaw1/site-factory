@@ -1,7 +1,11 @@
-import { ComingSoon } from "@/components/ComingSoon";
+import { AuthForm } from "@/features/auth/components/AuthForm";
+import { Suspense } from "react";
 
+// Suspense: AuthForm reads ?next via useSearchParams.
 export default function SignupPage() {
   return (
-    <ComingSoon title="Регистрация" description="Регистрация через Supabase Auth появится в фазе E3." />
+    <Suspense>
+      <AuthForm mode="signup" />
+    </Suspense>
   );
 }

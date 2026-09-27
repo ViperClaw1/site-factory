@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
-import { CloseIcon, MenuIcon } from "./icons";
+import { useUser } from "@/features/auth/hooks";
+import { CartIcon, CloseIcon, HeartIcon, MenuIcon, UserIcon } from "./icons";
 import { LanguageMenu } from "./LanguageMenu";
 import { Logo } from "./Logo";
 
 export function SiteHeader() {
   const { t } = useI18n();
+  const { user, ready } = useUser();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -26,6 +28,11 @@ export function SiteHeader() {
     { href: "/#instructors", label: t.nav.instructors },
     { href: "/#reviews", label: t.nav.reviews },
     { href: "/#pricing", label: t.nav.pricing },
+  ];
+  const userLinks = [
+    { href: "/account", label: t.nav.profile, Icon: UserIcon },
+    { href: "/account/favorites", label: t.nav.favorites, Icon: HeartIcon },
+    { href: "/cart", label: t.nav.cart, Icon: CartIcon },
   ];
   const glass = scrolled || mobileOpen;
 
@@ -48,18 +55,38 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-2 sm:gap-3">
           <LanguageMenu />
-          <Link
-            href="/login"
-            className="hidden h-10 items-center px-3 text-sm font-medium text-white/75 transition hover:text-white sm:inline-flex"
-          >
-            {t.nav.login}
-          </Link>
-          <Link
-            href="/#pricing"
-            className="hidden h-10 items-center rounded-full bg-brand px-5 text-sm font-bold text-ink transition hover:bg-brand-dark md:inline-flex"
-          >
-            {t.nav.cta}
-          </Link>
+          {user ? (
+            /* Signed in: account shortcuts (always visible, incl. mobile). */
+            userLinks.map(({ href, label, Icon }) => (
+              <Link
+                key={href}
+                href={href}
+                aria-label={label}
+                title={label}
+                className="grid h-10 w-10 place-items-center rounded-full border border-white/10 text-white/75 transition hover:border-brand hover:text-brand"
+              >
+                <Icon />
+              </Link>
+            ))
+          ) : (
+            /* Guest (or session still loading — render nothing to avoid a flash). */
+            ready && (
+              <>
+                <Link
+                  href="/login"
+                  className="hidden h-10 items-center px-3 text-sm font-medium text-white/75 transition hover:text-white sm:inline-flex"
+                >
+                  {t.nav.login}
+                </Link>
+                <Link
+                  href="/#pricing"
+                  className="hidden h-10 items-center rounded-full bg-brand px-5 text-sm font-bold text-ink transition hover:bg-brand-dark md:inline-flex"
+                >
+                  {t.nav.cta}
+                </Link>
+              </>
+            )
+          )}
           <button
             type="button"
             aria-label={t.nav.menu}
@@ -85,6 +112,7 @@ export function SiteHeader() {
               {item.label}
             </Link>
           ))}
+          {ready && !user && (
           <div className="mt-5 flex gap-3">
             <Link
               href="/login"
@@ -101,6 +129,7 @@ export function SiteHeader() {
               {t.nav.cta}
             </Link>
           </div>
+          )}
         </nav>
       )}
     </header>
