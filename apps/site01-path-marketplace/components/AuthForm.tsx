@@ -29,8 +29,11 @@ export interface AuthFormProps {
 export function AuthForm({ mode }: AuthFormProps) {
   const { t } = useT();
   const router = useRouter();
-  const next = safeNext(useSearchParams().get("next"));
   const isSignup = mode === "signup";
+  // An explicit ?next (e.g. middleware bouncing a guest off /account) wins;
+  // otherwise login → home, signup → profile page.
+  const requestedNext = useSearchParams().get("next");
+  const next = safeNext(requestedNext, isSignup ? "/account" : "/");
 
   const [values, setValues] = useState({ name: "", email: "", password: "" });
   const [errors, setErrors] = useState<Partial<Record<Field, MessageKey>>>({});
@@ -155,10 +158,11 @@ export function AuthForm({ mode }: AuthFormProps) {
         </form>
       )}
 
-      {/* Switch between login and signup, keeping ?next. */}
+      {/* Switch between login and signup, forwarding ?next only if one was
+          given — so each mode keeps its own default destination. */}
       <p className="mt-6 text-center text-sm text-black/60">
         <Link
-          href={`/${isSignup ? "login" : "signup"}?next=${encodeURIComponent(next)}`}
+          href={`/${isSignup ? "login" : "signup"}${requestedNext ? `?next=${encodeURIComponent(next)}` : ""}`}
           className="font-semibold text-pink underline"
         >
           {t(isSignup ? "auth.toLogin" : "auth.toSignup")}

@@ -38,6 +38,7 @@ export function NavBar() {
   const itemCount = useCartStore((state) => state.items.reduce((sum, item) => sum + item.qty, 0));
 
   const signedIn = useAuthStore((state) => state.role !== "guest");
+  const authReady = useAuthStore((state) => state.ready);
 
   // Both persisted stores skip SSR hydration; the nav is on every page, so it
   // owns the one-time rehydrate for the cart and the saved locale, plus the
@@ -148,35 +149,41 @@ export function NavBar() {
             </AnimatePresence>
           </div>
 
-          {/* Utility icons: search goes to the shop; favorites + account are
-              gated by middleware, so guests land on /login. */}
+          {/* Utility icons: search goes to the shop. Favorites, account and
+              cart are for signed-in users; guests get a single sign-in icon.
+              Nothing auth-dependent renders until the session is known, so a
+              signed-in visitor never sees the guest icon flash first. */}
           <Link href="/shop" className={iconClass} aria-label={t("nav.search")}>
             <i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
           </Link>
-          <Link href="/favorites" className={`${iconClass} hidden sm:flex`} aria-label={t("nav.wishlist")} title={t("nav.wishlist")}>
-            <i className="fa-regular fa-heart" aria-hidden="true" />
-          </Link>
-          <Link
-            href={signedIn ? "/account" : "/login"}
-            className={iconClass}
-            aria-label={t(signedIn ? "nav.account" : "nav.signIn")}
-            title={t(signedIn ? "nav.account" : "nav.signIn")}
-          >
-            <i className={`fa-${signedIn ? "solid" : "regular"} fa-user`} aria-hidden="true" />
-          </Link>
-          <Link href="/cart" className={`${iconClass} relative`} aria-label={t("nav.cart")}>
-            <i className="fa-solid fa-bag-shopping" aria-hidden="true" />
-            {hydrated && itemCount > 0 && (
-              <motion.span
-                key={itemCount}
-                initial={{ scale: 0.4 }}
-                animate={{ scale: 1 }}
-                className="absolute -right-0.5 top-0 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-pink px-1 text-[10px] font-bold text-white"
-              >
-                {itemCount}
-              </motion.span>
-            )}
-          </Link>
+          {authReady &&
+            (signedIn ? (
+              <>
+                <Link href="/favorites" className={`${iconClass} hidden sm:flex`} aria-label={t("nav.wishlist")} title={t("nav.wishlist")}>
+                  <i className="fa-regular fa-heart" aria-hidden="true" />
+                </Link>
+                <Link href="/account" className={iconClass} aria-label={t("nav.account")} title={t("nav.account")}>
+                  <i className="fa-solid fa-user" aria-hidden="true" />
+                </Link>
+                <Link href="/cart" className={`${iconClass} relative`} aria-label={t("nav.cart")}>
+                  <i className="fa-solid fa-bag-shopping" aria-hidden="true" />
+                  {hydrated && itemCount > 0 && (
+                    <motion.span
+                      key={itemCount}
+                      initial={{ scale: 0.4 }}
+                      animate={{ scale: 1 }}
+                      className="absolute -right-0.5 top-0 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-pink px-1 text-[10px] font-bold text-white"
+                    >
+                      {itemCount}
+                    </motion.span>
+                  )}
+                </Link>
+              </>
+            ) : (
+              <Link href="/login" className={iconClass} aria-label={t("nav.signIn")} title={t("nav.signIn")}>
+                <i className="fa-solid fa-right-to-bracket" aria-hidden="true" />
+              </Link>
+            ))}
 
           {/* Hamburger (mobile/tablet only) */}
           <button

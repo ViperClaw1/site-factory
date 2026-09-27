@@ -40,6 +40,8 @@ export function requiredPermission(pathname: string): Permission | null {
 
 // Only same-site relative paths are allowed as post-login redirects, so
 // ?next=https://evil.example can't turn /login into an open redirect.
-export function safeNext(next: string | null | undefined): string {
-  return next && next.startsWith("/") && !next.startsWith("//") ? next : "/account";
+// `fallback` when there's no (safe) ?next: home after login, the profile page
+// after signup (AuthForm passes that one).
+export function safeNext(next: string | null | undefined, fallback = "/"): string {
+  return next && next.startsWith("/") && !next.startsWith("//") ? next : fallback;
 }
