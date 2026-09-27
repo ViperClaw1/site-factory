@@ -1,24 +1,23 @@
 "use client";
 
-import { CheckIcon, EyeIcon, EyeOffIcon, GoogleIcon } from "@/components/icons";
+import { GoogleIcon } from "@/components/icons";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { signIn, signInWithGoogle, signUp } from "../api";
+import { safeNext, validateEmail, validatePassword, type AuthErrorKey } from "../validation";
 import {
-  PASSWORD_RULES,
-  safeNext,
-  validateEmail,
-  validatePassword,
-  type AuthErrorKey,
-  type PasswordRule,
-} from "../validation";
+  AUTH_SECTION_CLASS,
+  FieldError,
+  FormError,
+  INPUT_CLASS,
+  Notice,
+  PasswordField,
+  PRIMARY_BUTTON_CLASS,
+} from "./fields";
 
 type Field = "email" | "password";
-
-const INPUT_CLASS =
-  "h-12 w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-brand aria-[invalid=true]:border-red-400";
 
 export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const { t } = useI18n();
@@ -35,7 +34,6 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   // Fields the user has left (or all, after a submit attempt). Errors only
   // show for these, then update live on every keystroke.
   const [touched, setTouched] = useState<Partial<Record<Field, boolean>>>({});
-  const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [checkEmail, setCheckEmail] = useState(false);
   // Supabase's own message, or the callback's ?error=oauth.
@@ -45,7 +43,10 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
     email: validateEmail(values.email),
     password: validatePassword(values.password, isSignup),
   };
-  const shownError = (field: Field) => (touched[field] ? errors[field] : null);
+  const shownError = (field: Field) => {
+    const key = touched[field] && errors[field];
+    return key ? a.errors[key] : null;
+  };
 
   const update = (field: Field, value: string) => setValues((current) => ({ ...current, [field]: value }));
   const blur = (field: Field) => setTouched((current) => ({ ...current, [field]: true }));
@@ -81,26 +82,14 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
     }
   }
 
-  const fieldProps = (field: Field) => ({
-    id: field,
-    name: field,
-    value: values[field],
-    onChange: (event: React.ChangeEvent<HTMLInputElement>) => update(field, event.target.value),
-    onBlur: () => blur(field),
-    "aria-invalid": !!shownError(field),
-    "aria-describedby": `${field}-error`,
-  });
-
   return (
-    <section className="mx-auto w-full max-w-md px-4 py-16 sm:py-24">
+    <section className={AUTH_SECTION_CLASS}>
       <h1 className="font-heading text-3xl font-extrabold sm:text-4xl">{isSignup ? a.signupTitle : a.loginTitle}</h1>
       <p className="mt-2 text-sm text-white/60">{isSignup ? a.signupSubtitle : a.loginSubtitle}</p>
 
       {checkEmail ? (
         /* Signup done, waiting on the confirmation link. */
-        <p role="status" className="mt-8 rounded-xl border border-brand/30 bg-brand/10 p-4 text-sm text-white/85">
-          {a.checkEmail}
-        </p>
+        <Notice>{a.checkEmail}</Notice>
       ) : (
         <>
           {/* ---- Google OAuth ---- */}
@@ -126,61 +115,43 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
               <label htmlFor="email" className="mb-2 block text-sm font-medium text-white/80">
                 {a.email}
               </label>
-              <input {...fieldProps("email")} type="email" autoComplete="email" placeholder="you@example.com" className={INPUT_CLASS} />
-              <FieldError id="email-error" message={shownError("email") && a.errors[shownError("email")!]} />
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                placeholder="you@example.com"
+                value={values.email}
+                onChange={(event) => update("email", event.target.value)}
+                onBlur={() => blur("email")}
+                aria-invalid={!!shownError("email")}
+                aria-describedby="email-error"
+                className={INPUT_CLASS}
+              />
+              <FieldError id="email-error" message={shownError("email")} />
             </div>
 
-            <div>
-              <label htmlFor="password" className="mb-2 block text-sm font-medium text-white/80">
-                {a.password}
-              </label>
-              <div className="relative">
-                <input
-                  {...fieldProps("password")}
-                  type={showPassword ? "text" : "password"}
-                  autoComplete={isSignup ? "new-password" : "current-password"}
-                  className={`${INPUT_CLASS} pr-12`}
-                />
-                {/* Show/hide toggle; aria-pressed exposes the state to screen readers. */}
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((shown) => !shown)}
-                  aria-label={showPassword ? a.hidePassword : a.showPassword}
-                  aria-pressed={showPassword}
-                  className="absolute inset-y-0 right-0 grid w-12 place-items-center text-white/45 transition hover:text-brand"
-                >
-                  {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-                </button>
-              </div>
-              <FieldError id="password-error" message={shownError("password") && a.errors[shownError("password")!]} />
+            <PasswordField
+              id="password"
+              label={a.password}
+              value={values.password}
+              onChange={(event) => update("password", event.target.value)}
+              onBlur={() => blur("password")}
+              error={shownError("password")}
+              autoComplete={isSignup ? "new-password" : "current-password"}
+              showRules={isSignup}
+              labelExtra={
+                !isSignup && (
+                  <Link href="/forgot-password" className="text-xs font-medium text-brand hover:underline">
+                    {a.forgotLink}
+                  </Link>
+                )
+              }
+            />
 
-              {/* Live password-policy checklist (signup only). */}
-              {isSignup && (
-                <ul className="mt-3 grid grid-cols-2 gap-1.5 text-xs">
-                  {(Object.keys(PASSWORD_RULES) as PasswordRule[]).map((rule) => {
-                    const ok = PASSWORD_RULES[rule](values.password);
-                    return (
-                      <li key={rule} className={`flex items-center gap-1.5 ${ok ? "text-emerald-400" : "text-white/45"}`}>
-                        <CheckIcon className={`h-3.5 w-3.5 ${ok ? "" : "opacity-30"}`} />
-                        {a.rules[rule]}
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </div>
+            <FormError message={formError} />
 
-            {formError && (
-              <p role="alert" className="rounded-xl border border-red-400/30 bg-red-400/10 p-3 text-xs text-red-300">
-                {formError}
-              </p>
-            )}
-
-            <button
-              type="submit"
-              disabled={submitting}
-              className="h-12 w-full rounded-full bg-brand text-sm font-bold text-ink transition hover:bg-brand-dark disabled:opacity-60"
-            >
+            <button type="submit" disabled={submitting} className={PRIMARY_BUTTON_CLASS}>
               {isSignup ? a.submitSignup : a.submitLogin}
             </button>
           </form>
@@ -198,13 +169,5 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         </Link>
       </p>
     </section>
-  );
-}
-
-function FieldError({ id, message }: { id: string; message: string | null | false }) {
-  return (
-    <p id={id} role="alert" className="mt-1.5 min-h-[1rem] text-xs text-red-300">
-      {message || null}
-    </p>
   );
 }

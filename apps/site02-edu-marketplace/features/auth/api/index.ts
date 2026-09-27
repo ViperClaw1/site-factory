@@ -26,6 +26,17 @@ export function signUp(email: string, password: string, next: string) {
   return supabaseBrowser().auth.signUp({ email, password, options: { emailRedirectTo: callbackUrl(next) } });
 }
 
+// Emails a recovery link; it lands on /auth/callback (which signs the user in)
+// and continues to /reset-password to choose a new password.
+export function requestPasswordReset(email: string) {
+  return supabaseBrowser().auth.resetPasswordForEmail(email, { redirectTo: callbackUrl("/reset-password") });
+}
+
+// Needs the recovery session created by the link above.
+export function updatePassword(password: string) {
+  return supabaseBrowser().auth.updateUser({ password });
+}
+
 export function signOut() {
   return supabaseBrowser().auth.signOut();
 }
