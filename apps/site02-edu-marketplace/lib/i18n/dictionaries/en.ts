@@ -1,0 +1,148 @@
+export const en = {
+  nav: {
+    courses: "Courses",
+    how: "How it works",
+    instructors: "Instructors",
+    reviews: "Reviews",
+    pricing: "Pricing",
+    login: "Log in",
+    cta: "Start learning",
+    menu: "Menu",
+    language: "Language",
+  },
+  hero: {
+    badge: "Online IT school · 200K+ students",
+    titleA: "Master a tech career",
+    titleB: "one project at a time",
+    subtitle:
+      "Interactive courses in programming, data, design and AI — with mentors from Google, Yandex and DeepMind, and hands-on practice from day one.",
+    ctaPrimary: "Choose a course",
+    ctaSecondary: "How it works",
+    proof: "4.9 rating · 38,000 reviews",
+  },
+  dash: {
+    course: "Python for Data Analysis",
+    lesson: "Module 4 · Lesson 12",
+    progress: "Course progress",
+    next: "Next: Visualizing with Matplotlib",
+    cont: "Continue",
+    toastTitle: "Achievement unlocked",
+    toastText: "7-day learning streak",
+  },
+  trust: { title: "Our graduates work at" },
+  courses: {
+    eyebrow: "Catalog",
+    title: "Courses that lead to a job",
+    subtitle: "Pick a direction — the curriculum, practice and mentors are already inside.",
+    cats: {
+      all: "All",
+      programming: "Programming",
+      data: "Data Science",
+      design: "Design",
+      devops: "DevOps",
+      mobile: "Mobile",
+      ai: "AI/ML",
+      security: "Security",
+    },
+    levels: { beginner: "Beginner", intermediate: "Intermediate", advanced: "Advanced" },
+    badges: { bestseller: "Bestseller", new: "New", popular: "Popular" },
+    students: "students",
+    months: "mo",
+    enroll: "Enroll",
+    items: {
+      python: { title: "Python Developer", desc: "From syntax to production-ready backend services." },
+      frontend: { title: "Frontend Developer: React", desc: "Build fast interfaces with React, TypeScript and Next.js." },
+      analyst: { title: "Data Analyst", desc: "SQL, Python and dashboards that drive decisions." },
+      uxui: { title: "UX/UI Designer", desc: "Research, prototype and ship interfaces in Figma." },
+      devops: { title: "DevOps Engineer", desc: "Docker, Kubernetes, CI/CD and cloud infrastructure." },
+      mobile: { title: "Mobile Developer: Flutter", desc: "One codebase for iOS and Android apps." },
+      ml: { title: "Machine Learning Engineer", desc: "Train, evaluate and deploy models with TensorFlow." },
+      security: { title: "Cybersecurity Specialist", desc: "Pentesting, defense and incident response." },
+    },
+  },
+  stats: {
+    eyebrow: "In numbers",
+    title: "A platform learners trust",
+    items: [
+      "students learning with us",
+      "courses and professions",
+      "mentors from top tech companies",
+      "of graduates land a job within 6 months",
+    ],
+  },
+  how: {
+    eyebrow: "How it works",
+    title: "Four steps to a new profession",
+    steps: [
+      { title: "Choose a course", text: "Take a free intro lesson and find the direction that fits you." },
+      { title: "Learn by doing", text: "Short theory, then real tasks in an in-browser simulator." },
+      { title: "Get code reviews", text: "Mentors review every project and help whenever you get stuck." },
+      { title: "Land the job", text: "Build a portfolio and get career support until you sign an offer." },
+    ],
+  },
+  instructors: {
+    eyebrow: "Instructors",
+    title: "Learn from practitioners",
+    subtitle: "Experts who build products at leading tech companies every day.",
+    roles: ["Senior Software Engineer", "Head of Data Analytics", "Research Scientist", "Principal Product Designer"],
+    students: "students",
+  },
+  reviews: {
+    eyebrow: "Reviews",
+    title: "Stories from our students",
+    items: [
+      {
+        quote: "I switched from accounting to analytics in 9 months. The simulator is what finally made SQL click.",
+        role: "Data Analyst at Revolut",
+      },
+      {
+        quote: "Code reviews were tough and honest — exactly what I needed. I got my first offer before graduating.",
+        role: "Frontend Developer at Booking.com",
+      },
+      {
+        quote: "Real briefs, real feedback and a portfolio I'm proud of. Worth every single hour.",
+        role: "Product Designer at Spotify",
+      },
+    ],
+  },
+  pricing: {
+    eyebrow: "Pricing",
+    title: "Simple, honest pricing",
+    subtitle: "Start for free and upgrade to Pro when you're ready.",
+    month: "/mo",
+    seat: "per seat",
+    popular: "Most popular",
+    plans: {
+      free: {
+        name: "Free",
+        desc: "Try the platform and learn the basics.",
+        features: ["Intro lessons in every course", "In-browser code simulator", "Community chat"],
+        cta: "Start for free",
+      },
+      pro: {
+        name: "Pro",
+        desc: "Full access for a serious career change.",
+        features: ["All 180+ courses", "Mentor code reviews", "Career center & CV review", "Certificates of completion"],
+        cta: "Get Pro",
+      },
+      team: {
+        name: "Team",
+        desc: "Upskill your whole team with analytics.",
+        features: ["Everything in Pro", "Team progress dashboard", "Custom learning tracks", "Dedicated manager"],
+        cta: "Contact sales",
+      },
+    },
+  },
+  footer: {
+    tagline: "Online school of tech professions: practice, mentors and career support.",
+    cols: [
+      { title: "Learning", links: ["Courses", "Professions", "Free lessons", "Career center"] },
+      { title: "Company", links: ["About us", "Instructors", "Careers", "Blog"] },
+      { title: "Support", links: ["Help center", "Contact", "Privacy", "Terms"] },
+    ],
+    rights: "All rights reserved.",
+    languages: "Language",
+  },
+};
+
+export type Dict = typeof en;

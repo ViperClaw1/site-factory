@@ -1,0 +1,148 @@
+import type { Dict } from "./en";
+
+export const it: Dict = {
+  nav: {
+    courses: "Corsi",
+    how: "Come funziona",
+    instructors: "Docenti",
+    reviews: "Recensioni",
+    pricing: "Prezzi",
+    login: "Accedi",
+    cta: "Inizia ora",
+    menu: "Menu",
+    language: "Lingua",
+  },
+  hero: {
+    badge: "Scuola tech online · 200K+ studenti",
+    titleA: "Costruisci una carriera tech",
+    titleB: "un progetto alla volta",
+    subtitle:
+      "Corsi interattivi di programmazione, dati, design e IA — con mentor di Google, Yandex e DeepMind e pratica fin dal primo giorno.",
+    ctaPrimary: "Scegli un corso",
+    ctaSecondary: "Come funziona",
+    proof: "Valutazione 4,9 · 38.000 recensioni",
+  },
+  dash: {
+    course: "Python per l'analisi dei dati",
+    lesson: "Modulo 4 · Lezione 12",
+    progress: "Avanzamento del corso",
+    next: "Prossima: visualizzazione con Matplotlib",
+    cont: "Continua",
+    toastTitle: "Traguardo sbloccato",
+    toastText: "7 giorni di fila",
+  },
+  trust: { title: "I nostri diplomati lavorano in" },
+  courses: {
+    eyebrow: "Catalogo",
+    title: "Corsi che portano al lavoro",
+    subtitle: "Scegli una direzione: programma, pratica e mentor sono già inclusi.",
+    cats: {
+      all: "Tutti",
+      programming: "Programmazione",
+      data: "Data Science",
+      design: "Design",
+      devops: "DevOps",
+      mobile: "Mobile",
+      ai: "IA/ML",
+      security: "Sicurezza",
+    },
+    levels: { beginner: "Principiante", intermediate: "Intermedio", advanced: "Avanzato" },
+    badges: { bestseller: "Bestseller", new: "Nuovo", popular: "Popolare" },
+    students: "studenti",
+    months: "mesi",
+    enroll: "Iscriviti",
+    items: {
+      python: { title: "Sviluppatore Python", desc: "Dalla sintassi ai servizi backend in produzione." },
+      frontend: { title: "Sviluppatore Frontend: React", desc: "Interfacce veloci con React, TypeScript e Next.js." },
+      analyst: { title: "Data Analyst", desc: "SQL, Python e dashboard che guidano le decisioni." },
+      uxui: { title: "Designer UX/UI", desc: "Ricerca, prototipi e interfacce realizzate in Figma." },
+      devops: { title: "Ingegnere DevOps", desc: "Docker, Kubernetes, CI/CD e infrastruttura cloud." },
+      mobile: { title: "Sviluppatore mobile: Flutter", desc: "Un unico codice per app iOS e Android." },
+      ml: { title: "Ingegnere Machine Learning", desc: "Addestra, valuta e distribuisci modelli con TensorFlow." },
+      security: { title: "Specialista in cybersicurezza", desc: "Penetration test, difesa e risposta agli incidenti." },
+    },
+  },
+  stats: {
+    eyebrow: "In numeri",
+    title: "Una piattaforma di cui fidarsi",
+    items: [
+      "studenti imparano con noi",
+      "corsi e professioni",
+      "mentor dalle migliori aziende tech",
+      "dei diplomati trova lavoro entro 6 mesi",
+    ],
+  },
+  how: {
+    eyebrow: "Come funziona",
+    title: "Quattro passi verso una nuova professione",
+    steps: [
+      { title: "Scegli un corso", text: "Segui una lezione introduttiva gratuita e trova la tua strada." },
+      { title: "Impara facendo", text: "Teoria breve, poi esercizi reali in un simulatore nel browser." },
+      { title: "Ricevi code review", text: "I mentor controllano ogni progetto e ti aiutano quando sei bloccato." },
+      { title: "Ottieni il lavoro", text: "Crea un portfolio con supporto alla carriera fino all'offerta." },
+    ],
+  },
+  instructors: {
+    eyebrow: "Docenti",
+    title: "Impara da chi lo fa ogni giorno",
+    subtitle: "Esperti che costruiscono prodotti nelle principali aziende tech.",
+    roles: ["Senior Software Engineer", "Responsabile Data Analytics", "Ricercatrice", "Principal Product Designer"],
+    students: "studenti",
+  },
+  reviews: {
+    eyebrow: "Recensioni",
+    title: "Le storie dei nostri studenti",
+    items: [
+      {
+        quote: "Sono passata dalla contabilità all'analisi dati in 9 mesi. Il simulatore mi ha finalmente fatto capire SQL.",
+        role: "Data Analyst in Revolut",
+      },
+      {
+        quote: "Code review severe e oneste: proprio ciò di cui avevo bisogno. Prima offerta ancora prima del diploma.",
+        role: "Sviluppatore Frontend in Booking.com",
+      },
+      {
+        quote: "Brief reali, feedback reali e un portfolio di cui vado fiera. Valeva ogni ora.",
+        role: "Product Designer in Spotify",
+      },
+    ],
+  },
+  pricing: {
+    eyebrow: "Prezzi",
+    title: "Prezzi semplici e onesti",
+    subtitle: "Inizia gratis e passa a Pro quando sei pronto.",
+    month: "/mese",
+    seat: "per utente",
+    popular: "Il più scelto",
+    plans: {
+      free: {
+        name: "Free",
+        desc: "Prova la piattaforma e impara le basi.",
+        features: ["Lezioni introduttive di ogni corso", "Simulatore di codice nel browser", "Chat della community"],
+        cta: "Inizia gratis",
+      },
+      pro: {
+        name: "Pro",
+        desc: "Accesso completo per cambiare davvero carriera.",
+        features: ["Oltre 180 corsi", "Code review dei mentor", "Centro carriera e revisione CV", "Certificati di completamento"],
+        cta: "Passa a Pro",
+      },
+      team: {
+        name: "Team",
+        desc: "Forma tutto il tuo team, con analisi dettagliate.",
+        features: ["Tutto di Pro", "Dashboard dei progressi del team", "Percorsi personalizzati", "Manager dedicato"],
+        cta: "Contatta le vendite",
+      },
+    },
+  },
+  footer: {
+    tagline: "Scuola online delle professioni tech: pratica, mentor e supporto alla carriera.",
+    cols: [
+      { title: "Formazione", links: ["Corsi", "Professioni", "Lezioni gratuite", "Centro carriera"] },
+      { title: "Azienda", links: ["Chi siamo", "Docenti", "Lavora con noi", "Blog"] },
+      { title: "Supporto", links: ["Centro assistenza", "Contatti", "Privacy", "Termini"] },
+    ],
+    rights: "Tutti i diritti riservati.",
+    languages: "Lingua",
+  },
+};

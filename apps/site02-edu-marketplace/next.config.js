@@ -2,6 +2,9 @@
 const nextConfig = {
   output: "standalone",
   transpilePackages: ["@repo/ui", "@repo/lib", "@repo/types"],
+  images: {
+    remotePatterns: [{ protocol: "https", hostname: "images.unsplash.com" }],
+  },
   async rewrites() {
     const plausibleUrl = process.env.NEXT_PUBLIC_PLAUSIBLE_URL;
     if (!plausibleUrl) {

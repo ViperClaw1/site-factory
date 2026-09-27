@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
-import { Inter, Source_Serif_4 } from "next/font/google";
+import { Inter, Manrope } from "next/font/google";
+import { cookies } from "next/headers";
 import PlausibleProvider from "next-plausible";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
+import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
+import { DEFAULT_LANG, LANG_COOKIE, isLang } from "@/lib/i18n/locales";
 import "./globals.css";
 
 const body = Inter({
@@ -11,22 +14,25 @@ const body = Inter({
   display: "swap",
 });
 
-// Newsreader has no Cyrillic subset; Source Serif 4 is a close serif with full cyrillic + italic.
-const heading = Source_Serif_4({
+const heading = Manrope({
   subsets: ["latin", "cyrillic"],
-  style: ["normal", "italic"],
+  weight: ["500", "600", "700", "800"],
   variable: "--font-heading",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Курсы Path Animation",
-  description: "Образовательная платформа: курсы как отдельные продукты, практика после покупки.",
+  title: "Path.courses — online IT school",
+  description: "Interactive courses in programming, data, design and AI with mentors and hands-on practice.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // Language lives in a cookie so SSR output already matches the visitor's choice.
+  const saved = cookies().get(LANG_COOKIE)?.value;
+  const lang = isLang(saved) ? saved : DEFAULT_LANG;
+
   return (
-    <html lang="ru" className={`${body.variable} ${heading.variable}`}>
+    <html lang={lang} className={`${body.variable} ${heading.variable}`}>
       <head>
         <PlausibleProvider
           domain={process.env.NEXT_PUBLIC_SITE_DOMAIN ?? "localhost"}
@@ -35,9 +41,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="flex min-h-screen flex-col antialiased">
-        <SiteHeader />
-        <main className="flex-1">{children}</main>
-        <SiteFooter />
+        <LanguageProvider initialLang={lang} hasSavedLang={isLang(saved)}>
+          <SiteHeader />
+          <main className="flex-1">{children}</main>
+          <SiteFooter />
+        </LanguageProvider>
       </body>
     </html>
   );

@@ -1,0 +1,148 @@
+import type { Dict } from "./en";
+
+export const es: Dict = {
+  nav: {
+    courses: "Cursos",
+    how: "Cómo funciona",
+    instructors: "Instructores",
+    reviews: "Opiniones",
+    pricing: "Precios",
+    login: "Entrar",
+    cta: "Empieza a aprender",
+    menu: "Menú",
+    language: "Idioma",
+  },
+  hero: {
+    badge: "Escuela tech online · 200K+ estudiantes",
+    titleA: "Domina una carrera tech",
+    titleB: "proyecto a proyecto",
+    subtitle:
+      "Cursos interactivos de programación, datos, diseño e IA — con mentores de Google, Yandex y DeepMind y práctica desde el primer día.",
+    ctaPrimary: "Elegir un curso",
+    ctaSecondary: "Cómo funciona",
+    proof: "Valoración 4,9 · 38.000 opiniones",
+  },
+  dash: {
+    course: "Python para análisis de datos",
+    lesson: "Módulo 4 · Lección 12",
+    progress: "Progreso del curso",
+    next: "Siguiente: visualización con Matplotlib",
+    cont: "Continuar",
+    toastTitle: "Logro desbloqueado",
+    toastText: "Racha de 7 días",
+  },
+  trust: { title: "Nuestros graduados trabajan en" },
+  courses: {
+    eyebrow: "Catálogo",
+    title: "Cursos que llevan a un empleo",
+    subtitle: "Elige una dirección: el temario, la práctica y los mentores ya están dentro.",
+    cats: {
+      all: "Todos",
+      programming: "Programación",
+      data: "Data Science",
+      design: "Diseño",
+      devops: "DevOps",
+      mobile: "Móvil",
+      ai: "IA/ML",
+      security: "Seguridad",
+    },
+    levels: { beginner: "Principiante", intermediate: "Intermedio", advanced: "Avanzado" },
+    badges: { bestseller: "Más vendido", new: "Nuevo", popular: "Popular" },
+    students: "estudiantes",
+    months: "meses",
+    enroll: "Inscribirse",
+    items: {
+      python: { title: "Desarrollador Python", desc: "De la sintaxis a servicios backend listos para producción." },
+      frontend: { title: "Desarrollador Frontend: React", desc: "Interfaces rápidas con React, TypeScript y Next.js." },
+      analyst: { title: "Analista de datos", desc: "SQL, Python y dashboards que guían decisiones." },
+      uxui: { title: "Diseñador UX/UI", desc: "Investiga, prototipa y lanza interfaces en Figma." },
+      devops: { title: "Ingeniero DevOps", desc: "Docker, Kubernetes, CI/CD e infraestructura cloud." },
+      mobile: { title: "Desarrollador móvil: Flutter", desc: "Un solo código para apps de iOS y Android." },
+      ml: { title: "Ingeniero de Machine Learning", desc: "Entrena, evalúa y despliega modelos con TensorFlow." },
+      security: { title: "Especialista en ciberseguridad", desc: "Pentesting, defensa y respuesta a incidentes." },
+    },
+  },
+  stats: {
+    eyebrow: "En cifras",
+    title: "Una plataforma de confianza",
+    items: [
+      "estudiantes aprenden con nosotros",
+      "cursos y profesiones",
+      "mentores de grandes empresas tech",
+      "de los graduados consiguen empleo en 6 meses",
+    ],
+  },
+  how: {
+    eyebrow: "Cómo funciona",
+    title: "Cuatro pasos hacia una nueva profesión",
+    steps: [
+      { title: "Elige un curso", text: "Haz una lección introductoria gratis y encuentra tu camino." },
+      { title: "Aprende haciendo", text: "Teoría breve y luego tareas reales en un simulador en el navegador." },
+      { title: "Recibe code reviews", text: "Los mentores revisan cada proyecto y te ayudan cuando te atascas." },
+      { title: "Consigue el trabajo", text: "Crea un portafolio con apoyo profesional hasta recibir una oferta." },
+    ],
+  },
+  instructors: {
+    eyebrow: "Instructores",
+    title: "Aprende de profesionales",
+    subtitle: "Expertos que crean productos cada día en empresas tecnológicas líderes.",
+    roles: ["Ingeniero de software sénior", "Directora de análisis de datos", "Investigadora científica", "Diseñador de producto principal"],
+    students: "estudiantes",
+  },
+  reviews: {
+    eyebrow: "Opiniones",
+    title: "Historias de nuestros estudiantes",
+    items: [
+      {
+        quote: "Pasé de la contabilidad a la analítica en 9 meses. El simulador fue lo que por fin me hizo entender SQL.",
+        role: "Analista de datos en Revolut",
+      },
+      {
+        quote: "Las code reviews fueron exigentes y honestas: justo lo que necesitaba. Recibí mi primera oferta antes de graduarme.",
+        role: "Desarrollador Frontend en Booking.com",
+      },
+      {
+        quote: "Briefs reales, feedback real y un portafolio del que estoy orgullosa. Valió cada hora.",
+        role: "Diseñadora de producto en Spotify",
+      },
+    ],
+  },
+  pricing: {
+    eyebrow: "Precios",
+    title: "Precios simples y honestos",
+    subtitle: "Empieza gratis y pásate a Pro cuando estés listo.",
+    month: "/mes",
+    seat: "por usuario",
+    popular: "Más popular",
+    plans: {
+      free: {
+        name: "Free",
+        desc: "Prueba la plataforma y aprende lo básico.",
+        features: ["Lecciones de introducción de cada curso", "Simulador de código en el navegador", "Chat de la comunidad"],
+        cta: "Empezar gratis",
+      },
+      pro: {
+        name: "Pro",
+        desc: "Acceso total para un cambio de carrera serio.",
+        features: ["Más de 180 cursos", "Code reviews de mentores", "Centro de carrera y revisión de CV", "Certificados de finalización"],
+        cta: "Obtener Pro",
+      },
+      team: {
+        name: "Team",
+        desc: "Forma a todo tu equipo, con analíticas.",
+        features: ["Todo lo de Pro", "Panel de progreso del equipo", "Rutas personalizadas", "Gestor dedicado"],
+        cta: "Contactar ventas",
+      },
+    },
+  },
+  footer: {
+    tagline: "Escuela online de profesiones tech: práctica, mentores y apoyo profesional.",
+    cols: [
+      { title: "Aprender", links: ["Cursos", "Profesiones", "Lecciones gratis", "Centro de carrera"] },
+      { title: "Empresa", links: ["Sobre nosotros", "Instructores", "Empleo", "Blog"] },
+      { title: "Soporte", links: ["Centro de ayuda", "Contacto", "Privacidad", "Términos"] },
+    ],
+    rights: "Todos los derechos reservados.",
+    languages: "Idioma",
+  },
+};

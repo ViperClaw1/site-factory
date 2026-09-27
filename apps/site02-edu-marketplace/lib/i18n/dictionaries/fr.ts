@@ -1,0 +1,148 @@
+import type { Dict } from "./en";
+
+export const fr: Dict = {
+  nav: {
+    courses: "Cours",
+    how: "Comment ça marche",
+    instructors: "Formateurs",
+    reviews: "Avis",
+    pricing: "Tarifs",
+    login: "Connexion",
+    cta: "Commencer",
+    menu: "Menu",
+    language: "Langue",
+  },
+  hero: {
+    badge: "École tech en ligne · 200K+ apprenants",
+    titleA: "Lancez votre carrière tech",
+    titleB: "projet après projet",
+    subtitle:
+      "Des cours interactifs en programmation, data, design et IA — avec des mentors de Google, Yandex et DeepMind, et de la pratique dès le premier jour.",
+    ctaPrimary: "Choisir un cours",
+    ctaSecondary: "Comment ça marche",
+    proof: "Note 4,9 · 38 000 avis",
+  },
+  dash: {
+    course: "Python pour l'analyse de données",
+    lesson: "Module 4 · Leçon 12",
+    progress: "Progression du cours",
+    next: "Ensuite : visualiser avec Matplotlib",
+    cont: "Continuer",
+    toastTitle: "Succès débloqué",
+    toastText: "7 jours d'affilée",
+  },
+  trust: { title: "Nos diplômés travaillent chez" },
+  courses: {
+    eyebrow: "Catalogue",
+    title: "Des cours qui mènent à l'emploi",
+    subtitle: "Choisissez une voie — programme, pratique et mentors sont déjà inclus.",
+    cats: {
+      all: "Tous",
+      programming: "Programmation",
+      data: "Data Science",
+      design: "Design",
+      devops: "DevOps",
+      mobile: "Mobile",
+      ai: "IA/ML",
+      security: "Sécurité",
+    },
+    levels: { beginner: "Débutant", intermediate: "Intermédiaire", advanced: "Avancé" },
+    badges: { bestseller: "Best-seller", new: "Nouveau", popular: "Populaire" },
+    students: "apprenants",
+    months: "mois",
+    enroll: "S'inscrire",
+    items: {
+      python: { title: "Développeur Python", desc: "De la syntaxe aux services backend en production." },
+      frontend: { title: "Développeur Frontend : React", desc: "Des interfaces rapides avec React, TypeScript et Next.js." },
+      analyst: { title: "Data Analyst", desc: "SQL, Python et tableaux de bord qui guident les décisions." },
+      uxui: { title: "Designer UX/UI", desc: "Rechercher, prototyper et livrer des interfaces dans Figma." },
+      devops: { title: "Ingénieur DevOps", desc: "Docker, Kubernetes, CI/CD et infrastructure cloud." },
+      mobile: { title: "Développeur mobile : Flutter", desc: "Un seul code pour les apps iOS et Android." },
+      ml: { title: "Ingénieur Machine Learning", desc: "Entraîner, évaluer et déployer des modèles avec TensorFlow." },
+      security: { title: "Spécialiste cybersécurité", desc: "Pentest, défense et réponse aux incidents." },
+    },
+  },
+  stats: {
+    eyebrow: "En chiffres",
+    title: "Une plateforme de confiance",
+    items: [
+      "apprenants avec nous",
+      "cours et métiers",
+      "mentors issus des meilleures entreprises tech",
+      "des diplômés trouvent un emploi en 6 mois",
+    ],
+  },
+  how: {
+    eyebrow: "Comment ça marche",
+    title: "Quatre étapes vers un nouveau métier",
+    steps: [
+      { title: "Choisissez un cours", text: "Suivez une leçon d'introduction gratuite et trouvez votre voie." },
+      { title: "Apprenez en pratiquant", text: "Un peu de théorie, puis de vrais exercices dans un simulateur en ligne." },
+      { title: "Recevez des code reviews", text: "Les mentors relisent chaque projet et vous débloquent au besoin." },
+      { title: "Décrochez le poste", text: "Construisez un portfolio avec un accompagnement carrière jusqu'à l'offre." },
+    ],
+  },
+  instructors: {
+    eyebrow: "Formateurs",
+    title: "Apprenez auprès de praticiens",
+    subtitle: "Des experts qui créent chaque jour des produits dans les grandes entreprises tech.",
+    roles: ["Ingénieur logiciel senior", "Responsable de l'analyse de données", "Chercheuse scientifique", "Lead Product Designer"],
+    students: "apprenants",
+  },
+  reviews: {
+    eyebrow: "Avis",
+    title: "Les histoires de nos apprenants",
+    items: [
+      {
+        quote: "Je suis passée de la comptabilité à l'analyse en 9 mois. C'est le simulateur qui m'a enfin fait comprendre SQL.",
+        role: "Data Analyst chez Revolut",
+      },
+      {
+        quote: "Des code reviews exigeantes et honnêtes — exactement ce qu'il me fallait. Première offre avant même la fin.",
+        role: "Développeur Frontend chez Booking.com",
+      },
+      {
+        quote: "De vrais briefs, de vrais retours et un portfolio dont je suis fière. Chaque heure en valait la peine.",
+        role: "Product Designer chez Spotify",
+      },
+    ],
+  },
+  pricing: {
+    eyebrow: "Tarifs",
+    title: "Des prix simples et honnêtes",
+    subtitle: "Commencez gratuitement et passez à Pro quand vous êtes prêt.",
+    month: "/mois",
+    seat: "par siège",
+    popular: "Le plus populaire",
+    plans: {
+      free: {
+        name: "Free",
+        desc: "Découvrez la plateforme et les bases.",
+        features: ["Leçons d'intro de chaque cours", "Simulateur de code en ligne", "Chat de la communauté"],
+        cta: "Commencer gratuitement",
+      },
+      pro: {
+        name: "Pro",
+        desc: "Accès complet pour une vraie reconversion.",
+        features: ["Plus de 180 cours", "Code reviews par des mentors", "Centre carrière et relecture de CV", "Certificats de réussite"],
+        cta: "Passer à Pro",
+      },
+      team: {
+        name: "Team",
+        desc: "Formez toute votre équipe, avec des analyses.",
+        features: ["Tout ce qu'inclut Pro", "Tableau de bord d'équipe", "Parcours sur mesure", "Responsable dédié"],
+        cta: "Contacter l'équipe",
+      },
+    },
+  },
+  footer: {
+    tagline: "École en ligne des métiers de la tech : pratique, mentors et accompagnement carrière.",
+    cols: [
+      { title: "Apprendre", links: ["Cours", "Métiers", "Leçons gratuites", "Centre carrière"] },
+      { title: "Entreprise", links: ["À propos", "Formateurs", "Recrutement", "Blog"] },
+      { title: "Support", links: ["Centre d'aide", "Contact", "Confidentialité", "Conditions"] },
+    ],
+    rights: "Tous droits réservés.",
+    languages: "Langue",
+  },
+};
