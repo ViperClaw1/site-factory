@@ -4,6 +4,7 @@ import { initAuth, useAuthStore } from "@/lib/auth";
 import { useCartStore } from "@/lib/cart";
 import { LOCALE_LABELS, LOCALES, localeTag, useLocaleStore, useT, type MessageKey } from "@/lib/i18n";
 import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -16,11 +17,33 @@ const NAV_LINKS: { key: MessageKey; href: string }[] = [
   { key: "nav.digital", href: "/shop/designs" },
 ];
 
-// Wordmark: black "TOY" + pink "VERSE" in heavy Fraunces.
+// Brand: the Path Kids bear mark + the "PATH KIDS" wordmark, split from the
+// original logo (both keep its transparent background). Served as-is
+// (unoptimized) — lossless, padding-trimmed WebPs at ~5× display height, crisp
+// on 3× screens; Next's optimizer would re-encode them lossily.
+// Full-resolution masters: public/brand/path-kids-{bear,wordmark}-full.webp.
 export function Logo() {
   return (
-    <Link href="/" className="font-display text-xl tracking-tight" aria-label="ToyVerse home">
-      TOY<span className="text-pink">VERSE</span>
+    <Link href="/" className="flex items-center gap-2.5" aria-label="Path Kids home">
+      <Image
+        src="/brand/path-kids-bear.webp"
+        alt=""
+        width={276}
+        height={240}
+        unoptimized
+        priority
+        className="h-12 w-auto shrink-0"
+      />
+      <Image
+        src="/brand/path-kids-wordmark.webp"
+        alt="Path Kids"
+        width={394}
+        height={233}
+        unoptimized
+        priority
+        // 42px = the former 36px + the 6px gap added between PATH and KIDS.
+        className="h-[42px] w-auto shrink-0"
+      />
     </Link>
   );
 }
