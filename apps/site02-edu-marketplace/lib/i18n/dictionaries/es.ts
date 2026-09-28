@@ -197,4 +197,18 @@ export const es: Dict = {
     signOut: "Cerrar sesión",
     favoritesEmpty: "Aún no tienes cursos favoritos.",
   },
+  catalog: {
+    eyebrow: "Catálogo",
+    title: "Todos los cursos",
+    empty: "Aún no hay cursos publicados.",
+    minutes: "min",
+    preview: "vista previa",
+    program: "Programa del curso",
+    addToCart: "Añadir al carrito",
+    soon: "Próximamente",
+    cartTitle: "Carrito",
+    cartText: "El carrito y el pago llegarán pronto.",
+    levels: { beginner: "Principiante", intermediate: "Intermedio", advanced: "Avanzado" },
+    lessonTypes: { video: "Vídeo", audio: "Audio", text: "Texto" },
+  },
 };

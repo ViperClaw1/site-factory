@@ -1,5 +1,6 @@
-export function formatPrice(amount: number, currency: string): string {
-  return new Intl.NumberFormat("ru-RU", {
+// locale: any BCP 47 tag (site02 passes its UI language); defaults to ru-RU.
+export function formatPrice(amount: number, currency: string, locale = "ru-RU"): string {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency,
     minimumFractionDigits: 0,

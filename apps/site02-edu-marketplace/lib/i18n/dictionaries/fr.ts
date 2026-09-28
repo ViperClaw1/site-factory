@@ -197,4 +197,18 @@ export const fr: Dict = {
     signOut: "Se déconnecter",
     favoritesEmpty: "Aucun cours favori pour l'instant.",
   },
+  catalog: {
+    eyebrow: "Catalogue",
+    title: "Tous les cours",
+    empty: "Aucun cours publié pour l'instant.",
+    minutes: "min",
+    preview: "aperçu",
+    program: "Programme du cours",
+    addToCart: "Ajouter au panier",
+    soon: "Bientôt",
+    cartTitle: "Panier",
+    cartText: "Le panier et le paiement arrivent bientôt.",
+    levels: { beginner: "Débutant", intermediate: "Intermédiaire", advanced: "Avancé" },
+    lessonTypes: { video: "Vidéo", audio: "Audio", text: "Texte" },
+  },
 };

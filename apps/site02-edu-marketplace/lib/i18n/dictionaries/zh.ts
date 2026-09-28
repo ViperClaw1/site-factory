@@ -182,4 +182,18 @@ export const zh: Dict = {
     signOut: "退出登录",
     favoritesEmpty: "还没有收藏的课程。",
   },
+  catalog: {
+    eyebrow: "课程目录",
+    title: "全部课程",
+    empty: "暂无已发布的课程。",
+    minutes: "分钟",
+    preview: "试看",
+    program: "课程大纲",
+    addToCart: "加入购物车",
+    soon: "即将推出",
+    cartTitle: "购物车",
+    cartText: "购物车和结账功能即将上线。",
+    levels: { beginner: "入门", intermediate: "中级", advanced: "高级" },
+    lessonTypes: { video: "视频", audio: "音频", text: "文本" },
+  },
 };

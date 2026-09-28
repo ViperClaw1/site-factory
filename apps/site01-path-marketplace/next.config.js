@@ -1,3 +1,8 @@
+// Self-hosted Supabase serves Storage from its own API domain, not
+// *.supabase.co — allow whatever host NEXT_PUBLIC_SUPABASE_URL points at.
+// Read at build time (standalone bakes the config into the image).
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL) : null;
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Overridable so a verification build/dev server can run beside a live
@@ -10,6 +15,16 @@ const nextConfig = {
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "*.supabase.co", pathname: "/storage/v1/object/public/**" },
+      ...(supabaseUrl
+        ? [
+            {
+              protocol: supabaseUrl.protocol.slice(0, -1),
+              hostname: supabaseUrl.hostname,
+              port: supabaseUrl.port,
+              pathname: "/storage/v1/object/public/**",
+            },
+          ]
+        : []),
       { protocol: "https", hostname: "images.unsplash.com" },
     ],
   },

@@ -183,4 +183,18 @@ export const ja: Dict = {
     signOut: "ログアウト",
     favoritesEmpty: "お気に入りのコースはまだありません。",
   },
+  catalog: {
+    eyebrow: "カタログ",
+    title: "すべてのコース",
+    empty: "公開中のコースはまだありません。",
+    minutes: "分",
+    preview: "プレビュー",
+    program: "カリキュラム",
+    addToCart: "カートに追加",
+    soon: "近日公開",
+    cartTitle: "カート",
+    cartText: "カートと決済機能は近日公開予定です。",
+    levels: { beginner: "初級", intermediate: "中級", advanced: "上級" },
+    lessonTypes: { video: "動画", audio: "音声", text: "テキスト" },
+  },
 };

@@ -1,5 +1,9 @@
 # Деплой
 
+> site01 и site02 деплоятся на self-hosted Supabase VPS через GitHub Actions —
+> см. [`deploy-supabase-vps.ru.md`](./deploy-supabase-vps.ru.md) /
+> [`.en.md`](./deploy-supabase-vps.en.md). Схема с Coolify ниже — для остальных сайтов.
+
 ## Пайплайн
 
 ```

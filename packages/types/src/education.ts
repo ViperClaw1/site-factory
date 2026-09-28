@@ -8,6 +8,9 @@ export type CourseLevel = "beginner" | "intermediate" | "advanced";
 
 export type CourseOrderStatus = "pending" | "paid" | "cancelled" | "refunded";
 
+/** Per-language overrides of text fields, e.g. { en: { title: "…" } }. Base columns hold the default (ru) text. */
+export type ContentI18n = Partial<Record<string, Partial<Record<string, string>>>>;
+
 export interface Course {
   id: string;
   slug: string;
@@ -27,6 +30,7 @@ export interface Course {
   duration_minutes: number | null;
   created_at: string;
   updated_at: string;
+  i18n?: ContentI18n | null;
 }
 
 export interface CourseModule {
@@ -36,6 +40,7 @@ export interface CourseModule {
   description: string | null;
   sort: number;
   is_preview: boolean;
+  i18n?: ContentI18n | null;
 }
 
 export interface Lesson {
@@ -61,6 +66,7 @@ export interface LessonOutline {
   duration_seconds: number | null;
   sort: number;
   is_preview: boolean;
+  i18n?: ContentI18n | null;
 }
 
 export interface CourseModuleWithLessons extends CourseModule {

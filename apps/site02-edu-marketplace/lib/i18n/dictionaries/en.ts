@@ -195,6 +195,20 @@ export const en = {
     signOut: "Sign out",
     favoritesEmpty: "No favorite courses yet.",
   },
+  catalog: {
+    eyebrow: "Catalog",
+    title: "All courses",
+    empty: "No published courses yet.",
+    minutes: "min",
+    preview: "preview",
+    program: "Course program",
+    addToCart: "Add to cart",
+    soon: "Coming soon",
+    cartTitle: "Cart",
+    cartText: "Your cart and checkout are coming soon.",
+    levels: { beginner: "Beginner", intermediate: "Intermediate", advanced: "Advanced" },
+    lessonTypes: { video: "Video", audio: "Audio", text: "Text" },
+  },
 };
 
 export type Dict = typeof en;

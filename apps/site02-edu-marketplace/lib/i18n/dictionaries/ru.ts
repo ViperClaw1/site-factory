@@ -197,4 +197,18 @@ export const ru: Dict = {
     signOut: "Выйти",
     favoritesEmpty: "Пока нет избранных курсов.",
   },
+  catalog: {
+    eyebrow: "Каталог",
+    title: "Все курсы",
+    empty: "Пока нет опубликованных курсов.",
+    minutes: "мин",
+    preview: "превью",
+    program: "Программа курса",
+    addToCart: "В корзину",
+    soon: "Скоро",
+    cartTitle: "Корзина",
+    cartText: "Корзина и оформление заказа скоро появятся.",
+    levels: { beginner: "Начальный", intermediate: "Средний", advanced: "Продвинутый" },
+    lessonTypes: { video: "Видео", audio: "Аудио", text: "Текст" },
+  },
 };

@@ -56,8 +56,8 @@ export async function getCourse(slug: string): Promise<CourseWithCurriculum | nu
         `
         *,
         course_modules (
-          id, course_id, title, description, sort, is_preview,
-          lessons ( id, module_id, slug, title, type, duration_seconds, sort, is_preview )
+          id, course_id, title, description, sort, is_preview, i18n,
+          lessons ( id, module_id, slug, title, type, duration_seconds, sort, is_preview, i18n )
         )
       `
       )
