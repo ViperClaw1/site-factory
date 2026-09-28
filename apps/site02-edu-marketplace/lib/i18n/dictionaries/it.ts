@@ -211,4 +211,10 @@ export const it: Dict = {
     levels: { beginner: "Principiante", intermediate: "Intermedio", advanced: "Avanzato" },
     lessonTypes: { video: "Video", audio: "Audio", text: "Testo" },
   },
+  subscribe: {
+    eyebrow: "Abbonamenti",
+    title: "Presto disponibile",
+    text: "I piani a pagamento sono in arrivo. Nel frattempo, esplora il catalogo e acquista singoli corsi.",
+    browse: "Sfoglia i corsi",
+  },
 };

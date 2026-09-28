@@ -211,4 +211,10 @@ export const ru: Dict = {
     levels: { beginner: "Начальный", intermediate: "Средний", advanced: "Продвинутый" },
     lessonTypes: { video: "Видео", audio: "Аудио", text: "Текст" },
   },
+  subscribe: {
+    eyebrow: "Подписки",
+    title: "Скоро",
+    text: "Платные тарифы уже в пути. А пока загляните в каталог и купите отдельные курсы.",
+    browse: "Перейти в каталог",
+  },
 };

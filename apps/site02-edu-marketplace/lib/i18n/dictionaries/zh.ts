@@ -196,4 +196,10 @@ export const zh: Dict = {
     levels: { beginner: "入门", intermediate: "中级", advanced: "高级" },
     lessonTypes: { video: "视频", audio: "音频", text: "文本" },
   },
+  subscribe: {
+    eyebrow: "订阅",
+    title: "即将推出",
+    text: "付费方案即将上线。在此之前，欢迎浏览课程目录并单独购买课程。",
+    browse: "浏览课程",
+  },
 };

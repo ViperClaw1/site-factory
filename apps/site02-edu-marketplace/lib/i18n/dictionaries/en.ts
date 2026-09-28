@@ -209,6 +209,12 @@ export const en = {
     levels: { beginner: "Beginner", intermediate: "Intermediate", advanced: "Advanced" },
     lessonTypes: { video: "Video", audio: "Audio", text: "Text" },
   },
+  subscribe: {
+    eyebrow: "Subscriptions",
+    title: "Coming soon",
+    text: "Paid plans are on their way. Meanwhile, browse the catalog and buy individual courses.",
+    browse: "Browse courses",
+  },
 };
 
 export type Dict = typeof en;

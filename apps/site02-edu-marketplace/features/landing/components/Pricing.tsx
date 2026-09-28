@@ -8,8 +8,8 @@ import { SectionHeading } from "./SectionHeading";
 
 const PLANS = [
   { id: "free", price: 0, href: "/signup" },
-  { id: "pro", price: 29, href: "/signup", highlighted: true },
-  { id: "team", price: 19, href: "/#", perSeat: true },
+  { id: "pro", price: 29, href: "/subscribe?plan=pro", highlighted: true },
+  { id: "team", price: 19, href: "/subscribe?plan=team", perSeat: true },
 ] as const;
 
 export function Pricing() {

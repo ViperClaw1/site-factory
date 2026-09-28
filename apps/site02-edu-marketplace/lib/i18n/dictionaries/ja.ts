@@ -197,4 +197,10 @@ export const ja: Dict = {
     levels: { beginner: "初級", intermediate: "中級", advanced: "上級" },
     lessonTypes: { video: "動画", audio: "音声", text: "テキスト" },
   },
+  subscribe: {
+    eyebrow: "サブスクリプション",
+    title: "近日公開",
+    text: "有料プランは準備中です。それまではカタログから個別のコースをご購入ください。",
+    browse: "コースを見る",
+  },
 };
