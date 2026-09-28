@@ -10,6 +10,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { buttonClass } from "./buttons";
 import { FormField, INPUT_CLASS } from "./FormField";
+import { PasswordInput } from "./PasswordInput";
 
 type Field = "name" | "email" | "password";
 
@@ -40,7 +41,6 @@ export function AuthForm({ mode }: AuthFormProps) {
   const [formError, setFormError] = useState<string | null>(null);
   const [checkEmail, setCheckEmail] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   // Fields the user has left (or all, after a submit attempt). Errors only
   // show for these, then update live on every keystroke.
   const [touched, setTouched] = useState<Partial<Record<Field, boolean>>>({});
@@ -95,6 +95,25 @@ export function AuthForm({ mode }: AuthFormProps) {
     router.refresh();
   }
 
+  // Google OAuth: Supabase redirects to Google and back to its own
+  // /auth/v1/callback, then on to our /auth/callback (which exchanges the
+  // code for a session cookie) and finally ?next — same destination rules as
+  // the email flow. A new Google user is created on the fly, so this button
+  // covers both login and signup.
+  async function signInWithGoogle() {
+    setFormError(null);
+    setSubmitting(true);
+    const { error } = await supabaseBrowser().auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}` },
+    });
+    // On success the browser is already navigating to Google.
+    if (error) {
+      setSubmitting(false);
+      setFormError(error.message);
+    }
+  }
+
   const fieldProps = (field: Field) => ({
     id: field,
     value: values[field],
@@ -115,7 +134,24 @@ export function AuthForm({ mode }: AuthFormProps) {
         /* Signup done, waiting on the confirmation link. */
         <p className="mt-8 border-l-4 border-electric bg-electric-soft p-4 text-sm text-ink/80">{t("auth.checkEmail")}</p>
       ) : (
-        <form onSubmit={handleSubmit} noValidate className="mt-8 space-y-5">
+        <>
+        {/* Google OAuth, then an "or" divider before the email form. */}
+        <button
+          type="button"
+          onClick={signInWithGoogle}
+          disabled={submitting}
+          className={buttonClass("outline", "lg", "mt-8 w-full normal-case tracking-normal")}
+        >
+          <i className="fa-brands fa-google text-base" aria-hidden="true" />
+          {t("auth.google")}
+        </button>
+        <div className="mt-6 flex items-center gap-3 text-xs uppercase tracking-widest text-black/40" aria-hidden="true">
+          <span className="h-px flex-1 bg-black/10" />
+          {t("auth.or")}
+          <span className="h-px flex-1 bg-black/10" />
+        </div>
+
+        <form onSubmit={handleSubmit} noValidate className="mt-6 space-y-5">
           {isSignup && (
             <FormField id="name" label={t("auth.name")} error={errors.name && t(errors.name)}>
               <input {...fieldProps("name")} autoComplete="name" />
@@ -124,25 +160,22 @@ export function AuthForm({ mode }: AuthFormProps) {
           <FormField id="email" label={t("auth.email")} error={errors.email && t(errors.email)}>
             <input {...fieldProps("email")} type="email" autoComplete="email" placeholder="you@example.com" />
           </FormField>
-          <FormField id="password" label={t("auth.password")} error={errors.password && t(errors.password)}>
-            <div className="relative">
-              <input
-                {...fieldProps("password")}
-                type={showPassword ? "text" : "password"}
-                autoComplete={isSignup ? "new-password" : "current-password"}
-                className={`${INPUT_CLASS} pr-12`}
-              />
-              {/* Show/hide toggle; aria-pressed exposes the state to screen readers. */}
-              <button
-                type="button"
-                onClick={() => setShowPassword((shown) => !shown)}
-                aria-label={t(showPassword ? "auth.hidePassword" : "auth.showPassword")}
-                aria-pressed={showPassword}
-                className="absolute inset-y-0 right-0 mt-2 flex w-12 items-center justify-center text-black/45 transition-colors hover:text-pink"
-              >
-                <i className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"}`} aria-hidden="true" />
-              </button>
-            </div>
+          <FormField
+            id="password"
+            label={t("auth.password")}
+            error={errors.password && t(errors.password)}
+            labelAction={
+              !isSignup && (
+                <Link href="/forgot-password" className="text-xs font-semibold text-pink hover:underline">
+                  {t("auth.forgot")}
+                </Link>
+              )
+            }
+          >
+            <PasswordInput
+              {...fieldProps("password")}
+              autoComplete={isSignup ? "new-password" : "current-password"}
+            />
           </FormField>
 
           {/* Supabase's own message (e.g. "Invalid login credentials"), untranslated. */}
@@ -156,6 +189,7 @@ export function AuthForm({ mode }: AuthFormProps) {
             {t(isSignup ? "auth.submit.signup" : "auth.submit.login")}
           </button>
         </form>
+        </>
       )}
 
       {/* Switch between login and signup, forwarding ?next only if one was
