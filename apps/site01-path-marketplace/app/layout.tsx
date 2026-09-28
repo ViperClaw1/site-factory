@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Onest, Outfit, Playfair_Display } from "next/font/google";
+import { Alegreya, Fraunces, Onest, Outfit } from "next/font/google";
 import PlausibleProvider from "next-plausible";
 import { Footer } from "@/components/Footer";
 import { NavBar } from "@/components/NavBar";
@@ -7,10 +7,18 @@ import "./globals.css";
 
 // Outfit for body copy, Fraunces (variable, with its SOFT/WONK axes) for the
 // heavy display headlines.
+// No bundled system fallback on the Latin faces (fallback: [],
+// adjustFontFallback: false): next/font otherwise appends a metric-matched
+// Arial/Times face to the variable, and since those contain Cyrillic, they'd
+// catch Russian text before the Cyrillic faces below (the old bug: Cyrillic
+// headings rendered in Times New Roman). Cost: no metric-matched stand-in
+// while these load (display: swap) — a slight reflow on first paint.
 const body = Outfit({
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",
+  fallback: [],
+  adjustFontFallback: false,
 });
 
 const heading = Fraunces({
@@ -18,19 +26,23 @@ const heading = Fraunces({
   variable: "--font-heading",
   display: "swap",
   axes: ["SOFT", "WONK", "opsz"],
+  fallback: [],
+  adjustFontFallback: false,
 });
 
-// Cyrillic-only fallbacks for the ru locale — Outfit and Fraunces ship no
-// Cyrillic glyphs. Onest is a close geometric match for Outfit; Playfair
-// Display 900 stands in for heavy Fraunces. Their cyrillic-subset
-// unicode-range means Latin text never pulls these files.
+// Cyrillic faces for the ru locale — Outfit and Fraunces ship no Cyrillic
+// glyphs, so Cyrillic falls through to these (listed right after them in
+// globals.css). Onest matches Outfit's geometry; Alegreya 900 matches Fraunces
+// Black's weight, width and soft serifs. They must stay AFTER the Latin faces:
+// next/font's `subsets` only limits preloading, the CSS still carries their
+// Latin glyphs too.
 const bodyCyrillic = Onest({
   subsets: ["cyrillic"],
   variable: "--font-body-cyrillic",
   display: "swap",
 });
 
-const headingCyrillic = Playfair_Display({
+const headingCyrillic = Alegreya({
   subsets: ["cyrillic"],
   weight: "900",
   variable: "--font-heading-cyrillic",

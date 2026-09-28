@@ -13,8 +13,8 @@
 body {
   background-color: var(--color-bg);
   color: #111111;
-  /* Outfit/Fraunces are Latin-only: Cyrillic (ru) falls through to the
-     next/font fallback, zh/ja copy to the platform's native CJK faces. */
+  /* Outfit is Latin-only (and has no bundled fallback — see layout.tsx), so
+     Cyrillic falls through to Onest; zh/ja to the native CJK faces. */
   font-family: var(--font-body), var(--font-body-cyrillic), "PingFang SC", "Hiragino Sans",
     "Noto Sans CJK SC", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -23,6 +23,7 @@ body {
 @layer utilities {
   /* Heavy, slightly soft Fraunces used for every display headline. */
   .font-display {
+    /* Fraunces (Latin-only) → Alegreya for Cyrillic; same reasoning as body. */
     font-family: var(--font-heading), var(--font-heading-cyrillic), "Songti SC", "Hiragino Mincho ProN", "Noto Serif CJK SC", serif;
     font-weight: 900;
     font-variation-settings: "SOFT" 50, "WONK" 0;
