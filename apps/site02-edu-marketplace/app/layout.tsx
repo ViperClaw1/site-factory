@@ -22,6 +22,8 @@ const heading = Manrope({
 });
 
 export const metadata: Metadata = {
+  // Resolves relative OG/canonical URLs to absolute ones.
+  metadataBase: process.env.BASE_URL ? new URL(process.env.BASE_URL) : undefined,
   title: "Path.courses — online IT school",
   description: "Interactive courses in programming, data, design and AI with mentors and hands-on practice.",
 };

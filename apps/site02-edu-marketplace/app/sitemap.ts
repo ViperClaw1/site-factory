@@ -1,6 +1,9 @@
 import type { MetadataRoute } from "next";
 import { getCourses } from "@/features/catalog/api/courses";
 
+// Otherwise built once at build time and frozen until the next deploy.
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = process.env.BASE_URL ?? "http://localhost:3002";
 

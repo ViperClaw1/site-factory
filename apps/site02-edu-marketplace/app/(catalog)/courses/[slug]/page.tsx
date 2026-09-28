@@ -3,7 +3,7 @@ import { CourseDetail } from "@/features/course/components/CourseDetail";
 import { generateCourseJsonLd, generateMetadata as seo } from "@repo/lib";
 import { notFound } from "next/navigation";
 
-export const revalidate = 0;
+export const revalidate = 60;
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const course = await getCourse(params.slug);
