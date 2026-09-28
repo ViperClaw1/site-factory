@@ -1,10 +1,23 @@
 import { getCollection, getProducts } from "@/lib/api-client";
 import { PageHeader } from "@/components/PageHeader";
 import { ProductGrid } from "@/components/ProductGrid";
+import { generateMetadata as seo } from "@repo/lib";
 import { Container, ImageWithFallback } from "@repo/ui";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-export const revalidate = 0;
+export const revalidate = 60;
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const collection = await getCollection(params.slug);
+  if (!collection) return {};
+  return seo(
+    collection.name,
+    (collection.description ?? `The ${collection.name} collection.`).slice(0, 160),
+    collection.hero_image ?? undefined,
+    `/collections/${collection.slug}`
+  );
+}
 
 export default async function CollectionDetailPage({ params }: { params: { slug: string } }) {
   const collection = await getCollection(params.slug);

@@ -10,12 +10,14 @@ import {
 } from "@/lib/placeholders";
 import { CatalogImage } from "@/components/CatalogImage";
 import { blurhashToDataUrl } from "@/lib/blurhash";
+import { generateProductJsonLd, generateMetadata as seo } from "@repo/lib";
 import { Container } from "@repo/ui";
 import type { Product } from "@repo/types";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-export const revalidate = 0;
+export const revalidate = 60;
 
 // "placeholder-N" slugs never hit Supabase — they resolve to the matching
 // showcase item so placeholder cards link somewhere real to exercise the
@@ -50,6 +52,15 @@ function buildPlaceholderProduct(slug: string): { product: Product; character: s
   };
 }
 
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const real = await getProduct(params.slug);
+  if (!real) {
+    // Placeholder/showcase products are demo content — keep them out of the index.
+    return { robots: { index: false } };
+  }
+  return seo(real.title, (real.description ?? "").slice(0, 160), real.images[0]?.url, `/p/${real.slug}`);
+}
+
 export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
   const real = await getProduct(params.slug);
   if (!real && !params.slug.startsWith("placeholder-")) notFound();
@@ -61,6 +72,13 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
 
   return (
     <Container className="py-12 lg:py-16">
+      {/* Structured data only for real products, never for showcase placeholders. */}
+      {real && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: generateProductJsonLd(real, `${process.env.BASE_URL}/p/${real.slug}`) }}
+        />
+      )}
       <Reveal>
         <div className="grid gap-10 lg:grid-cols-2 lg:items-start lg:gap-16">
           {/* Photo on a Memphis-decorated panel */}

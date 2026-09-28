@@ -6,9 +6,9 @@ import { PlaceholderCard } from "@/components/PlaceholderCard";
 import { RevealGrid } from "@/components/RevealGrid";
 import { Container } from "@repo/ui";
 
-// revalidate = 0: never time-based cached — Directus's webhook hits
-// /api/revalidate on publish instead, so this route renders per-request.
-export const revalidate = 0;
+// ISR: cached, regenerated at most every 60s (ADR-004 fallback TTL);
+// Directus's webhook hits /api/revalidate on publish to refresh it sooner.
+export const revalidate = 60;
 
 export default async function CollectionsPage() {
   const collections = await getCollections();

@@ -7,7 +7,7 @@ import { SHOWCASE_ITEMS } from "@/lib/placeholders";
 import { SHOP_CATEGORY_OPTIONS } from "@/lib/shop-categories";
 import { Container } from "@repo/ui";
 
-export const revalidate = 0;
+export const revalidate = 60;
 
 interface ShopPageProps {
   searchParams: {

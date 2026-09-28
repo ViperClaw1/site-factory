@@ -9,7 +9,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { RevealGrid } from "@/components/RevealGrid";
 import { SectionHeading } from "@/components/SectionHeading";
 
-export const revalidate = 0;
+export const revalidate = 60;
 
 export default async function HomePage() {
   // Catalog (Supabase) + character IPs (Directus), fetched in parallel.

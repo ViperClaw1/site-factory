@@ -50,7 +50,10 @@ const headingCyrillic = Alegreya({
 });
 
 export const metadata: Metadata = {
-  title: "ToyVerse — Collectibles Marketplace",
+  // Resolves relative OG/canonical URLs to absolute ones.
+  metadataBase: process.env.BASE_URL ? new URL(process.env.BASE_URL) : undefined,
+  // Pages with generateMetadata set just their own name; the template appends the brand.
+  title: { default: "ToyVerse — Collectibles Marketplace", template: "%s — ToyVerse" },
   description:
     "A multilingual marketplace for designer toys, blind boxes, figures, art books and digital collectibles.",
 };

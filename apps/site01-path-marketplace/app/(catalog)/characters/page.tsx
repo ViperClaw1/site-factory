@@ -5,7 +5,7 @@ import { RevealGrid } from "@/components/RevealGrid";
 import { placeholderCharacters } from "@/lib/placeholders";
 import { Container } from "@repo/ui";
 
-export const revalidate = 0;
+export const revalidate = 60;
 
 export default async function CharactersPage() {
   // Published characters from Directus — or the showcase IPs while none exist.

@@ -1,6 +1,9 @@
 import type { MetadataRoute } from "next";
 import { getCharacters, getCollections } from "@/lib/api-client";
 
+// Otherwise built once at build time and frozen until the next deploy.
+export const revalidate = 3600;
+
 // Fixed taxonomy matching CATEGORY_OPTIONS in app/(catalog)/shop/page.tsx —
 // kept in sync manually since Supabase doesn't expose a categories table.
 const CATEGORIES = ["toys", "collectible_toys", "books", "artbooks", "designs", "merch", "figures"];

@@ -5,9 +5,20 @@ import { ProductGrid } from "@/components/ProductGrid";
 import type { PillGroup } from "@/components/CategoryPills";
 import { SHOWCASE_ITEMS } from "@/lib/placeholders";
 import { categoryLabelKey } from "@/lib/shop-categories";
+import { generateMetadata as seo } from "@repo/lib";
 import { Container } from "@repo/ui";
+import type { Metadata } from "next";
 
-export const revalidate = 0;
+export const revalidate = 60;
+
+export function generateMetadata({ params }: { params: { category: string } }): Metadata {
+  // Unknown slugs still render (empty grid + showcase) — don't index them.
+  if (!categoryLabelKey(params.category)) return { robots: { index: false } };
+  const name = params.category.replace(/_/g, " ");
+  const title = name.charAt(0).toUpperCase() + name.slice(1);
+  // Canonical drops ?collection/character/sort so filtered views don't compete with the category page.
+  return seo(title, `Shop ${name} — designer toys, figures, art books and digital collectibles.`, undefined, `/shop/${params.category}`);
+}
 
 interface ShopCategoryPageProps {
   params: { category: string };

@@ -6,10 +6,24 @@ import {
   placeholderIndexFromSlug,
   showcaseItemsForCharacter,
 } from "@/lib/placeholders";
+import { generateMetadata as seo } from "@repo/lib";
 import { Container, ImageWithFallback } from "@repo/ui";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-export const revalidate = 0;
+export const revalidate = 60;
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const character = await getCharacter(params.slug);
+  // Placeholder characters are demo content — keep them out of the index.
+  if (!character) return { robots: { index: false } };
+  return seo(
+    character.name,
+    (character.description ?? `Collectibles featuring ${character.name}.`).slice(0, 160),
+    character.image ?? undefined,
+    `/characters/${character.slug}`
+  );
+}
 
 export default async function CharacterDetailPage({ params }: { params: { slug: string } }) {
   // Same "placeholder-N" convention as products — showcase IPs resolve to a

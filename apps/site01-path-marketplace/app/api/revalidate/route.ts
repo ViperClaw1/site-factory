@@ -2,8 +2,10 @@ import { timingSafeEqual, createHmac } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
-// Directus webhook target: fires on publish/update so ISR pages (which set
-// revalidate = 0) get fresh content immediately instead of waiting on a timer.
+// Directus webhook target: fires on publish/update so ISR pages (revalidate =
+// 60) get fresh content immediately instead of waiting out the 60s timer.
+// Only meaningful for cached pages — a revalidate = 0 page is never cached, so
+// purging it would be a no-op.
 //
 // The signature travels in a header, never the query string — query strings
 // end up in Traefik access logs, the Referer header, and browser history, so
