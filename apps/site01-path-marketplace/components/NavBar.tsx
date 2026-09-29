@@ -17,32 +17,24 @@ const NAV_LINKS: { key: MessageKey; href: string }[] = [
   { key: "nav.digital", href: "/shop/designs" },
 ];
 
-// Brand: the Path Kids bear mark + the "PATH KIDS" wordmark, split from the
-// original logo (both keep its transparent background). Served as-is
-// (unoptimized) — lossless, padding-trimmed WebPs at ~5× display height, crisp
-// on 3× screens; Next's optimizer would re-encode them lossily.
-// Full-resolution masters: public/brand/path-kids-{bear,wordmark}-full.webp.
+// Brand: the full Path Kids logo (path-kids-logo-dark-full.webp) centered on a
+// circular ink-black badge, transparent outside the circle. The logo's thin
+// line-art strokes are thickened (radius-3 dilation at 1024px) so the bear and
+// letters stay legible at header size. Served as-is (unoptimized) — a lossless
+// 320px WebP (~6× display size), crisp on 3× screens; Next's optimizer would
+// re-encode it lossily.
+// Full-resolution master: public/brand/path-kids-badge-full.webp (1024px).
 export function Logo() {
   return (
-    <Link href="/" className="flex items-center gap-2.5" aria-label="Path Kids home">
+    <Link href="/" className="flex items-center" aria-label="Path Kids home">
       <Image
-        src="/brand/path-kids-bear.webp"
-        alt=""
-        width={276}
-        height={240}
-        unoptimized
-        priority
-        className="h-12 w-auto shrink-0"
-      />
-      <Image
-        src="/brand/path-kids-wordmark.webp"
+        src="/brand/path-kids-badge.webp"
         alt="Path Kids"
-        width={394}
-        height={233}
+        width={320}
+        height={320}
         unoptimized
         priority
-        // 42px = the former 36px + the 6px gap added between PATH and KIDS.
-        className="h-[42px] w-auto shrink-0"
+        className="h-14 w-14 shrink-0 rounded-full"
       />
     </Link>
   );

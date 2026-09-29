@@ -9,8 +9,8 @@ export default function HomeLoading() {
       <Container className="py-20">
         <div className="h-3 w-24 bg-black/5" />
         <div className="mt-3 h-12 w-80 max-w-full bg-black/5" />
-        <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => (
+        <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:gap-x-8 lg:gap-y-14">
+          {Array.from({ length: 3 }).map((_, i) => (
             <SkeletonCard key={i} />
           ))}
         </div>

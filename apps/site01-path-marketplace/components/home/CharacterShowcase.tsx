@@ -18,7 +18,7 @@ export interface CharacterShowcaseProps {
 }
 
 // "Discover Your Character": pill tabs (All + one per IP) that live-filter a
-// 4-column product grid client-side — no refetch, cards animate in and out.
+// product grid (3 columns from md up, so cards stay large on desktop) client-side — no refetch, cards animate in and out.
 export function CharacterShowcase({ items, tabs }: CharacterShowcaseProps) {
   const { t } = useT();
   const reduceMotion = useReducedMotion();
@@ -55,7 +55,7 @@ export function CharacterShowcase({ items, tabs }: CharacterShowcaseProps) {
         </div>
 
         {/* Filtered grid */}
-        <motion.div layout={!reduceMotion} className="mt-8 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
+        <motion.div layout={!reduceMotion} className="mt-8 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:gap-x-8 lg:gap-y-14">
           <AnimatePresence mode="popLayout" initial={false}>
             {visible.map((item) => (
               <motion.div
