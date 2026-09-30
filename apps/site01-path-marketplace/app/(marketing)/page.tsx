@@ -1,6 +1,6 @@
 import { getCharacters, getProducts } from "@/lib/api-client";
 import { toCardItem } from "@/lib/to-card-item";
-import { SHOWCASE_FLASH_SALE, SHOWCASE_ITEMS, SHOWCASE_NEW_ARRIVALS, placeholderCharacters } from "@/lib/placeholders";
+import { FRESH_SALE_DEALS, SHOWCASE_ITEMS, SHOWCASE_NEW_ARRIVALS, placeholderCharacters } from "@/lib/placeholders";
 import { CategoryGrid } from "@/components/home/CategoryGrid";
 import { CharacterShowcase } from "@/components/home/CharacterShowcase";
 import { FlashSale } from "@/components/home/FlashSale";
@@ -37,9 +37,7 @@ export default async function HomePage() {
 
       <CategoryGrid />
 
-      {/* The schema has no sale pricing yet, so the flash sale only runs on
-          the showcase catalog — never a fake discount on a real product. */}
-      {isShowcase && <FlashSale item={SHOWCASE_FLASH_SALE} />}
+      <FlashSale deals={FRESH_SALE_DEALS} />
 
       {/* New Arrivals: 6-column strip of the newest items. */}
       <section className="py-20">
@@ -51,7 +49,7 @@ export default async function HomePage() {
           />
           <RevealGrid className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-6">
             {newArrivals.map((item) => (
-              <ProductCard key={item.id} item={item} compact />
+              <ProductCard key={item.id} item={item} compact authGate />
             ))}
           </RevealGrid>
         </div>

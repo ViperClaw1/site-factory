@@ -9,7 +9,7 @@ export type { MessageKey } from "./messages";
 
 // Display order of the nav dropdown / footer bar. English stays the default
 // (server render + first client render) regardless of position here.
-export const LOCALES = ["ru", "en", "de", "fr", "es", "it", "zh", "ja"] as const;
+export const LOCALES = ["en", "ru", "de", "fr", "es", "it", "zh", "ja"] as const;
 export type Locale = (typeof LOCALES)[number];
 
 // Short labels used by the nav dropdown and the footer language bar.
@@ -22,6 +22,18 @@ export const LOCALE_LABELS: Record<Locale, string> = {
   it: "IT",
   zh: "中文",
   ja: "JP",
+};
+
+// Flag + native name for the header language menu.
+export const LOCALE_OPTIONS: Record<Locale, { name: string; code: string }> = {
+  en: { name: "English", code: "EN" },
+  ru: { name: "Русский", code: "RU" },
+  de: { name: "Deutsch", code: "DE" },
+  fr: { name: "Français", code: "FR" },
+  es: { name: "Español", code: "ES" },
+  it: { name: "Italiano", code: "IT" },
+  zh: { name: "中文", code: "中文" },
+  ja: { name: "日本語", code: "日本語" },
 };
 
 // BCP 47 tags for <html lang> and Intl number formatting.

@@ -66,7 +66,7 @@ export function CharacterShowcase({ items, tabs }: CharacterShowcaseProps) {
                 exit={{ opacity: 0, scale: 0.94 }}
                 transition={{ duration: 0.25 }}
               >
-                <ProductCard item={item} />
+                <ProductCard item={item} authGate />
               </motion.div>
             ))}
           </AnimatePresence>

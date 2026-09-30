@@ -1,10 +1,11 @@
 "use client";
 
+import { useAuthStore } from "@/lib/auth";
 import type { BadgeKind, CardItem } from "@/lib/catalog";
 import { useCartStore } from "@/lib/cart";
 import { useT, type MessageKey } from "@/lib/i18n";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { buttonClass } from "./buttons";
 import { CatalogImage } from "./CatalogImage";
@@ -29,9 +30,23 @@ export function ItemBadge({ kind, className = "" }: { kind: BadgeKind; className
   );
 }
 
+// Guests on gated surfaces (the home page) go to login instead of mutating the cart.
+function useGuestLoginRedirect(enabled: boolean) {
+  const role = useAuthStore((state) => state.role);
+  const router = useRouter();
+  const pathname = usePathname();
+
+  return function redirectIfGuest(): boolean {
+    if (!enabled || role !== "guest") return false;
+    router.push(`/login?next=${encodeURIComponent(pathname)}`);
+    return true;
+  };
+}
+
 // Adds a card item to the cart with a short "Added ✓" confirmation state.
-export function useAddToCart(item: CardItem) {
+export function useAddToCart(item: CardItem, authGate = false) {
   const addItem = useCartStore((state) => state.addItem);
+  const redirectIfGuest = useGuestLoginRedirect(authGate);
   const [added, setAdded] = useState(false);
 
   useEffect(() => {
@@ -40,7 +55,8 @@ export function useAddToCart(item: CardItem) {
     return () => clearTimeout(timer);
   }, [added]);
 
-  function add() {
+  function add(): boolean {
+    if (redirectIfGuest()) return false;
     addItem({
       productId: item.id,
       slug: item.slug,
@@ -50,6 +66,7 @@ export function useAddToCart(item: CardItem) {
       image: item.image,
     });
     setAdded(true);
+    return true;
   }
 
   return { add, added };
@@ -59,18 +76,20 @@ export interface ProductCardProps {
   item: CardItem;
   // Tighter type scale for the 6-column "New Arrivals" strip.
   compact?: boolean;
+  // Logged-out add-to-cart / buy-now opens /login (AuthForm) instead of the cart.
+  authGate?: boolean;
 }
 
 // Square image with badge + hover-reveal "Add to Cart" bar, then character /
 // title / subtitle / price and a "Buy Now" button (adds, then opens the cart).
-export function ProductCard({ item, compact = false }: ProductCardProps) {
+export function ProductCard({ item, compact = false, authGate = false }: ProductCardProps) {
   const { t, price } = useT();
   const router = useRouter();
-  const { add, added } = useAddToCart(item);
+  const { add, added } = useAddToCart(item, authGate);
   const href = `/p/${item.slug}`;
 
   function buyNow() {
-    add();
+    if (!add()) return;
     router.push("/cart");
   }
 

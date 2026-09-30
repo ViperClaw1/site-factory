@@ -20,8 +20,9 @@ export function FavoriteButton({ productId, className = "" }: FavoriteButtonProp
   const active = useAuthStore((state) => state.favorites.has(productId));
   const toggleFavorite = useAuthStore((state) => state.toggleFavorite);
 
-  // Showcase placeholders aren't DB products, so they can't be favorited.
-  if (productId.startsWith("placeholder-")) return null;
+  // Showcase placeholders aren't DB products. Signed-in users can't save them;
+  // guests still see the heart so the click can send them to login.
+  if (productId.startsWith("placeholder-") && can(role, "favorites")) return null;
 
   async function handleClick() {
     if (!can(role, "favorites")) {

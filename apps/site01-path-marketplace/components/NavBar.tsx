@@ -2,7 +2,8 @@
 
 import { initAuth, useAuthStore } from "@/lib/auth";
 import { useCartStore } from "@/lib/cart";
-import { LOCALE_LABELS, LOCALES, localeTag, useLocaleStore, useT, type MessageKey } from "@/lib/i18n";
+import { LOCALE_LABELS, LOCALE_OPTIONS, LOCALES, localeTag, useLocaleStore, useT, type MessageKey } from "@/lib/i18n";
+import { FlagIcon } from "./FlagIcon";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -121,12 +122,12 @@ export function NavBar() {
               aria-haspopup="listbox"
               aria-expanded={langOpen}
               aria-label={t("nav.language")}
-              className="flex h-9 items-center gap-1.5 px-2 text-xs font-semibold text-ink hover:text-pink"
+              className="flex h-9 items-center gap-1.5 rounded-full px-2.5 text-xs font-semibold text-ink hover:bg-black/5"
             >
-              <i className="fa-solid fa-globe" aria-hidden="true" />
-              {LOCALE_LABELS[locale]}
+              <FlagIcon locale={locale} />
+              {LOCALE_OPTIONS[locale].code}
               <i
-                className={`fa-solid fa-chevron-down text-[9px] transition-transform ${langOpen ? "rotate-180" : ""}`}
+                className={`fa-solid fa-chevron-down text-[9px] text-black/40 transition-transform ${langOpen ? "rotate-180" : ""}`}
                 aria-hidden="true"
               />
             </button>
@@ -138,27 +139,33 @@ export function NavBar() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -6 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-full mt-2 w-32 border-2 border-ink bg-white py-1 shadow-[4px_4px_0_0_#FF2D55]"
+                  className="absolute right-0 top-full z-50 mt-2 w-56 rounded-2xl border border-black/10 bg-white p-1.5 shadow-lg"
                 >
-                  {LOCALES.map((code) => (
-                    <li key={code}>
-                      <button
-                        type="button"
-                        role="option"
-                        aria-selected={code === locale}
-                        onClick={() => {
-                          setLocale(code);
-                          setLangOpen(false);
-                        }}
-                        className={`flex w-full items-center justify-between px-3 py-2 text-left text-xs font-semibold hover:bg-pink-soft ${
-                          code === locale ? "text-pink" : "text-ink"
-                        }`}
-                      >
-                        {LOCALE_LABELS[code]}
-                        {code === locale && <i className="fa-solid fa-check text-[10px]" aria-hidden="true" />}
-                      </button>
-                    </li>
-                  ))}
+                  {LOCALES.map((code) => {
+                    const option = LOCALE_OPTIONS[code];
+                    const selected = code === locale;
+                    return (
+                      <li key={code}>
+                        <button
+                          type="button"
+                          role="option"
+                          aria-selected={selected}
+                          onClick={() => {
+                            setLocale(code);
+                            setLangOpen(false);
+                          }}
+                          className={`flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-sm ${
+                            selected ? "bg-pink text-white" : "text-ink hover:bg-black/[0.04]"
+                          }`}
+                        >
+                          <FlagIcon locale={code} />
+                          <span className="flex-1 font-medium leading-none">{option.name}</span>
+                          <span className={`text-xs ${selected ? "text-white/80" : "text-black/40"}`}>{option.code}</span>
+                          {selected && <i className="fa-solid fa-check text-[11px]" aria-hidden="true" />}
+                        </button>
+                      </li>
+                    );
+                  })}
                 </motion.ul>
               )}
             </AnimatePresence>

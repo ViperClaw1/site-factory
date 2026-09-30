@@ -60,12 +60,14 @@ const en = {
   "category.figures": "Figures",
 
   // Flash sale
-  "flash.eyebrow": "Flash Sale",
+  "flash.eyebrow": "Fresh Sale",
   "flash.endsIn": "Ends in",
   "flash.hrs": "HRS",
   "flash.min": "MIN",
   "flash.sec": "SEC",
   "flash.save": "You save {amount}",
+  "flash.prev": "Previous deal",
+  "flash.next": "Next deal",
 
   // Product cards + badges
   "card.addToCart": "Add to Cart",
@@ -248,12 +250,14 @@ const zh: Messages = {
   "category.merch": "周边",
   "category.figures": "手办",
 
-  "flash.eyebrow": "限时特卖",
+  "flash.eyebrow": "每日特惠",
   "flash.endsIn": "距结束",
   "flash.hrs": "时",
   "flash.min": "分",
   "flash.sec": "秒",
   "flash.save": "立省 {amount}",
+  "flash.prev": "上一个",
+  "flash.next": "下一个",
 
   "card.addToCart": "加入购物车",
   "card.added": "已加入 ✓",
@@ -426,12 +430,14 @@ const ja: Messages = {
   "category.merch": "グッズ",
   "category.figures": "フィギュア",
 
-  "flash.eyebrow": "タイムセール",
+  "flash.eyebrow": "フレッシュセール",
   "flash.endsIn": "終了まで",
   "flash.hrs": "時間",
   "flash.min": "分",
   "flash.sec": "秒",
   "flash.save": "{amount} お得",
+  "flash.prev": "前の商品",
+  "flash.next": "次の商品",
 
   "card.addToCart": "カートに入れる",
   "card.added": "追加済み ✓",
@@ -604,12 +610,14 @@ const ru: Messages = {
   "category.merch": "Мерч",
   "category.figures": "Фигурки",
 
-  "flash.eyebrow": "Флеш-распродажа",
+  "flash.eyebrow": "Свежая распродажа",
   "flash.endsIn": "До конца",
   "flash.hrs": "ЧАС",
   "flash.min": "МИН",
   "flash.sec": "СЕК",
   "flash.save": "Экономия {amount}",
+  "flash.prev": "Предыдущий товар",
+  "flash.next": "Следующий товар",
 
   "card.addToCart": "В корзину",
   "card.added": "Добавлено ✓",
@@ -782,12 +790,14 @@ const de: Messages = {
   "category.merch": "Merch",
   "category.figures": "Figuren",
 
-  "flash.eyebrow": "Flash Sale",
+  "flash.eyebrow": "Fresh Sale",
   "flash.endsIn": "Endet in",
   "flash.hrs": "STD",
   "flash.min": "MIN",
   "flash.sec": "SEK",
   "flash.save": "Du sparst {amount}",
+  "flash.prev": "Vorheriges Angebot",
+  "flash.next": "Nächstes Angebot",
 
   "card.addToCart": "In den Warenkorb",
   "card.added": "Hinzugefügt ✓",
@@ -960,12 +970,14 @@ const fr: Messages = {
   "category.merch": "Goodies",
   "category.figures": "Figurines",
 
-  "flash.eyebrow": "Vente flash",
+  "flash.eyebrow": "Vente du jour",
   "flash.endsIn": "Se termine dans",
   "flash.hrs": "H",
   "flash.min": "MIN",
   "flash.sec": "SEC",
   "flash.save": "Économisez {amount}",
+  "flash.prev": "Offre précédente",
+  "flash.next": "Offre suivante",
 
   "card.addToCart": "Ajouter au panier",
   "card.added": "Ajouté ✓",
@@ -1138,12 +1150,14 @@ const es: Messages = {
   "category.merch": "Merch",
   "category.figures": "Figuras",
 
-  "flash.eyebrow": "Oferta relámpago",
+  "flash.eyebrow": "Oferta fresca",
   "flash.endsIn": "Termina en",
   "flash.hrs": "H",
   "flash.min": "MIN",
   "flash.sec": "SEG",
   "flash.save": "Ahorras {amount}",
+  "flash.prev": "Oferta anterior",
+  "flash.next": "Siguiente oferta",
 
   "card.addToCart": "Añadir al carrito",
   "card.added": "Añadido ✓",
@@ -1316,12 +1330,14 @@ const it: Messages = {
   "category.merch": "Merch",
   "category.figures": "Figure",
 
-  "flash.eyebrow": "Flash sale",
+  "flash.eyebrow": "Offerta del giorno",
   "flash.endsIn": "Termina tra",
   "flash.hrs": "ORE",
   "flash.min": "MIN",
   "flash.sec": "SEC",
   "flash.save": "Risparmi {amount}",
+  "flash.prev": "Offerta precedente",
+  "flash.next": "Offerta successiva",
 
   "card.addToCart": "Aggiungi al carrello",
   "card.added": "Aggiunto ✓",

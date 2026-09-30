@@ -45,14 +45,56 @@ export const SHOWCASE_ITEMS: CardItem[] = ROWS.map(
 // Same subset/order as the reference design's "New Arrivals" strip.
 export const SHOWCASE_NEW_ARRIVALS = [1, 2, 3, 6, 9, 11].map((i) => SHOWCASE_ITEMS[i]!);
 
-// The flash-sale product: Aquarium World at 40% off. Its own productId keeps
-// the discounted line separate from a full-price one in the cart.
-export const SHOWCASE_FLASH_SALE: CardItem = {
-  ...SHOWCASE_ITEMS[4]!,
-  id: "placeholder-4-flash",
-  price: 53.99,
-  compareAt: 89.99,
-};
+// Fresh-sale rotation. Each row is an existing showcase product at a fixed
+// discount, plus a countdown length that wraps (there is no real end date yet).
+// The home section advances one deal per local day at FRESH_SALE_SWITCH_HOUR.
+type FreshSaleRow = { index: number; price: number; countdownSeconds: number };
+
+const FRESH_SALE_ROWS: FreshSaleRow[] = [
+  { index: 4, price: 53.99, countdownSeconds: 6 * 3600 + 23 * 60 + 7 },
+  { index: 2, price: 41.99, countdownSeconds: 11 * 3600 + 4 * 60 + 18 },
+  { index: 10, price: 38.49, countdownSeconds: 3 * 3600 + 47 * 60 + 55 },
+  { index: 7, price: 27.99, countdownSeconds: 18 * 3600 + 12 * 60 + 33 },
+  { index: 1, price: 17.49, countdownSeconds: 8 * 3600 + 56 * 60 + 2 },
+];
+
+export interface FreshSaleDeal {
+  item: CardItem;
+  countdownSeconds: number;
+}
+
+/** Local hour when the featured deal advances to the next one. */
+export const FRESH_SALE_SWITCH_HOUR = 18;
+
+export const FRESH_SALE_DEALS: FreshSaleDeal[] = FRESH_SALE_ROWS.map(({ index, price, countdownSeconds }) => {
+  const source = SHOWCASE_ITEMS[index]!;
+  return {
+    countdownSeconds,
+    item: {
+      ...source,
+      id: `${source.id}-fresh`,
+      price,
+      compareAt: source.price,
+    },
+  };
+});
+
+/** Deal index for the local calendar day that started at `switchHour`. */
+export function freshSaleIndex(now: Date, count: number, switchHour = FRESH_SALE_SWITCH_HOUR): number {
+  if (count <= 0) return 0;
+  const slot = new Date(now);
+  slot.setHours(switchHour, 0, 0, 0);
+  if (now.getTime() < slot.getTime()) slot.setDate(slot.getDate() - 1);
+  const day = Math.floor(Date.UTC(slot.getFullYear(), slot.getMonth(), slot.getDate()) / 86_400_000);
+  return ((day % count) + count) % count;
+}
+
+/** Seconds left in a looping countdown of `durationSeconds`. */
+export function circularCountdown(durationSeconds: number, nowMs: number): number {
+  if (durationSeconds <= 0) return 0;
+  const elapsed = Math.floor(nowMs / 1000) % durationSeconds;
+  return elapsed === 0 ? durationSeconds : durationSeconds - elapsed;
+}
 
 // Character IPs — order defines the character placeholder slugs.
 const CHARACTER_NAMES = ["Molly", "Labubu", "Hirono", "Dimoo", "Crybaby", "Skullpanda"];
