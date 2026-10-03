@@ -5,7 +5,11 @@ export type ProductStatus = "active" | "draft" | "archived";
 /** Pregenerated resized copies stored next to the original (`name_thumb.webp`, …). */
 export type ProductImageVariant = "thumb" | "gallery" | "hero";
 
+export type ProductMediaType = "image" | "video";
+
 export interface ProductImage {
+  /** Default "image" — existing rows without the field are still images. */
+  type?: ProductMediaType;
   url: string;
   alt?: string;
   /** Low-res placeholder hash, written by the image backfill scripts. */
@@ -14,6 +18,14 @@ export interface ProductImage {
   variants?: ProductImageVariant[];
   /** Variants version — changes whenever the variants are re-rendered (cache busting). */
   v?: string;
+  /** Video only: still frame uploaded as its own image object. */
+  poster?: string;
+  posterBlurhash?: string;
+  posterVariants?: ProductImageVariant[];
+  mime?: string;
+  width?: number;
+  height?: number;
+  durationSec?: number;
 }
 
 export interface CollectibleChapter {

@@ -119,6 +119,21 @@ STRIPE_WEBHOOK_SECRET=
 - **Local development** uses `.env.local` (git-ignored) copied from `.env.example`
 - **Service role keys** (Supabase `SUPABASE_SERVICE_ROLE_KEY`, Stripe `STRIPE_SECRET_KEY`) — never expose to client bundle. Only in server components / API routes
 
+## Catalog admin (site 01)
+
+`/admin` uploads products into Supabase Storage and `products`. It needs `SUPABASE_SERVICE_ROLE_KEY` in the Next.js runtime (Coolify env), not only in a laptop `.env.local` for scripts.
+
+Grant the role (writes `app_metadata.role`, which clients cannot set):
+
+```bash
+cd apps/site01-path-marketplace
+node scripts/grant-admin.mjs --email you@example.com
+```
+
+Storage buckets are one per category (`toys`, `collectible_toys`, `books`, `artbooks`, `designs`, `merch`, `figures`). Underscores are accepted by the hosted project (`collectible_toys` was created successfully on 2026-10-03).
+
+The admin allows video up to 200 MB, and the migration sets `storage.buckets.file_size_limit` to 209715200. The hosted project's Storage API currently rejects any bucket limit above **50 MB** (`The object exceeded the maximum allowed size`). Raise the project-wide Storage file size limit before uploading files larger than 50 MB. Until then, `ensureBucket` falls back to a 50 MB bucket limit and the admin UI says so.
+
 ## Related
 
 - [[Site Factory Architecture]]

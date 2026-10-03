@@ -56,12 +56,18 @@ importers:
       framer-motion:
         specifier: ^11.11.1
         version: 11.18.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      nanoid:
+        specifier: ^6.0.1
+        version: 6.0.1
       next:
         specifier: ^14.2.35
         version: 14.2.35(@playwright/test@1.63.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       next-plausible:
         specifier: ^3.12.2
         version: 3.12.5(next@14.2.35(@playwright/test@1.63.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      papaparse:
+        specifier: ^5.7.0
+        version: 5.7.0
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -77,6 +83,9 @@ importers:
       sharp:
         specifier: ^0.35.4
         version: 0.35.4(@types/node@20.19.43)
+      zod:
+        specifier: ^4.6.5
+        version: 4.6.5
       zustand:
         specifier: ^4.5.5
         version: 4.5.7(@types/react@18.3.31)(react@18.3.1)
@@ -90,6 +99,9 @@ importers:
       '@types/node':
         specifier: ^20.16.10
         version: 20.19.43
+      '@types/papaparse':
+        specifier: ^5.5.2
+        version: 5.5.2
       '@types/react':
         specifier: ^18.3.11
         version: 18.3.31
@@ -1089,6 +1101,9 @@ packages:
   '@types/node@20.19.43':
     resolution: {integrity: sha512-6oYBAi5ikg4Pl+kGsoYtawUMBT2zZMCvPNF7pVLnHZfd1zf38DRiWn/gT01RYCdUqkv7Fhr+C9ot4/tb+2sVvA==}
 
+  '@types/papaparse@5.5.2':
+    resolution: {integrity: sha512-gFnFp/JMzLHCwRf7tQHrNnfhN4eYBVYYI897CGX4MY1tzY9l2aLkVyx2IlKZ/SAqDbB3I1AOZW5gTMGGsqWliA==}
+
   '@types/prop-types@15.7.15':
     resolution: {integrity: sha512-F6bEyamV9jKGAFBEmlQnesRPGOQqS2+Uwi0Em15xenOxHaf2hv6L8YCVn3rPdPJOiJfPiCnLIRyvwVaqMY3MIw==}
 
@@ -1875,6 +1890,11 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
+  nanoid@6.0.1:
+    resolution: {integrity: sha512-3wVS3i51pE2pi1k5FFL/95BGfVS0kSsvDVuGXHOtxox/TywUmtgq+3qiTOTbs9J7KfHaXPiN171k/A6dBnaXFw==}
+    engines: {node: ^22 || ^24 || >=26}
+    hasBin: true
+
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
@@ -1954,6 +1974,9 @@ packages:
   p-locate@5.0.0:
     resolution: {integrity: sha512-LaNjtRWUBY++zB5nE/NwcaoMylSPk+S+ZHNB1TzdbMJMny6dynpAGt7X/tl/QYq3TIeE6nxHppbo2LGymrG5Pw==}
     engines: {node: '>=10'}
+
+  papaparse@5.7.0:
+    resolution: {integrity: sha512-qBGxg/7Q3Kl9Wfhrz2Z74UnvnHTXLNG6jmKJFeBvP2+y4lV7So+7SR62+Zd47JvdrCkX+nDcnr0ObPzek/+6RA==}
 
   parent-module@1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
@@ -2400,6 +2423,9 @@ packages:
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+
+  zod@4.6.5:
+    resolution: {integrity: sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q==}
 
   zustand@4.5.7:
     resolution: {integrity: sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw==}
@@ -3253,6 +3279,10 @@ snapshots:
   '@types/node@20.19.43':
     dependencies:
       undici-types: 6.21.0
+
+  '@types/papaparse@5.5.2':
+    dependencies:
+      '@types/node': 20.19.43
 
   '@types/prop-types@15.7.15': {}
 
@@ -4119,6 +4149,8 @@ snapshots:
 
   nanoid@3.3.16: {}
 
+  nanoid@6.0.1: {}
+
   natural-compare@1.4.0: {}
 
   next-plausible@3.12.5(next@14.2.35(@playwright/test@1.63.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
@@ -4211,6 +4243,8 @@ snapshots:
   p-locate@5.0.0:
     dependencies:
       p-limit: 3.1.0
+
+  papaparse@5.7.0: {}
 
   parent-module@1.0.1:
     dependencies:
@@ -4750,6 +4784,8 @@ snapshots:
   word-wrap@1.2.5: {}
 
   yocto-queue@0.1.0: {}
+
+  zod@4.6.5: {}
 
   zustand@4.5.7(@types/react@18.3.31)(react@18.3.1):
     dependencies:
