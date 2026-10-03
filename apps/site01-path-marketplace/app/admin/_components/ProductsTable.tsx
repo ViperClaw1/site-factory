@@ -12,9 +12,10 @@ interface ProductsTableProps {
   onPage: (page: number) => void;
   onAdd: () => void;
   onBulk: () => void;
+  onDelete: (row: AdminProductRow) => void;
 }
 
-export function ProductsTable({ rows, total, page, filteredEmpty, onPage, onAdd, onBulk }: ProductsTableProps) {
+export function ProductsTable({ rows, total, page, filteredEmpty, onPage, onAdd, onBulk, onDelete }: ProductsTableProps) {
   const pages = Math.max(1, Math.ceil(total / ADMIN_PAGE_SIZE));
 
   if (rows.length === 0) {
@@ -50,6 +51,9 @@ export function ProductsTable({ rows, total, page, filteredEmpty, onPage, onAdd,
               <th className="p-2">Stock</th>
               <th className="p-2">Media</th>
               <th className="p-2">Updated</th>
+              <th className="p-2">
+                <span className="sr-only">Actions</span>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -72,6 +76,16 @@ export function ProductsTable({ rows, total, page, filteredEmpty, onPage, onAdd,
                 <td className="p-2">{row.stock}</td>
                 <td className="p-2">{row.mediaCount}</td>
                 <td className="p-2 text-black/50">{new Date(row.updatedAt).toLocaleString("en-US")}</td>
+                <td className="p-2 text-right">
+                  <button
+                    type="button"
+                    className="inline-flex h-9 w-9 items-center justify-center text-black/40 hover:text-pink"
+                    aria-label={`Delete ${row.title}`}
+                    onClick={() => onDelete(row)}
+                  >
+                    <i className="fa-solid fa-trash" aria-hidden="true" />
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>

@@ -53,6 +53,13 @@ export class SlugTakenError extends Error {
   }
 }
 
+export class ProductMissingError extends Error {
+  readonly status = 404;
+  constructor() {
+    super("not_found");
+  }
+}
+
 async function gate(): Promise<void> {
   const result = await requireAdmin();
   if (!result.ok) throw new AdminAuthError(result.status);
@@ -408,6 +415,72 @@ export async function createProduct(input: ProductInput): Promise<{ id: string; 
   }
   revalidateCatalog(input.category, input.slug);
   return created;
+}
+
+const PRODUCT_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function mediaBuckets(category: string, images: ProductImage[]): string[] {
+  const names = new Set<string>([bucketForCategory(category)]);
+  for (const image of images) {
+    for (const url of [image?.url, image?.poster]) {
+      const ref = parseStorageUrl(url ?? "");
+      if (ref) names.add(ref.bucket);
+    }
+  }
+  return [...names];
+}
+
+async function productMediaPaths(bucket: string, slug: string, images: ProductImage[]): Promise<string[]> {
+  const paths = new Set<string>();
+  const listed = await supabaseAdmin().storage.from(bucket).list(slug, { limit: 1000 });
+  if (!listed.error) {
+    for (const entry of listed.data ?? []) {
+      if (entry.name && isSafePath(slug, `${slug}/${entry.name}`)) paths.add(`${slug}/${entry.name}`);
+    }
+  }
+  for (const image of images) {
+    for (const url of [image?.url, image?.poster]) {
+      const ref = parseStorageUrl(url ?? "");
+      if (!ref || ref.bucket !== bucket || !isSafePath(slug, ref.objectPath)) continue;
+      paths.add(ref.objectPath);
+      for (const variant of VARIANT_ORDER) paths.add(variantObjectPath(ref.objectPath, variant));
+    }
+  }
+  return [...paths];
+}
+
+export async function deleteProduct(id: string): Promise<{ slug: string; warnings: string[] }> {
+  await gate();
+  if (!PRODUCT_ID.test(id)) throw new ProductMissingError();
+
+  const { data, error } = await supabaseAdmin()
+    .from("products")
+    .select("id, slug, category, images")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) throw new ProductMissingError();
+
+  const images = (Array.isArray(data.images) ? data.images : []) as ProductImage[];
+  const buckets = mediaBuckets(data.category, images);
+  const paths = new Map<string, string[]>();
+  for (const bucket of buckets) {
+    paths.set(bucket, await productMediaPaths(bucket, data.slug, images));
+  }
+
+  const removed = await supabaseAdmin().from("products").delete().eq("id", data.id).select("id");
+  if (removed.error) throw new Error(removed.error.message);
+  if (!removed.data?.length) throw new ProductMissingError();
+
+  const warnings: string[] = [];
+  for (const [bucket, objectPaths] of paths) {
+    if (objectPaths.length === 0) continue;
+    const storage = await supabaseAdmin().storage.from(bucket).remove(objectPaths);
+    if (storage.error) warnings.push(`Could not remove files from ${bucket}.`);
+  }
+
+  revalidateCatalog(data.category, data.slug);
+  return { slug: data.slug, warnings };
 }
 
 export interface ProductListQuery {

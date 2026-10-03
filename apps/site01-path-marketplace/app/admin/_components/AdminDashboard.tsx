@@ -2,6 +2,7 @@
 
 import { AdminToolbar, type AdminFilters } from "@/app/admin/_components/AdminToolbar";
 import { BulkUploadModal } from "@/app/admin/_components/BulkUploadModal";
+import { DeleteProductDialog } from "@/app/admin/_components/DeleteProductDialog";
 import { ProductFormModal } from "@/app/admin/_components/ProductFormModal";
 import { ProductsTable } from "@/app/admin/_components/ProductsTable";
 import { StatsCards } from "@/app/admin/_components/StatsCards";
@@ -21,6 +22,7 @@ export function AdminDashboard({ rows, total, page, stats, filters }: AdminDashb
   const router = useRouter();
   const [addOpen, setAddOpen] = useState(false);
   const [bulkOpen, setBulkOpen] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<AdminProductRow | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
   function push(next: AdminFilters, nextPage = 1) {
@@ -48,6 +50,7 @@ export function AdminDashboard({ rows, total, page, stats, filters }: AdminDashb
         onPage={(nextPage) => push(filters, nextPage)}
         onAdd={() => setAddOpen(true)}
         onBulk={() => setBulkOpen(true)}
+        onDelete={setPendingDelete}
       />
       <ProductFormModal
         open={addOpen}
@@ -55,6 +58,23 @@ export function AdminDashboard({ rows, total, page, stats, filters }: AdminDashb
         onCreated={(slug, warnings) => {
           const extra = warnings.length > 0 ? ` Warnings: ${warnings.join(" ")}` : "";
           setNotice(`Created ${slug}.${extra}`);
+          router.refresh();
+        }}
+      />
+      <DeleteProductDialog
+        product={pendingDelete}
+        onOpenChange={(open) => {
+          if (!open) setPendingDelete(null);
+        }}
+        onDeleted={(slug, warnings) => {
+          const extra = warnings.length > 0 ? ` ${warnings.join(" ")}` : "";
+          setNotice(`Deleted ${slug}.${extra}`);
+          setPendingDelete(null);
+          router.refresh();
+        }}
+        onError={(message) => {
+          setNotice(message);
+          setPendingDelete(null);
           router.refresh();
         }}
       />
