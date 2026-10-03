@@ -3,10 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import type { Course } from "@repo/types";
 import { Container } from "@repo/ui";
 import { ArrowRightIcon, ClockIcon, UsersIcon } from "@/components/icons";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
-import { CATEGORIES, COURSES, LEVELS, unsplash, type BadgeId, type CategoryId } from "../data";
+import { localize } from "@/lib/i18n/localize";
+import { CATEGORIES, LEVELS, type BadgeId, type CategoryId } from "../data";
 import { SectionHeading } from "./SectionHeading";
 
 const badgeStyle: Record<BadgeId, string> = {
@@ -15,10 +17,11 @@ const badgeStyle: Record<BadgeId, string> = {
   popular: "bg-white text-ink",
 };
 
-export function CoursesShowcase() {
+// Courses come from Supabase (getCourses), already sorted by the caller.
+export function CoursesShowcase({ courses }: { courses: Course[] }) {
   const { t, lang } = useI18n();
   const [filter, setFilter] = useState<CategoryId | "all">("all");
-  const visible = filter === "all" ? COURSES : COURSES.filter((course) => course.category === filter);
+  const visible = filter === "all" ? courses : courses.filter((course) => course.category === filter);
   const numberFormat = new Intl.NumberFormat(lang);
 
   return (
@@ -54,8 +57,9 @@ export function CoursesShowcase() {
         {/* ---- Course cards (keyed by filter so they re-animate on change) ---- */}
         <div key={filter} className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {visible.map((course, index) => {
-            const copy = t.courses.items[course.id];
-            const levelIndex = LEVELS.indexOf(course.level);
+            const title = localize(course, "title", lang);
+            const categoryLabel = t.courses.cats[course.category as CategoryId] ?? course.category;
+            const levelIndex = course.level ? LEVELS.indexOf(course.level) : -1;
             return (
               <article
                 key={course.id}
@@ -63,13 +67,15 @@ export function CoursesShowcase() {
                 className="anim-fade-up group flex flex-col overflow-hidden rounded-3xl border border-white/[0.08] bg-surface transition duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-[0_24px_60px_-24px_rgba(255,221,45,0.25)]"
               >
                 <div className="relative aspect-[16/10] overflow-hidden">
-                  <Image
-                    src={unsplash(course.photo, 640)}
-                    alt={copy.title}
-                    fill
-                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    className="object-cover transition duration-700 group-hover:scale-105"
-                  />
+                  {course.cover_image && (
+                    <Image
+                      src={course.cover_image}
+                      alt={title}
+                      fill
+                      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                      className="object-cover transition duration-700 group-hover:scale-105"
+                    />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/10 to-transparent" />
                   <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
                     {course.badge && (
@@ -77,43 +83,49 @@ export function CoursesShowcase() {
                         {t.courses.badges[course.badge]}
                       </span>
                     )}
-                    <span className="rounded-full bg-ink/70 px-2.5 py-1 text-[11px] font-semibold text-white/90 backdrop-blur">
-                      {t.courses.cats[course.category]}
-                    </span>
+                    {categoryLabel && (
+                      <span className="rounded-full bg-ink/70 px-2.5 py-1 text-[11px] font-semibold text-white/90 backdrop-blur">
+                        {categoryLabel}
+                      </span>
+                    )}
                   </div>
                 </div>
 
                 <div className="flex flex-1 flex-col p-5">
-                  <h3 className="font-heading text-lg font-bold leading-snug">{copy.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted">{copy.desc}</p>
+                  <h3 className="font-heading text-lg font-bold leading-snug">{title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted">{localize(course, "description", lang)}</p>
 
                   {/* Level indicator: 3 bars, filled up to the course level */}
-                  <div className="mt-5 flex items-center gap-2 text-xs text-white/70">
-                    <span className="flex items-end gap-[3px]" aria-hidden>
-                      {LEVELS.map((level, i) => (
-                        <span
-                          key={level}
-                          className={`w-1 rounded-sm ${i <= levelIndex ? "bg-brand" : "bg-white/15"}`}
-                          style={{ height: `${6 + i * 4}px` }}
-                        />
-                      ))}
-                    </span>
-                    {t.courses.levels[course.level]}
-                  </div>
+                  {course.level && (
+                    <div className="mt-5 flex items-center gap-2 text-xs text-white/70">
+                      <span className="flex items-end gap-[3px]" aria-hidden>
+                        {LEVELS.map((level, i) => (
+                          <span
+                            key={level}
+                            className={`w-1 rounded-sm ${i <= levelIndex ? "bg-brand" : "bg-white/15"}`}
+                            style={{ height: `${6 + i * 4}px` }}
+                          />
+                        ))}
+                      </span>
+                      {t.courses.levels[course.level]}
+                    </div>
+                  )}
 
                   <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted">
                     <span className="flex items-center gap-1.5">
                       <UsersIcon className="h-3.5 w-3.5" />
-                      {numberFormat.format(course.students)} {t.courses.students}
+                      {numberFormat.format(course.students ?? 0)} {t.courses.students}
                     </span>
-                    <span className="flex items-center gap-1.5">
-                      <ClockIcon className="h-3.5 w-3.5" />
-                      {course.months} {t.courses.months}
-                    </span>
+                    {course.duration_months != null && (
+                      <span className="flex items-center gap-1.5">
+                        <ClockIcon className="h-3.5 w-3.5" />
+                        {course.duration_months} {t.courses.months}
+                      </span>
+                    )}
                   </div>
 
                   <Link
-                    href={`/course/${course.id}`}
+                    href={`/course/${course.slug}`}
                     className="mt-6 flex items-center justify-between rounded-2xl bg-white/[0.05] px-4 py-3 text-sm font-bold transition group-hover:bg-brand group-hover:text-ink"
                   >
                     {t.courses.enroll}
@@ -124,6 +136,7 @@ export function CoursesShowcase() {
             );
           })}
         </div>
+        {visible.length === 0 && <p className="mt-10 text-muted">{t.catalog.empty}</p>}
       </Container>
     </section>
   );
