@@ -14,6 +14,11 @@ export function supabaseAdmin(): SupabaseClient {
   }
   client ??= createClient(url, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
+    // Next.js caches fetch() in the Data Cache. A cached product list survives
+    // both router.refresh() and a full reload after a delete.
+    global: {
+      fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),
+    },
   });
   return client;
 }

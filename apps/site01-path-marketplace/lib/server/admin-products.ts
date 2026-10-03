@@ -279,6 +279,7 @@ async function processMedia(
 }
 
 function revalidateCatalog(category: string, slug: string): void {
+  revalidatePath("/admin");
   revalidatePath("/");
   revalidatePath("/shop");
   revalidatePath(`/shop/${category}`);

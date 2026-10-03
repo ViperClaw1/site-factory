@@ -24,6 +24,31 @@ export function AdminDashboard({ rows, total, page, stats, filters }: AdminDashb
   const [bulkOpen, setBulkOpen] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<AdminProductRow | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [goneIds, setGoneIds] = useState<ReadonlySet<string>>(new Set());
+  const removed = rows.filter((row) => goneIds.has(row.id));
+  const visibleRows = rows.filter((row) => !goneIds.has(row.id));
+  const visibleStats: AdminStats = {
+    total: Math.max(0, stats.total - removed.length),
+    byStatus: {
+      active: Math.max(0, stats.byStatus.active - removed.filter((row) => row.status === "active").length),
+      draft: Math.max(0, stats.byStatus.draft - removed.filter((row) => row.status === "draft").length),
+      archived: Math.max(0, stats.byStatus.archived - removed.filter((row) => row.status === "archived").length),
+    },
+    byCategory: Object.fromEntries(
+      Object.entries(stats.byCategory).map(([category, count]) => [
+        category,
+        Math.max(0, count - removed.filter((row) => row.category === category).length),
+      ]),
+    ),
+  };
+
+  function dropRow(id: string) {
+    setGoneIds((current) => {
+      const next = new Set(current);
+      next.add(id);
+      return next;
+    });
+  }
 
   function push(next: AdminFilters, nextPage = 1) {
     const params = new URLSearchParams();
@@ -40,11 +65,11 @@ export function AdminDashboard({ rows, total, page, stats, filters }: AdminDashb
       <header>
         <h1 className="font-display text-4xl text-ink">Catalog admin</h1>
       </header>
-      <StatsCards stats={stats} />
+      <StatsCards stats={visibleStats} />
       <AdminToolbar filters={filters} onChange={(next) => push(next, 1)} onAdd={() => setAddOpen(true)} onBulk={() => setBulkOpen(true)} />
       <ProductsTable
-        rows={rows}
-        total={total}
+        rows={visibleRows}
+        total={Math.max(0, total - removed.length)}
         page={page}
         filteredEmpty={Boolean(filters.category || filters.status || filters.q)}
         onPage={(nextPage) => push(filters, nextPage)}
@@ -66,8 +91,9 @@ export function AdminDashboard({ rows, total, page, stats, filters }: AdminDashb
         onOpenChange={(open) => {
           if (!open) setPendingDelete(null);
         }}
-        onDeleted={(slug, warnings) => {
+        onDeleted={(id, slug, warnings) => {
           const extra = warnings.length > 0 ? ` ${warnings.join(" ")}` : "";
+          dropRow(id);
           setNotice(`Deleted ${slug}.${extra}`);
           setPendingDelete(null);
           router.refresh();

@@ -7,7 +7,7 @@ import { useState } from "react";
 interface DeleteProductDialogProps {
   product: AdminProductRow | null;
   onOpenChange: (open: boolean) => void;
-  onDeleted: (slug: string, warnings: string[]) => void;
+  onDeleted: (id: string, slug: string, warnings: string[]) => void;
   onError: (message: string) => void;
 }
 
@@ -20,11 +20,15 @@ export function DeleteProductDialog({ product, onOpenChange, onDeleted, onError 
     try {
       const response = await fetch(`/api/admin/products/${product.id}`, { method: "DELETE" });
       const body = (await response.json().catch(() => null)) as { slug?: string; warnings?: string[]; error?: string } | null;
-      if (!response.ok || !body?.slug) {
-        onError(body?.error === "not_found" ? "This product is already gone." : "Could not delete the product.");
+      if (response.status === 404) {
+        onDeleted(product.id, product.slug, []);
         return;
       }
-      onDeleted(body.slug, body.warnings ?? []);
+      if (!response.ok || !body?.slug) {
+        onError("Could not delete the product.");
+        return;
+      }
+      onDeleted(product.id, body.slug, body.warnings ?? []);
     } catch {
       onError("Could not delete the product.");
     } finally {

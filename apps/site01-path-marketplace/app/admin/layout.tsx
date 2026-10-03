@@ -2,6 +2,9 @@ import { requireAdmin } from "@/lib/server/require-admin";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const gate = await requireAdmin();
   if (!gate.ok) notFound();
