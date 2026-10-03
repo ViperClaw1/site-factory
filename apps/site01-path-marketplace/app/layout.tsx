@@ -53,7 +53,7 @@ export const metadata: Metadata = {
   // Resolves relative OG/canonical URLs to absolute ones.
   metadataBase: process.env.BASE_URL ? new URL(process.env.BASE_URL) : undefined,
   // Pages with generateMetadata set just their own name; the template appends the brand.
-  title: { default: "ToyVerse — Collectibles Marketplace", template: "%s — ToyVerse" },
+  title: { default: "Path Kids — Collectibles Marketplace", template: "%s — Path Kids" },
   description:
     "A multilingual marketplace for designer toys, blind boxes, figures, art books and digital collectibles.",
 };
