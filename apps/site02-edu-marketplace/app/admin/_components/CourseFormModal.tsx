@@ -97,6 +97,7 @@ export function CourseFormModal({ open, onOpenChange, onCreated }: CourseFormMod
       const next = checked.success ? {} : fieldErrorsOf(checked.error);
       if (!cover) next.coverPath = "Add a cover image.";
       setErrors(next);
+      setFormError(Object.values(next)[0] ?? "Check the form and try again.");
       return;
     }
     setErrors({});
@@ -153,7 +154,7 @@ export function CourseFormModal({ open, onOpenChange, onCreated }: CourseFormMod
           Description
           <textarea value={copy.description} onChange={(event) => patchCopy({ description: event.target.value })} rows={4} className={FIELD} />
         </label>
-        {errors.translations && <p className="text-xs text-red-300 lg:col-span-2">{errors.translations}</p>}
+        {errors.translations && <p className="text-xs text-red-600 lg:col-span-2">{errors.translations}</p>}
         <label className={LABEL}>
           Category
           <select value={category} onChange={(event) => setCategory(event.target.value)} className={FIELD}>
@@ -164,7 +165,7 @@ export function CourseFormModal({ open, onOpenChange, onCreated }: CourseFormMod
               </option>
             ))}
           </select>
-          {errors.category && <span className="mt-1 block text-xs font-normal normal-case text-red-300">{errors.category}</span>}
+          {errors.category && <span className="mt-1 block text-xs font-normal normal-case text-red-600">{errors.category}</span>}
         </label>
         <label className={LABEL}>
           Level / grade
@@ -176,12 +177,12 @@ export function CourseFormModal({ open, onOpenChange, onCreated }: CourseFormMod
               </option>
             ))}
           </select>
-          {errors.level && <span className="mt-1 block text-xs font-normal normal-case text-red-300">{errors.level}</span>}
+          {errors.level && <span className="mt-1 block text-xs font-normal normal-case text-red-600">{errors.level}</span>}
         </label>
         <label className={`${LABEL} lg:col-span-2`}>
           Tags
           <input value={tags} onChange={(event) => setTags(event.target.value)} placeholder="python, backend" className={FIELD} />
-          {errors.tags && <span className="mt-1 block text-xs font-normal normal-case text-red-300">{errors.tags}</span>}
+          {errors.tags && <span className="mt-1 block text-xs font-normal normal-case text-red-600">{errors.tags}</span>}
         </label>
         <div className="lg:col-span-2">
           <p className={LABEL}>Cover image</p>
@@ -192,7 +193,7 @@ export function CourseFormModal({ open, onOpenChange, onCreated }: CourseFormMod
         <label className={`${LABEL} lg:col-span-2`}>
           Promo video URL
           <input value={promo} onChange={(event) => setPromo(event.target.value)} placeholder="https://" className={FIELD} />
-          {errors.promoVideoUrl && <span className="mt-1 block text-xs font-normal normal-case text-red-300">{errors.promoVideoUrl}</span>}
+          {errors.promoVideoUrl && <span className="mt-1 block text-xs font-normal normal-case text-red-600">{errors.promoVideoUrl}</span>}
         </label>
         <label className={LABEL}>
           Price
@@ -206,7 +207,7 @@ export function CourseFormModal({ open, onOpenChange, onCreated }: CourseFormMod
           <span id="course-price-format" className="mt-1 block text-[11px] font-normal normal-case tracking-normal text-black/45">
             {moneyLabel(price, currency) || "Numbers only"}
           </span>
-          {errors.price && <span className="mt-1 block text-xs font-normal normal-case text-red-300">{errors.price}</span>}
+          {errors.price && <span className="mt-1 block text-xs font-normal normal-case text-red-600">{errors.price}</span>}
         </label>
         <label className={LABEL}>
           Currency
@@ -228,12 +229,12 @@ export function CourseFormModal({ open, onOpenChange, onCreated }: CourseFormMod
               </option>
             ))}
           </select>
-          {errors.instructorId && <span className="mt-1 block text-xs font-normal normal-case text-red-300">{errors.instructorId}</span>}
+          {errors.instructorId && <span className="mt-1 block text-xs font-normal normal-case text-red-600">{errors.instructorId}</span>}
         </label>
         <label className={LABEL}>
           Duration (minutes)
           <input inputMode="numeric" value={duration} onChange={(event) => setDuration(event.target.value.replace(/\D/g, ""))} className={FIELD} />
-          {errors.durationMinutes && <span className="mt-1 block text-xs font-normal normal-case text-red-300">{errors.durationMinutes}</span>}
+          {errors.durationMinutes && <span className="mt-1 block text-xs font-normal normal-case text-red-600">{errors.durationMinutes}</span>}
         </label>
         <label className={LABEL}>
           Badge
@@ -246,7 +247,7 @@ export function CourseFormModal({ open, onOpenChange, onCreated }: CourseFormMod
             ))}
           </select>
         </label>
-        {formError && <p className="text-sm text-red-300 lg:col-span-2">{formError}</p>}
+        {formError && <p className="text-sm text-red-600 lg:col-span-2">{formError}</p>}
         <div className="flex flex-wrap justify-end gap-2 lg:col-span-2">
           <button type="button" disabled={pending} onClick={() => onOpenChange(false)} className="rounded-full px-6 py-3 text-sm font-medium text-brand hover:bg-brand/10 disabled:opacity-50">
             Cancel

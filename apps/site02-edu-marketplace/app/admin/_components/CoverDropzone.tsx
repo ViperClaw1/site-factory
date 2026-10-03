@@ -73,7 +73,7 @@ export function CoverDropzone({ file, onChange, disabled, error }: CoverDropzone
         ) : null}
         {file ? file.name : "Drop a cover image, or click to choose one"}
       </label>
-      {(notice || error) && <p className="mt-2 text-xs text-red-300">{notice || error}</p>}
+      {(notice || error) && <p className="mt-2 text-xs text-red-600">{notice || error}</p>}
     </div>
   );
 }

@@ -33,7 +33,7 @@ export const courseInputSchema = z
       .min(1)
       .max(160)
       .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase letters, numbers, and hyphens."),
-    translations: z.record(z.enum(LOCALE_VALUES), copySchema),
+    translations: z.partialRecord(z.enum(LOCALE_VALUES), copySchema),
     category: z.enum(CATEGORY_VALUES, { error: "Choose a category." }),
     level: z.enum(LEVEL_VALUES, { error: "Choose a level." }),
     tags: z.array(z.string().trim().min(1).max(40)).max(12, "At most 12 tags."),
