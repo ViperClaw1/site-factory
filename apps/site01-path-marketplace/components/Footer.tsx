@@ -1,6 +1,6 @@
 "use client";
 
-import { LOCALE_OPTIONS, LOCALES, useLocaleStore, useT, type MessageKey } from "@/lib/i18n";
+import { LOCALES, useLocaleStore, useT, type MessageKey } from "@/lib/i18n";
 import { placeholderCharacters } from "@/lib/placeholders";
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
@@ -153,21 +153,21 @@ export function Footer() {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-5 text-xs text-black/45 sm:flex-row sm:px-6 lg:px-8">
           <p>{t("footer.rights", { year: new Date().getFullYear() })}</p>
           <div className="flex flex-wrap items-center justify-center gap-2" role="group" aria-label={t("nav.language")}>
-            {LOCALES.map((code) => {
-              const selected = code === locale;
+            {LOCALES.map((item) => {
+              const selected = item.code === locale;
               return (
                 <button
-                  key={code}
+                  key={item.code}
                   type="button"
-                  onClick={() => setLocale(code)}
+                  onClick={() => setLocale(item.code)}
                   aria-pressed={selected}
-                  aria-label={LOCALE_OPTIONS[code].name}
-                  title={LOCALE_OPTIONS[code].name}
+                  aria-label={item.native}
+                  title={item.native}
                   className={`rounded-[4px] p-0.5 transition-shadow ${
                     selected ? "ring-2 ring-pink" : "opacity-80 hover:opacity-100"
                   }`}
                 >
-                  <FlagIcon locale={code} className="h-4 w-6 rounded-[3px]" />
+                  <FlagIcon locale={item.code} className="h-4 w-6 rounded-[3px]" />
                 </button>
               );
             })}

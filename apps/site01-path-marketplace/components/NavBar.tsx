@@ -2,7 +2,7 @@
 
 import { initAuth, useAuthStore } from "@/lib/auth";
 import { useCartStore } from "@/lib/cart";
-import { LOCALE_LABELS, LOCALE_OPTIONS, LOCALES, localeTag, useLocaleStore, useT, type MessageKey } from "@/lib/i18n";
+import { LOCALES, localeTag, useLocaleStore, useT, type MessageKey } from "@/lib/i18n";
 import { FlagIcon } from "./FlagIcon";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
@@ -126,7 +126,7 @@ export function NavBar() {
               className="flex h-9 items-center gap-1.5 rounded-full px-2.5 text-xs font-semibold text-ink hover:bg-black/5"
             >
               <FlagIcon locale={locale} />
-              {LOCALE_OPTIONS[locale].code}
+              {LOCALES.find((item) => item.code === locale)?.label}
               <i
                 className={`fa-solid fa-chevron-down text-[9px] text-black/40 transition-transform ${langOpen ? "rotate-180" : ""}`}
                 aria-hidden="true"
@@ -142,26 +142,25 @@ export function NavBar() {
                   transition={{ duration: 0.15 }}
                   className="absolute right-0 top-full z-50 mt-2 max-h-[min(28rem,70vh)] w-64 overflow-y-auto rounded-2xl border border-black/10 bg-white p-1.5 shadow-lg"
                 >
-                  {LOCALES.map((code) => {
-                    const option = LOCALE_OPTIONS[code];
-                    const selected = code === locale;
+                  {LOCALES.map((item) => {
+                    const selected = item.code === locale;
                     return (
-                      <li key={code}>
+                      <li key={item.code}>
                         <button
                           type="button"
                           role="option"
                           aria-selected={selected}
                           onClick={() => {
-                            setLocale(code);
+                            setLocale(item.code);
                             setLangOpen(false);
                           }}
                           className={`flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-sm ${
                             selected ? "bg-pink text-white" : "text-ink hover:bg-black/[0.04]"
                           }`}
                         >
-                          <FlagIcon locale={code} />
-                          <span className="flex-1 font-medium leading-none">{option.name}</span>
-                          <span className={`text-xs ${selected ? "text-white/80" : "text-black/40"}`}>{option.code}</span>
+                          <FlagIcon locale={item.code} />
+                          <span className="flex-1 font-medium leading-none">{item.native}</span>
+                          <span className={`text-xs ${selected ? "text-white/80" : "text-black/40"}`}>{item.label}</span>
                           {selected && <i className="fa-solid fa-check text-[11px]" aria-hidden="true" />}
                         </button>
                       </li>
@@ -241,16 +240,16 @@ export function NavBar() {
                 </Link>
               ))}
               <div className="mt-4 flex flex-wrap gap-2">
-                {LOCALES.map((code) => (
+                {LOCALES.map((item) => (
                   <button
-                    key={code}
+                    key={item.code}
                     type="button"
-                    onClick={() => setLocale(code)}
+                    onClick={() => setLocale(item.code)}
                     className={`px-3 py-1.5 text-xs font-semibold ${
-                      code === locale ? "bg-ink text-white" : "bg-black/5 text-ink"
+                      item.code === locale ? "bg-ink text-white" : "bg-black/5 text-ink"
                     }`}
                   >
-                    {LOCALE_LABELS[code]}
+                    {item.label}
                   </button>
                 ))}
               </div>

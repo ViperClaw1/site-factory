@@ -1,5 +1,5 @@
 import { isValidPhoneNumber } from "react-phone-number-input";
-import type { MessageKey } from "./messages";
+import type { MessageKey } from "./i18n";
 
 // Client-side form validators — each returns a message key, or null when the
 // value is fine. The same rules are enforced server-side by the profiles
