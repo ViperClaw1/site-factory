@@ -57,6 +57,9 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
+          <Link href="/admin" className="hidden px-2 text-sm font-semibold text-white/80 hover:text-brand lg:inline">
+            Admin
+          </Link>
           <ThemeSwitch />
           <LanguageMenu />
           <Link
@@ -119,6 +122,9 @@ export function SiteHeader() {
       {/* ---- Mobile drawer ---- */}
       {mobileOpen && (
         <nav className="anim-fade-up border-t border-white/10 px-4 pb-6 pt-2 sm:px-6 lg:hidden">
+          <Link href="/admin" onClick={() => setMobileOpen(false)} className="block border-b border-white/5 py-3.5 text-base font-medium text-white/80">
+            Admin
+          </Link>
           {nav.map((item) => (
             <Link
               key={item.href}
