@@ -1,10 +1,32 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
+  "globalPassThroughEnv": [
+    "BASE_URL",
+    "DIRECTUS_URL",
+    "REVALIDATE_TOKEN",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "HYPERSWITCH_URL",
+    "HYPERSWITCH_API_KEY",
+    "HYPERSWITCH_WEBHOOK_SECRET",
+    "BTCPAY_URL",
+    "BTCPAY_STORE_ID",
+    "BTCPAY_API_KEY",
+    "BTCPAY_WEBHOOK_SECRET",
+    "FORMANCE_URL",
+    "FORMANCE_LEDGER",
+    "FORMANCE_API_KEY",
+    "R2_ACCOUNT_ID",
+    "R2_ACCESS_KEY_ID",
+    "R2_SECRET_ACCESS_KEY",
+    "R2_BUCKET_NAME",
+    "R2_ENDPOINT"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
+      "env": ["BASE_URL", "DIRECTUS_URL"]
     },
     "dev": {
       "cache": false,
