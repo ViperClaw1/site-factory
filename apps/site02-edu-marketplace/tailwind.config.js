@@ -19,9 +19,10 @@ module.exports = {
         brand: "#FFDD2D",
         "brand-dark": "#F2C800",
         ink: "#0B0B0F",
-        surface: "#141419",
-        "surface-2": "#1C1C24",
-        muted: "#9B9BA7",
+        canvas: "rgb(var(--canvas) / <alpha-value>)",
+        surface: "rgb(var(--surface) / <alpha-value>)",
+        "surface-2": "rgb(var(--surface-2) / <alpha-value>)",
+        muted: "rgb(var(--muted) / <alpha-value>)",
       },
       fontFamily: {
         heading: ["var(--font-heading)", ...cjkFallback],

@@ -1,7 +1,10 @@
-import { ComingSoon } from "@/components/ComingSoon";
+import { RequireUser } from "@/features/auth/components/RequireUser";
+import { CheckoutForm } from "@/features/checkout/components/CheckoutForm";
 
 export default function CheckoutPage() {
   return (
-    <ComingSoon title="Оформление" description="Оплата через PayMesh появится в фазе E3." />
+    <RequireUser next="/checkout">
+      <CheckoutForm />
+    </RequireUser>
   );
 }

@@ -2,6 +2,7 @@ import type { Dict } from "./en";
 
 export const sw: Dict = {
   nav: {
+    news: "Habari",
     profile: "Wasifu",
     favorites: "Vipendwa",
     cart: "Kikapu",
@@ -216,5 +217,33 @@ export const sw: Dict = {
     title: "Inakuja hivi karibuni",
     text: "Mipango ya kulipia inakuja. Kwa sasa, vinjari orodha na ununue kozi moja moja.",
     browse: "Vinjari kozi",
+  },
+  news: {
+    title: "Habari na mawazo",
+    subtitle: "Masasisho ya bidhaa, miongozo ya taaluma, na hadithi kutoka kwa jamii yetu ya kujifunza.",
+    topics: { all: "Zote", product: "Bidhaa", careers: "Taaluma", community: "Jamii" },
+    read: "Soma hadithi →",
+    feedback: {
+      title: "Tusaidie kuboresha",
+      text: "Tuambie nini kingefanya uzoefu wako wa kujifunza kuwa bora.",
+      topic: "Mada",
+      body: "Maoni yako",
+      send: "Tuma maoni",
+      thanks: "Asante — tunasoma kila ujumbe.",
+    },
+    stories: {
+      workspace: {
+        title: "Eneo bora zaidi la kujifunza kwa umakini",
+        excerpt: "Kutana na kichezaji kipya cha masomo: madokezo, msimbo na maoni ya mshauri mahali pamoja.",
+      },
+      hiring: {
+        title: "Wanachotafuta wasimamizi wa kuajiri mwaka 2025",
+        excerpt: "Viongozi saba wa teknolojia wanaeleza kinachofanya kumbukumbu ya mwanafunzi chipukizi ionekane kabla ya mahojiano ya kwanza.",
+      },
+      mina: {
+        title: "Kutoka rejareja hadi data: sura mpya ya Mina",
+        excerpt: "Jinsi udadisi wa lahajedwali ulivyokuwa kazi ya mchambuzi wa data ndani ya miezi tisa.",
+      },
+    },
   },
 };

@@ -5,6 +5,8 @@ import PlausibleProvider from "next-plausible";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
+import { ThemeProvider } from "@/lib/theme/ThemeProvider";
+import { isTheme } from "@/lib/theme/theme";
 import { DEFAULT_LANG, LANG_COOKIE, isLang, localeTag } from "@/lib/i18n/locales";
 import "./globals.css";
 
@@ -32,9 +34,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   // Language lives in a cookie so SSR output already matches the visitor's choice.
   const saved = cookies().get(LANG_COOKIE)?.value;
   const lang = isLang(saved) ? saved : DEFAULT_LANG;
+  const themeCookie = cookies().get("theme")?.value;
+  const theme = isTheme(themeCookie) ? themeCookie : "dark";
 
   return (
-    <html lang={localeTag(lang)} dir={lang === "ar" ? "rtl" : "ltr"} className={`${body.variable} ${heading.variable}`}>
+    <html lang={localeTag(lang)} dir={lang === "ar" ? "rtl" : "ltr"} data-theme={theme} className={`${body.variable} ${heading.variable}`}>
       <head>
         <PlausibleProvider
           domain={process.env.NEXT_PUBLIC_SITE_DOMAIN ?? "localhost"}
@@ -43,11 +47,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="flex min-h-screen flex-col antialiased">
-        <LanguageProvider initialLang={lang} hasSavedLang={isLang(saved)}>
-          <SiteHeader />
-          <main className="flex-1">{children}</main>
-          <SiteFooter />
-        </LanguageProvider>
+        <ThemeProvider initialTheme={theme}>
+          <LanguageProvider initialLang={lang} hasSavedLang={isLang(saved)}>
+            <SiteHeader />
+            <main className="flex-1">{children}</main>
+            <SiteFooter />
+          </LanguageProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

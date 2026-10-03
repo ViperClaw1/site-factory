@@ -2,6 +2,7 @@ import type { Dict } from "./en";
 
 export const ja: Dict = {
   nav: {
+    news: "ニュース",
     profile: "プロフィール",
     favorites: "お気に入り",
     cart: "カート",
@@ -202,5 +203,33 @@ export const ja: Dict = {
     title: "近日公開",
     text: "有料プランは準備中です。それまではカタログから個別のコースをご購入ください。",
     browse: "コースを見る",
+  },
+  news: {
+    title: "ニュースとアイデア",
+    subtitle: "プロダクトの更新、キャリアガイド、学習コミュニティの物語。",
+    topics: { all: "すべて", product: "プロダクト", careers: "キャリア", community: "コミュニティ" },
+    read: "記事を読む →",
+    feedback: {
+      title: "改善にご協力ください",
+      text: "学習体験を良くするために必要なことを教えてください。",
+      topic: "トピック",
+      body: "ご意見",
+      send: "送信",
+      thanks: "ありがとうございます。すべてのメッセージを読んでいます。",
+    },
+    stories: {
+      workspace: {
+        title: "集中して学べる、より賢いワークスペース",
+        excerpt: "ノート、コード、メンターのフィードバックを一つにまとめた新しいレッスンプレーヤー。",
+      },
+      hiring: {
+        title: "2025年、採用担当が見ているもの",
+        excerpt: "7人のテックリードが、最初の面接の前にジュニアのポートフォリオを際立たせるポイントを語ります。",
+      },
+      mina: {
+        title: "小売からデータへ：Minaの新しい章",
+        excerpt: "表計算への好奇心が、9か月でデータアナリストの仕事になった話。",
+      },
+    },
   },
 };

@@ -26,7 +26,7 @@ export function SiteFooter() {
   const { t, lang, setLang } = useI18n();
 
   return (
-    <footer className="border-t border-white/10 bg-ink pb-10 pt-16 text-sm">
+    <footer className="border-t border-white/10 bg-canvas pb-10 pt-16 text-sm">
       <Container>
         {/* ---- Brand + link columns ---- */}
         <div className="grid gap-12 lg:grid-cols-[1.4fr_repeat(3,1fr)]">

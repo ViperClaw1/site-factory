@@ -2,6 +2,7 @@ import type { Dict } from "./en";
 
 export const zh: Dict = {
   nav: {
+    news: "新闻",
     profile: "个人资料",
     favorites: "收藏",
     cart: "购物车",
@@ -201,5 +202,33 @@ export const zh: Dict = {
     title: "即将推出",
     text: "付费方案即将上线。在此之前，欢迎浏览课程目录并单独购买课程。",
     browse: "浏览课程",
+  },
+  news: {
+    title: "新闻与想法",
+    subtitle: "产品更新、职业指南，以及学习社区里的故事。",
+    topics: { all: "全部", product: "产品", careers: "职业", community: "社区" },
+    read: "阅读故事 →",
+    feedback: {
+      title: "帮助我们改进",
+      text: "告诉我们怎样能让你的学习体验更好。",
+      topic: "主题",
+      body: "你的反馈",
+      send: "发送反馈",
+      thanks: "谢谢——我们会阅读每一条留言。",
+    },
+    stories: {
+      workspace: {
+        title: "更聪明的专注学习空间",
+        excerpt: "认识重新设计的课时播放器：笔记、代码和导师反馈都在一处。",
+      },
+      hiring: {
+        title: "2025 年招聘负责人在看什么",
+        excerpt: "七位技术负责人分享，初级作品集怎样在第一次面试前脱颖而出。",
+      },
+      mina: {
+        title: "从零售到数据：Mina 的新篇章",
+        excerpt: "一位学员如何在九个月内把对表格的好奇变成数据分析师的工作。",
+      },
+    },
   },
 };

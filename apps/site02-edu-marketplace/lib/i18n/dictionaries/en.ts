@@ -1,5 +1,6 @@
 export const en = {
   nav: {
+    news: "News",
     profile: "Profile",
     favorites: "Favorites",
     cart: "Cart",
@@ -214,6 +215,34 @@ export const en = {
     title: "Coming soon",
     text: "Paid plans are on their way. Meanwhile, browse the catalog and buy individual courses.",
     browse: "Browse courses",
+  },
+  news: {
+    title: "News & ideas",
+    subtitle: "Product updates, career guides, and stories from our learning community.",
+    topics: { all: "All", product: "Product", careers: "Careers", community: "Community" },
+    read: "Read story →",
+    feedback: {
+      title: "Help us improve",
+      text: "Tell us what would make your learning experience better.",
+      topic: "Topic",
+      body: "Your feedback",
+      send: "Send feedback",
+      thanks: "Thanks — we read every note.",
+    },
+    stories: {
+      workspace: {
+        title: "A smarter workspace for focused learning",
+        excerpt: "Meet the redesigned lesson player, built to keep your notes, code, and mentor feedback in one place.",
+      },
+      hiring: {
+        title: "What hiring managers look for in 2025",
+        excerpt: "Seven tech leads share what makes a junior portfolio stand out before the first interview.",
+      },
+      mina: {
+        title: "From retail to data: Mina’s new chapter",
+        excerpt: "How one learner turned a curiosity for spreadsheets into a data analyst role in nine months.",
+      },
+    },
   },
 };
 

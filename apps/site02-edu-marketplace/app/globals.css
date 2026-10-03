@@ -3,15 +3,32 @@
 @tailwind utilities;
 
 /* ---- Design tokens (kept as CSS vars for @repo/ui components and inner pages) ---- */
-:root {
+:root,
+html[data-theme="dark"] {
+  color-scheme: dark;
   --color-primary: #ffdd2d;
   --color-primary-dark: #f2c800;
   --color-bg: #0b0b0f;
   --color-text: #f5f5f7;
+  --canvas: 11 11 15;
+  --surface: 20 20 25;
+  --surface-2: 28 28 36;
+  --muted: 155 155 167;
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+  --color-primary: #ffdd2d;
+  --color-primary-dark: #f2c800;
+  --color-bg: #f4f4f6;
+  --color-text: #16161a;
+  --canvas: 244 244 246;
+  --surface: 255 255 255;
+  --surface-2: 236 236 240;
+  --muted: 82 82 91;
 }
 
 html {
-  color-scheme: dark;
   scroll-behavior: smooth;
   scroll-padding-top: 88px;
 }
@@ -24,8 +41,49 @@ body {
 
 ::selection {
   background: var(--color-primary);
-  color: var(--color-bg);
+  color: #0b0b0f;
 }
+
+/* Light theme keeps the same utility classes; only the "white on dark" tones flip. */
+html[data-theme="light"] .text-white { color: #16161a; }
+html[data-theme="light"] .hover\:text-white:hover { color: #16161a; }
+html[data-theme="light"] .text-white\/90 { color: rgb(22 22 26 / 0.9); }
+html[data-theme="light"] .text-white\/85 { color: rgb(22 22 26 / 0.85); }
+html[data-theme="light"] .text-white\/80 { color: rgb(22 22 26 / 0.8); }
+html[data-theme="light"] .text-white\/75 { color: rgb(22 22 26 / 0.75); }
+html[data-theme="light"] .text-white\/70 { color: rgb(22 22 26 / 0.7); }
+html[data-theme="light"] .text-white\/65 { color: rgb(22 22 26 / 0.65); }
+html[data-theme="light"] .text-white\/60 { color: rgb(22 22 26 / 0.6); }
+html[data-theme="light"] .text-white\/55 { color: rgb(22 22 26 / 0.55); }
+html[data-theme="light"] .text-white\/50 { color: rgb(22 22 26 / 0.5); }
+html[data-theme="light"] .text-white\/45 { color: rgb(22 22 26 / 0.45); }
+html[data-theme="light"] .text-white\/40 { color: rgb(22 22 26 / 0.4); }
+html[data-theme="light"] .text-white\/35 { color: rgb(22 22 26 / 0.35); }
+html[data-theme="light"] .text-white\/30 { color: rgb(22 22 26 / 0.3); }
+html[data-theme="light"] .border-white\/5,
+html[data-theme="light"] .border-white\/10,
+html[data-theme="light"] .border-white\/15,
+html[data-theme="light"] .border-white\/\[0\.08\],
+html[data-theme="light"] .border-white\/\[0\.05\] { border-color: rgb(22 22 26 / 0.12); }
+html[data-theme="light"] .hover\:border-white\/20:hover,
+html[data-theme="light"] .hover\:border-white\/25:hover,
+html[data-theme="light"] .hover\:border-white\/30:hover,
+html[data-theme="light"] .hover\:border-white\/40:hover { border-color: rgb(22 22 26 / 0.28); }
+html[data-theme="light"] .bg-white\/5,
+html[data-theme="light"] .bg-white\/10,
+html[data-theme="light"] .bg-white\/15,
+html[data-theme="light"] .bg-white\/\[0\.03\],
+html[data-theme="light"] .bg-white\/\[0\.04\],
+html[data-theme="light"] .bg-white\/\[0\.05\],
+html[data-theme="light"] .bg-white\/\[0\.06\],
+html[data-theme="light"] .bg-white\/\[0\.07\],
+html[data-theme="light"] .bg-white\/\[0\.08\] { background-color: rgb(22 22 26 / 0.05); }
+html[data-theme="light"] .hover\:bg-white\/\[0\.06\]:hover,
+html[data-theme="light"] .hover\:bg-white\/\[0\.08\]:hover { background-color: rgb(22 22 26 / 0.08); }
+html[data-theme="light"] .bg-ink\/80 { color: #f5f5f7; }
+html[data-theme="light"] .bg-ink\/80 .text-white\/40,
+html[data-theme="light"] .bg-ink\/80 .text-white\/50,
+html[data-theme="light"] .bg-ink\/80 .text-white\/85 { color: rgb(245 245 247 / 0.75); }
 
 /* ---- Legacy overrides for inner pages ---- */
 /* Shared Button renders white text on the primary color; on yellow that must be dark. */

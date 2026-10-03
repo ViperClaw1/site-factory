@@ -113,7 +113,7 @@ export function CoursesShowcase() {
                   </div>
 
                   <Link
-                    href="/courses"
+                    href={`/course/${course.id}`}
                     className="mt-6 flex items-center justify-between rounded-2xl bg-white/[0.05] px-4 py-3 text-sm font-bold transition group-hover:bg-brand group-hover:text-ink"
                   >
                     {t.courses.enroll}

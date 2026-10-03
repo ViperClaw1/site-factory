@@ -2,6 +2,7 @@ import type { Dict } from "./en";
 
 export const vi: Dict = {
   nav: {
+    news: "Tin tức",
     profile: "Hồ sơ",
     favorites: "Yêu thích",
     cart: "Giỏ hàng",
@@ -216,5 +217,33 @@ export const vi: Dict = {
     title: "Sắp ra mắt",
     text: "Các gói trả phí đang được chuẩn bị. Trong lúc đó, hãy xem danh mục và mua từng khóa học.",
     browse: "Xem khóa học",
+  },
+  news: {
+    title: "Tin tức và ý tưởng",
+    subtitle: "Cập nhật sản phẩm, hướng dẫn sự nghiệp và câu chuyện từ cộng đồng học viên.",
+    topics: { all: "Tất cả", product: "Sản phẩm", careers: "Sự nghiệp", community: "Cộng đồng" },
+    read: "Đọc câu chuyện →",
+    feedback: {
+      title: "Giúp chúng tôi cải thiện",
+      text: "Hãy cho chúng tôi biết điều gì sẽ làm trải nghiệm học của bạn tốt hơn.",
+      topic: "Chủ đề",
+      body: "Góp ý của bạn",
+      send: "Gửi góp ý",
+      thanks: "Cảm ơn — chúng tôi đọc từng lời nhắn.",
+    },
+    stories: {
+      workspace: {
+        title: "Không gian học tập thông minh hơn để tập trung",
+        excerpt: "Làm quen trình phát bài học mới: ghi chú, mã nguồn và góp ý của mentor ở cùng một nơi.",
+      },
+      hiring: {
+        title: "Nhà tuyển dụng tìm kiếm điều gì năm 2025",
+        excerpt: "Bảy trưởng nhóm công nghệ chia sẻ điều khiến portfolio cấp junior nổi bật trước buổi phỏng vấn đầu tiên.",
+      },
+      mina: {
+        title: "Từ bán lẻ đến dữ liệu: chương mới của Mina",
+        excerpt: "Sự tò mò với bảng tính trở thành vị trí nhà phân tích dữ liệu trong chín tháng như thế nào.",
+      },
+    },
   },
 };

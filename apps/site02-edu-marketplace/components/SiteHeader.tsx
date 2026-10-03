@@ -4,13 +4,16 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 import { useUser } from "@/features/auth/hooks";
+import { useCartIds } from "@/features/cart/store";
 import { CartIcon, CloseIcon, HeartIcon, MenuIcon, UserIcon } from "./icons";
 import { LanguageMenu } from "./LanguageMenu";
 import { Logo } from "./Logo";
+import { ThemeSwitch } from "./ThemeSwitch";
 
 export function SiteHeader() {
   const { t } = useI18n();
   const { user, ready } = useUser();
+  const cartCount = useCartIds().length;
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -23,6 +26,7 @@ export function SiteHeader() {
   }, []);
 
   const nav = [
+    { href: "/news", label: t.nav.news },
     { href: "/#courses", label: t.nav.courses },
     { href: "/#how", label: t.nav.how },
     { href: "/#instructors", label: t.nav.instructors },
@@ -30,16 +34,15 @@ export function SiteHeader() {
     { href: "/#pricing", label: t.nav.pricing },
   ];
   const userLinks = [
-    { href: "/account", label: t.nav.profile, Icon: UserIcon },
+    { href: "/profile", label: t.nav.profile, Icon: UserIcon },
     { href: "/account/favorites", label: t.nav.favorites, Icon: HeartIcon },
-    { href: "/cart", label: t.nav.cart, Icon: CartIcon },
   ];
   const glass = scrolled || mobileOpen;
 
   return (
     <header
       className={`sticky top-0 z-50 border-b transition-[background-color,border-color,backdrop-filter] duration-300 ${
-        glass ? "border-white/10 bg-ink/70 backdrop-blur-xl backdrop-saturate-150" : "border-transparent bg-transparent"
+        glass ? "border-white/10 bg-canvas/70 backdrop-blur-xl backdrop-saturate-150" : "border-transparent bg-transparent"
       }`}
     >
       <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
@@ -54,7 +57,21 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
+          <ThemeSwitch />
           <LanguageMenu />
+          <Link
+            href="/cart"
+            aria-label={cartCount > 0 ? `${t.nav.cart} (${cartCount})` : t.nav.cart}
+            title={t.nav.cart}
+            className="relative grid h-10 w-10 place-items-center rounded-full border border-white/10 text-white/75 transition hover:border-brand hover:text-brand"
+          >
+            <CartIcon />
+            {cartCount > 0 && (
+              <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-brand px-1 text-[11px] font-bold leading-none text-ink">
+                {cartCount > 9 ? "9+" : cartCount}
+              </span>
+            )}
+          </Link>
           {user ? (
             /* Signed in: account shortcuts (always visible, incl. mobile). */
             userLinks.map(({ href, label, Icon }) => (

@@ -2,6 +2,7 @@ import type { Dict } from "./en";
 
 export const ha: Dict = {
   nav: {
+    news: "Labarai",
     profile: "Bayani",
     favorites: "Waɗanda aka fi so",
     cart: "Kwantena",
@@ -216,5 +217,33 @@ export const ha: Dict = {
     title: "Ana zuwa",
     text: "Shirye-shiryen biya suna kan hanya. A halin yanzu, duba katalog ka sayi kwasai ɗaya-ɗaya.",
     browse: "Duba kwasai",
+  },
+  news: {
+    title: "Labarai da ra'ayoyi",
+    subtitle: "Sabbin bayanai na kayan aiki, jagororin sana'a, da labarun al'ummarmu ta koyo.",
+    topics: { all: "Duka", product: "Kaya", careers: "Sana'a", community: "Al'umma" },
+    read: "Karanta labari →",
+    feedback: {
+      title: "Taimaka mana mu inganta",
+      text: "Faɗa mana abin da zai sa koyo ya yi maka daɗi.",
+      topic: "Jigo",
+      body: "Ra'ayinka",
+      send: "Aika ra'ayi",
+      thanks: "Mun gode — muna karanta kowane saƙo.",
+    },
+    stories: {
+      workspace: {
+        title: "Wuri mafi wayo na koyo mai mai da hankali",
+        excerpt: "Sadu da sabon na'urar darasi: bayanin kula, lamba da ra'ayin jagora a wuri ɗaya.",
+      },
+      hiring: {
+        title: "Abin da masu daukar ma'aikata ke nema a 2025",
+        excerpt: "Shugabanni bakwai na fasaha sun bayyana abin da ke sa fayil ɗin matashi ya fito kafin hira ta farko.",
+      },
+      mina: {
+        title: "Daga sayarwa zuwa bayanai: sabon babi na Mina",
+        excerpt: "Yadda sha'awar jadawali ta zama aikin mai nazarin bayanai a cikin watanni tara.",
+      },
+    },
   },
 };

@@ -2,6 +2,7 @@ import type { Dict } from "./en";
 
 export const ko: Dict = {
   nav: {
+    news: "뉴스",
     profile: "프로필",
     favorites: "즐겨찾기",
     cart: "장바구니",
@@ -216,5 +217,33 @@ export const ko: Dict = {
     title: "곧 제공",
     text: "유료 플랜을 준비 중입니다. 그동안 카탈로그를 둘러보고 개별 코스를 구매하세요.",
     browse: "코스 둘러보기",
+  },
+  news: {
+    title: "뉴스와 아이디어",
+    subtitle: "제품 업데이트, 커리어 가이드, 학습 커뮤니티의 이야기.",
+    topics: { all: "전체", product: "제품", careers: "커리어", community: "커뮤니티" },
+    read: "이야기 읽기 →",
+    feedback: {
+      title: "개선에 참여해 주세요",
+      text: "학습 경험을 더 좋게 만들 방법을 알려 주세요.",
+      topic: "주제",
+      body: "의견",
+      send: "의견 보내기",
+      thanks: "감사합니다. 모든 메시지를 읽습니다.",
+    },
+    stories: {
+      workspace: {
+        title: "집중해서 배우는 더 똑똑한 작업 공간",
+        excerpt: "노트, 코드, 멘토 피드백을 한곳에 모은 새 레슨 플레이어를 만나 보세요.",
+      },
+      hiring: {
+        title: "2025년 채용 담당자가 보는 것",
+        excerpt: "테크 리드 7명이 첫 면접 전에 주니어 포트폴리오를 돋보이게 하는 점을 이야기합니다.",
+      },
+      mina: {
+        title: "리테일에서 데이터로: Mina의 새 장",
+        excerpt: "스프레드시트에 대한 호기심이 9개월 만에 데이터 분석가 직무가 된 이야기.",
+      },
+    },
   },
 };

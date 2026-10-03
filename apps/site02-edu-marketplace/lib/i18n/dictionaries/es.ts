@@ -2,6 +2,7 @@ import type { Dict } from "./en";
 
 export const es: Dict = {
   nav: {
+    news: "Noticias",
     profile: "Perfil",
     favorites: "Favoritos",
     cart: "Carrito",
@@ -216,5 +217,33 @@ export const es: Dict = {
     title: "Próximamente",
     text: "Los planes de pago están en camino. Mientras tanto, explora el catálogo y compra cursos sueltos.",
     browse: "Ver cursos",
+  },
+  news: {
+    title: "Noticias e ideas",
+    subtitle: "Novedades del producto, guías de carrera e historias de nuestra comunidad.",
+    topics: { all: "Todo", product: "Producto", careers: "Carreras", community: "Comunidad" },
+    read: "Leer historia →",
+    feedback: {
+      title: "Ayúdanos a mejorar",
+      text: "Cuéntanos qué haría mejor tu experiencia de aprendizaje.",
+      topic: "Tema",
+      body: "Tu comentario",
+      send: "Enviar comentario",
+      thanks: "Gracias: leemos cada nota.",
+    },
+    stories: {
+      workspace: {
+        title: "Un espacio más inteligente para aprender con foco",
+        excerpt: "Conoce el reproductor de lecciones rediseñado: notas, código y feedback del mentor en un solo lugar.",
+      },
+      hiring: {
+        title: "Lo que buscan los responsables de contratación en 2025",
+        excerpt: "Siete líderes tech cuentan qué hace destacar un portafolio junior antes de la primera entrevista.",
+      },
+      mina: {
+        title: "Del comercio a los datos: el nuevo capítulo de Mina",
+        excerpt: "Cómo la curiosidad por las hojas de cálculo se convirtió en un puesto de analista de datos en nueve meses.",
+      },
+    },
   },
 };

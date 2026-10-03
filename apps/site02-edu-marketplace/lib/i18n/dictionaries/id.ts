@@ -2,6 +2,7 @@ import type { Dict } from "./en";
 
 export const id: Dict = {
   nav: {
+    news: "Berita",
     profile: "Profil",
     favorites: "Favorit",
     cart: "Keranjang",
@@ -216,5 +217,33 @@ export const id: Dict = {
     title: "Segera hadir",
     text: "Paket berbayar sedang disiapkan. Sementara itu, jelajahi katalog dan beli kursus satuan.",
     browse: "Jelajahi kursus",
+  },
+  news: {
+    title: "Berita & ide",
+    subtitle: "Pembaruan produk, panduan karier, dan cerita dari komunitas belajar kami.",
+    topics: { all: "Semua", product: "Produk", careers: "Karier", community: "Komunitas" },
+    read: "Baca cerita →",
+    feedback: {
+      title: "Bantu kami jadi lebih baik",
+      text: "Ceritakan apa yang akan membuat pengalaman belajarmu lebih baik.",
+      topic: "Topik",
+      body: "Masukanmu",
+      send: "Kirim masukan",
+      thanks: "Terima kasih — kami membaca setiap catatan.",
+    },
+    stories: {
+      workspace: {
+        title: "Ruang kerja yang lebih cerdas untuk belajar fokus",
+        excerpt: "Kenali pemutar pelajaran yang didesain ulang: catatan, kode, dan umpan balik mentor di satu tempat.",
+      },
+      hiring: {
+        title: "Apa yang dicari manajer perekrutan di 2025",
+        excerpt: "Tujuh pemimpin teknologi berbagi apa yang membuat portofolio junior menonjol sebelum wawancara pertama.",
+      },
+      mina: {
+        title: "Dari ritel ke data: babak baru Mina",
+        excerpt: "Bagaimana rasa ingin tahu pada spreadsheet berubah menjadi peran analis data dalam sembilan bulan.",
+      },
+    },
   },
 };
