@@ -86,7 +86,7 @@ export function CoursesShowcase({ courses }: { courses: Course[] }) {
                       </span>
                     )}
                     {categoryLabel && (
-                      <span className="rounded-full bg-ink/70 px-2.5 py-1 text-[11px] font-semibold text-white/90 backdrop-blur">
+                      <span className="rounded-full bg-ink/70 px-2.5 py-1 text-[11px] font-semibold !text-white backdrop-blur">
                         {categoryLabel}
                       </span>
                     )}
