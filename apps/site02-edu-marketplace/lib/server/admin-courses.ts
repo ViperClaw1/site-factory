@@ -141,7 +141,10 @@ async function processCover(slug: string, objectPath: string): Promise<{ url: st
 }
 
 function baseCopy(translations: CourseInput["translations"]): { language: string; title: string; subtitle: string | null; description: string | null; i18n: Record<string, { title?: string; subtitle?: string; description?: string }> } {
-  const filled = Object.entries(translations).filter(([, copy]) => copy.title.trim().length >= 2);
+  const filled = Object.entries(translations).filter((entry): entry is [string, NonNullable<(typeof entry)[1]>] => {
+    const copy = entry[1];
+    return Boolean(copy && copy.title.trim().length >= 2);
+  });
   const preferred = filled.find(([code]) => code === "en") ?? filled[0];
   if (!preferred) throw new AdminInputError("Add a title for one language.");
   const [language, copy] = preferred;

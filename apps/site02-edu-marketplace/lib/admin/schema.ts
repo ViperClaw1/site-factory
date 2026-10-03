@@ -53,7 +53,7 @@ export const courseInputSchema = z
     status: z.enum(["active", "draft"]).default("active"),
   })
   .superRefine((value, ctx) => {
-    const filled = Object.values(value.translations).some((copy) => copy.title.trim().length >= 2);
+    const filled = Object.values(value.translations).some((copy) => (copy?.title.trim().length ?? 0) >= 2);
     if (!filled) {
       ctx.addIssue({ code: "custom", path: ["translations"], message: "Add a title (at least 2 characters) for one language." });
     }
