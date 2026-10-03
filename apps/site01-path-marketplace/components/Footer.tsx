@@ -1,9 +1,10 @@
 "use client";
 
-import { LOCALE_LABELS, LOCALES, useLocaleStore, useT, type MessageKey } from "@/lib/i18n";
+import { LOCALE_OPTIONS, LOCALES, useLocaleStore, useT, type MessageKey } from "@/lib/i18n";
 import { placeholderCharacters } from "@/lib/placeholders";
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
+import { FlagIcon } from "./FlagIcon";
 import { Logo } from "./NavBar";
 
 const SHOP_LINKS: { key: MessageKey; href: string }[] = [
@@ -151,20 +152,25 @@ export function Footer() {
       <div className="border-t border-black/5">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-5 text-xs text-black/45 sm:flex-row sm:px-6 lg:px-8">
           <p>{t("footer.rights", { year: new Date().getFullYear() })}</p>
-          <div className="flex flex-wrap justify-center gap-1" role="group" aria-label="Language">
-            {LOCALES.map((code) => (
-              <button
-                key={code}
-                type="button"
-                onClick={() => setLocale(code)}
-                aria-pressed={code === locale}
-                className={`px-2.5 py-1 font-semibold transition-colors ${
-                  code === locale ? "bg-ink text-white" : "text-black/50 hover:text-ink"
-                }`}
-              >
-                {LOCALE_LABELS[code]}
-              </button>
-            ))}
+          <div className="flex flex-wrap items-center justify-center gap-2" role="group" aria-label={t("nav.language")}>
+            {LOCALES.map((code) => {
+              const selected = code === locale;
+              return (
+                <button
+                  key={code}
+                  type="button"
+                  onClick={() => setLocale(code)}
+                  aria-pressed={selected}
+                  aria-label={LOCALE_OPTIONS[code].name}
+                  title={LOCALE_OPTIONS[code].name}
+                  className={`rounded-[4px] p-0.5 transition-shadow ${
+                    selected ? "ring-2 ring-pink" : "opacity-80 hover:opacity-100"
+                  }`}
+                >
+                  <FlagIcon locale={code} className="h-4 w-6 rounded-[3px]" />
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>

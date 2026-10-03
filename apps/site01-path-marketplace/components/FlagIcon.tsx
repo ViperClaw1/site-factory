@@ -117,12 +117,12 @@ const FLAGS: Record<Locale, JSX.Element> = {
   ),
 };
 
-export function FlagIcon({ locale }: { locale: Locale }) {
+export function FlagIcon({ locale, className = "" }: { locale: Locale; className?: string }) {
   return (
     <svg
       viewBox="0 0 20 14"
       aria-hidden="true"
-      className="block h-3.5 w-5 shrink-0 rounded-[2px] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12)]"
+      className={`block h-3.5 w-5 shrink-0 rounded-[2px] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12)] ${className}`}
     >
       {FLAGS[locale]}
     </svg>
