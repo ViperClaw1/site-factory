@@ -3,21 +3,31 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import type { CourseWithCurriculum } from "@repo/types";
 import { addToCart, useCartIds } from "@/features/cart/store";
-import {
-  INCLUDED,
-  LEARNING_OUTCOMES,
-  PROGRAM,
-  type StaticCourse,
-} from "@/features/course/static-catalog";
+import { INCLUDED, LEARNING_OUTCOMES, PROGRAM } from "@/features/course/static-catalog";
+import { coverImageProps } from "@/lib/image-variants";
+import { useI18n } from "@/lib/i18n/LanguageProvider";
+import { localize } from "@/lib/i18n/localize";
 
-export function CoursePage({ course }: { course: StaticCourse }) {
+export function CoursePage({ course }: { course: CourseWithCurriculum }) {
+  const { lang } = useI18n();
   const cart = useCartIds();
-  const inCart = cart.includes(course.id);
+  // Cart stores course slugs.
+  const inCart = cart.includes(course.slug);
   const [added, setAdded] = useState(false);
+  const title = localize(course, "title", lang);
+
+  // Real modules from Supabase when the course has them, generic program otherwise.
+  const program = course.modules.length
+    ? course.modules.map((module) => ({
+        title: localize(module, "title", lang),
+        lessons: module.lessons.map((lesson) => localize(lesson, "title", lang)),
+      }))
+    : PROGRAM;
 
   function handleAdd() {
-    addToCart(course.id);
+    addToCart(course.slug);
     setAdded(true);
   }
 
@@ -30,18 +40,23 @@ export function CoursePage({ course }: { course: StaticCourse }) {
       <div className="mt-6 grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div>
           <div className="relative overflow-hidden rounded-3xl">
-            <Image
-              src={course.photo}
-              alt=""
-              width={1400}
-              height={780}
-              className="aspect-[16/9] w-full object-cover"
-              priority
-            />
+            {course.cover_image ? (
+              <Image
+                src={course.cover_image}
+                alt=""
+                {...coverImageProps(course)}
+                width={1400}
+                height={780}
+                className="aspect-[16/9] w-full object-cover"
+                priority
+              />
+            ) : (
+              <div className="aspect-[16/9] w-full bg-white/[0.04]" />
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent" />
             <div className="absolute bottom-0 p-6 sm:p-8">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand">Career track</p>
-              <h1 className="mt-2 font-heading text-4xl font-extrabold tracking-tight sm:text-5xl">{course.title}</h1>
+              <h1 className="mt-2 font-heading text-4xl font-extrabold tracking-tight sm:text-5xl">{title}</h1>
             </div>
           </div>
 
@@ -54,8 +69,8 @@ export function CoursePage({ course }: { course: StaticCourse }) {
 
           <dl className="mt-8 grid grid-cols-3 overflow-hidden rounded-2xl border border-white/10">
             {[
-              [course.learners.toLocaleString("en-US"), "learners"],
-              [String(course.months), "months"],
+              [(course.students ?? 0).toLocaleString("en-US"), "learners"],
+              [String(course.duration_months ?? "—"), "months"],
               ["5", "portfolio projects"],
             ].map(([value, label]) => (
               <div key={label} className="border-white/10 px-4 py-5 sm:px-6 [&:not(:first-child)]:border-l">
@@ -83,7 +98,7 @@ export function CoursePage({ course }: { course: StaticCourse }) {
             <h2 className="font-heading text-3xl font-extrabold tracking-tight">Program</h2>
             <p className="mt-2 text-white/55">A practical curriculum built with senior industry experts.</p>
             <ol className="mt-6 space-y-4">
-              {PROGRAM.map((module, index) => (
+              {program.map((module, index) => (
                 <li key={module.title} className="rounded-2xl border border-white/10 p-5">
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand">
                     {String(index + 1).padStart(2, "0")}
@@ -111,7 +126,7 @@ export function CoursePage({ course }: { course: StaticCourse }) {
             {inCart || added ? "Added to cart" : "Add to cart"}
           </button>
           <Link
-            href={`/learn/${course.id}`}
+            href={`/learn/${course.slug}`}
             className="mt-3 flex h-12 w-full items-center justify-center rounded-full border border-white/15 text-sm font-semibold transition hover:border-white/40"
           >
             Start learning
@@ -128,9 +143,9 @@ export function CoursePage({ course }: { course: StaticCourse }) {
             ))}
           </ul>
           <p className="mt-6 text-sm capitalize text-white/45">
-            {course.level} · {course.category}
+            {[course.level, course.category].filter(Boolean).join(" · ")}
           </p>
-          <p className="mt-2 text-sm text-white/55">{course.summary}</p>
+          <p className="mt-2 text-sm text-white/55">{localize(course, "description", lang)}</p>
         </aside>
       </div>
     </div>

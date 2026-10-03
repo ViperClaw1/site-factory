@@ -35,7 +35,7 @@ export function CartView() {
               <li key={course.id} className="flex gap-4 rounded-3xl border border-white/10 p-4">
                 <Image src={course.photo} alt="" width={160} height={112} className="h-24 w-32 rounded-2xl object-cover" />
                 <div className="min-w-0 flex-1">
-                  <Link href={`/course/${course.numericId}`} className="font-heading text-lg font-bold hover:text-brand">
+                  <Link href={`/course/${course.id}`} className="font-heading text-lg font-bold hover:text-brand">
                     {course.title}
                   </Link>
                   <p className="mt-1 text-sm capitalize text-white/45">{course.level}</p>

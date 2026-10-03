@@ -13,7 +13,7 @@ const COURSES = [
     title: "Python Developer",
     next: "Functions and modules",
     progress: 68,
-    href: "/course/1",
+    href: "/course/python",
     photo: unsplash("1515879218367-8466d910aaa4", 400),
   },
 ];

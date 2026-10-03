@@ -1,8 +1,8 @@
 import { COURSES, unsplash } from "@/features/landing/data";
 
+// Still used by cart/checkout; course pages read Supabase.
 export type StaticCourse = {
   id: string;
-  numericId: string;
   title: string;
   category: string;
   level: string;
@@ -46,9 +46,8 @@ const TITLES: Record<string, string> = {
   security: "Cybersecurity Specialist",
 };
 
-export const STATIC_COURSES: StaticCourse[] = COURSES.map((course, index) => ({
+export const STATIC_COURSES: StaticCourse[] = COURSES.map((course) => ({
   id: course.id,
-  numericId: String(index + 1),
   title: TITLES[course.id] ?? course.id,
   category: course.category,
   level: course.level,
@@ -58,10 +57,6 @@ export const STATIC_COURSES: StaticCourse[] = COURSES.map((course, index) => ({
   photo: unsplash(course.photo, 1400),
   summary: SUMMARIES[course.id] ?? "",
 }));
-
-export function findStaticCourse(id: string) {
-  return STATIC_COURSES.find((course) => course.id === id || course.numericId === id);
-}
 
 export const LEARNING_OUTCOMES = [
   "Build maintainable applications from scratch",

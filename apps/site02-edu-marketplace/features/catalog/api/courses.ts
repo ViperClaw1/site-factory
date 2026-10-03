@@ -2,9 +2,15 @@ import "server-only";
 
 import { createSupabasePublicClient } from "@repo/lib";
 import type { Course, CourseModule, CourseWithCurriculum, LessonOutline } from "@repo/types";
+import { blurhashToDataUrl } from "@/lib/blurhash";
 import { FETCH_TIMEOUT_MS } from "@/lib/with-timeout";
 
 export type { Course, CourseWithCurriculum } from "@repo/types";
+
+// Decode the cover blurhash here (server) so client cards get a ready data URL.
+function withCoverBlur<T extends Course>(course: T): T {
+  return { ...course, cover_blur: blurhashToDataUrl(course.cover_meta?.blurhash) };
+}
 
 export interface CourseFilters {
   category?: string;
@@ -36,7 +42,7 @@ export async function getCourses(filters: CourseFilters = {}): Promise<Course[]>
       console.error("getCourses failed", error);
       return [];
     }
-    return data ?? [];
+    return (data ?? []).map(withCoverBlur);
   } catch (error) {
     console.error("getCourses threw", error);
     return [];
@@ -76,10 +82,10 @@ export async function getCourse(slug: string): Promise<CourseWithCurriculum | nu
 
     const row = data as CourseRow;
     const { course_modules: modules, ...course } = row;
-    return {
+    return withCoverBlur({
       ...course,
       modules: modules ?? [],
-    };
+    });
   } catch (error) {
     console.error("getCourse threw", error);
     return null;

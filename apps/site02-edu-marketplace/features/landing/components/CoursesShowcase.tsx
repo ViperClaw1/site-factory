@@ -6,6 +6,7 @@ import { useState } from "react";
 import type { Course } from "@repo/types";
 import { Container } from "@repo/ui";
 import { ArrowRightIcon, ClockIcon, UsersIcon } from "@/components/icons";
+import { coverImageProps } from "@/lib/image-variants";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 import { localize } from "@/lib/i18n/localize";
 import { CATEGORIES, LEVELS, type BadgeId, type CategoryId } from "../data";
@@ -71,6 +72,7 @@ export function CoursesShowcase({ courses }: { courses: Course[] }) {
                     <Image
                       src={course.cover_image}
                       alt={title}
+                      {...coverImageProps(course)}
                       fill
                       sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                       className="object-cover transition duration-700 group-hover:scale-105"
