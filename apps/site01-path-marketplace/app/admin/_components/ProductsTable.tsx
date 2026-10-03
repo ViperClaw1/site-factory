@@ -38,7 +38,7 @@ export function ProductsTable({ rows, total, page, filteredEmpty, onPage, onAdd,
 
   return (
     <div>
-      <div className="overflow-x-auto">
+      <div className="min-w-0 overflow-x-auto">
         <table className="w-full border-collapse text-left text-sm">
           <thead>
             <tr className="text-xs uppercase tracking-wide text-black/40">
