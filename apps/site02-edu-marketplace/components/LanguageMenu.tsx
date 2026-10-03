@@ -48,7 +48,7 @@ export function LanguageMenu() {
         <ul
           role="listbox"
           aria-label={t.nav.language}
-          className="anim-fade-up absolute right-0 top-full z-50 mt-2 w-56 rounded-2xl border border-white/10 bg-surface/95 p-1.5 shadow-2xl shadow-black/60 backdrop-blur-xl"
+          className="anim-fade-up absolute right-0 top-full z-50 mt-2 max-h-[min(28rem,70vh)] w-64 overflow-y-auto rounded-2xl border border-white/10 bg-surface/95 p-1.5 shadow-2xl shadow-black/60 backdrop-blur-xl"
         >
           {LOCALES.map((locale) => {
             const active = locale.code === lang;
@@ -67,11 +67,8 @@ export function LanguageMenu() {
                 >
                   <Flag code={locale.code} />
                   <span className="flex-1">{locale.native}</span>
-                  {active ? (
-                    <CheckIcon className="h-4 w-4" />
-                  ) : (
-                    <span className="text-xs text-white/35">{locale.label}</span>
-                  )}
+                  <span className={`text-xs ${active ? "text-brand/70" : "text-white/35"}`}>{locale.label}</span>
+                  {active && <CheckIcon className="h-4 w-4" />}
                 </button>
               </li>
             );

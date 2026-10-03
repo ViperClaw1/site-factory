@@ -19,7 +19,7 @@ html {
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
-  font-family: var(--font-body), "PingFang SC", "Hiragino Sans", "Microsoft YaHei", "Yu Gothic", system-ui, sans-serif;
+  font-family: var(--font-body), "Segoe UI", "PingFang SC", "Hiragino Sans", "Microsoft YaHei", "Yu Gothic", "Malgun Gothic", "Leelawadee UI", "Ebrima", system-ui, sans-serif;
 }
 
 ::selection {

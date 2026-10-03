@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { dictionaries, type Dict } from "./dictionaries";
-import { LANG_COOKIE, isLang, type Lang } from "./locales";
+import { LANG_COOKIE, isLang, localeTag, type Lang } from "./locales";
 
 interface I18nContextValue {
   lang: Lang;
@@ -27,7 +27,8 @@ export function LanguageProvider({
   const setLang = useCallback((next: Lang) => {
     setLangState(next);
     document.cookie = `${LANG_COOKIE}=${next}; path=/; max-age=31536000; samesite=lax`;
-    document.documentElement.lang = next;
+    document.documentElement.lang = localeTag(next);
+    document.documentElement.dir = next === "ar" ? "rtl" : "ltr";
   }, []);
 
   // First visit: pick the browser's preferred language if we support it.

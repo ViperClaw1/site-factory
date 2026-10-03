@@ -5,17 +5,17 @@ import PlausibleProvider from "next-plausible";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
-import { DEFAULT_LANG, LANG_COOKIE, isLang } from "@/lib/i18n/locales";
+import { DEFAULT_LANG, LANG_COOKIE, isLang, localeTag } from "@/lib/i18n/locales";
 import "./globals.css";
 
 const body = Inter({
-  subsets: ["latin", "cyrillic"],
+  subsets: ["latin", "latin-ext", "vietnamese"],
   variable: "--font-body",
   display: "swap",
 });
 
 const heading = Manrope({
-  subsets: ["latin", "cyrillic"],
+  subsets: ["latin", "latin-ext", "vietnamese"],
   weight: ["500", "600", "700", "800"],
   variable: "--font-heading",
   display: "swap",
@@ -34,7 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const lang = isLang(saved) ? saved : DEFAULT_LANG;
 
   return (
-    <html lang={lang} className={`${body.variable} ${heading.variable}`}>
+    <html lang={localeTag(lang)} dir={lang === "ar" ? "rtl" : "ltr"} className={`${body.variable} ${heading.variable}`}>
       <head>
         <PlausibleProvider
           domain={process.env.NEXT_PUBLIC_SITE_DOMAIN ?? "localhost"}
