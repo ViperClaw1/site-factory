@@ -2,6 +2,7 @@
 
 import { useCartStore } from "@/lib/cart";
 import { useT } from "@/lib/i18n";
+import { coverImage } from "@/lib/media";
 import type { Product } from "@repo/types";
 import Link from "next/link";
 import { useState } from "react";
@@ -27,7 +28,7 @@ export function ProductPurchasePanel({ product, soldOut = false }: ProductPurcha
       title: product.title,
       price: product.base_price,
       currency: product.currency,
-      image: product.images[0]?.url,
+      image: coverImage(product)?.url,
     });
     setAdded(true);
   }

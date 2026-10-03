@@ -1,8 +1,9 @@
 import type { PillOption } from "@/components/CategoryPills";
+import { CATEGORIES } from "./catalog-taxonomy.mjs";
 import type { MessageKey } from "./i18n";
 
-// Fixed taxonomy matching the seeded product categories (see Phase 1 schema).
-const CATEGORIES = ["toys", "collectible_toys", "books", "artbooks", "designs", "merch", "figures"] as const;
+export type { Category } from "./catalog-taxonomy.mjs";
+export { CATEGORIES };
 
 export const SHOP_CATEGORY_OPTIONS: PillOption[] = CATEGORIES.map((value) => ({
   value,

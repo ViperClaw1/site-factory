@@ -3,6 +3,7 @@ import "server-only";
 import type { Product } from "@repo/types";
 import { blurhashToDataUrl } from "./blurhash";
 import type { BadgeKind, CardItem } from "./catalog";
+import { coverImage } from "./media";
 
 // Real product → card. Server-only (it decodes blurhashes), which also keeps
 // the blurhash library out of client bundles that import lib/catalog.
@@ -10,7 +11,7 @@ import type { BadgeKind, CardItem } from "./catalog";
 // every collectible "collectible_toys" product is sold blind, other
 // collectibles are limited editions, digital goods get DIGITAL.
 export function toCardItem(product: Product): CardItem {
-  const cover = product.images[0];
+  const cover = coverImage(product);
   let badge: BadgeKind | null = null;
   if (product.is_collectible) {
     badge = product.category === "collectible_toys" ? "blindbox" : "limited";

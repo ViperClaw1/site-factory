@@ -10,6 +10,7 @@ import {
 } from "@/lib/placeholders";
 import { CatalogImage } from "@/components/CatalogImage";
 import { blurhashToDataUrl } from "@/lib/blurhash";
+import { coverImage } from "@/lib/media";
 import { generateProductJsonLd, generateMetadata as seo } from "@repo/lib";
 import { Container } from "@repo/ui";
 import type { Product } from "@repo/types";
@@ -58,7 +59,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     // Placeholder/showcase products are demo content — keep them out of the index.
     return { robots: { index: false } };
   }
-  return seo(real.title, (real.description ?? "").slice(0, 160), real.images[0]?.url, `/p/${real.slug}`);
+  const cover = coverImage(real);
+  return seo(real.title, (real.description ?? "").slice(0, 160), cover?.url, `/p/${real.slug}`);
 }
 
 export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
@@ -68,7 +70,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
   const { product, character, soldOut } = real
     ? { product: real, character: real.character, soldOut: false }
     : buildPlaceholderProduct(params.slug);
-  const cover = product.images[0];
+  const cover = coverImage(product);
 
   return (
     <Container className="py-12 lg:py-16">

@@ -1,6 +1,7 @@
 "use client";
 
 import { initAuth, useAuthStore } from "@/lib/auth";
+import { ADMIN_PUBLIC } from "@/lib/rbac";
 import { useCartStore } from "@/lib/cart";
 import { LOCALES, localeTag, useLocaleStore, useT, type MessageKey } from "@/lib/i18n";
 import { FlagIcon } from "./FlagIcon";
@@ -54,7 +55,9 @@ export function NavBar() {
   const itemCount = useCartStore((state) => state.items.reduce((sum, item) => sum + item.qty, 0));
 
   const signedIn = useAuthStore((state) => state.role !== "guest");
+  const role = useAuthStore((state) => state.role);
   const authReady = useAuthStore((state) => state.ready);
+  const showAdmin = ADMIN_PUBLIC || (authReady && role === "admin");
 
   // Both persisted stores skip SSR hydration; the nav is on every page, so it
   // owns the one-time rehydrate for the cart and the saved locale, plus the
@@ -175,6 +178,11 @@ export function NavBar() {
               cart are for signed-in users; guests get a single sign-in icon.
               Nothing auth-dependent renders until the session is known, so a
               signed-in visitor never sees the guest icon flash first. */}
+          {showAdmin && (
+            <Link href="/admin" className="hidden px-2 text-sm font-semibold text-ink hover:text-pink lg:inline">
+              Admin
+            </Link>
+          )}
           <Link href="/shop" className={iconClass} aria-label={t("nav.search")}>
             <i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
           </Link>
@@ -239,6 +247,11 @@ export function NavBar() {
                   {t(link.key)}
                 </Link>
               ))}
+              {showAdmin && (
+                <Link href="/admin" className="font-display border-b border-black/5 py-3 text-2xl text-ink hover:text-pink">
+                  Admin
+                </Link>
+              )}
               <div className="mt-4 flex flex-wrap gap-2">
                 {LOCALES.map((item) => (
                   <button

@@ -1,8 +1,8 @@
 import type { ProductImageVariant } from "@repo/types";
 import type { ImageLoader } from "next/image";
 
-// Mirrors PRODUCT_IMAGE_VARIANTS in scripts/lib/product-images.mjs (widths
-// only) — keep the two in sync. Ordered smallest → largest.
+// Mirrors PRODUCT_IMAGE_VARIANTS in lib/media/pipeline.mjs (widths only) —
+// keep the two in sync. Ordered smallest → largest.
 const VARIANT_WIDTHS: [ProductImageVariant, number][] = [
   ["thumb", 400],
   ["gallery", 960],

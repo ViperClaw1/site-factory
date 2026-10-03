@@ -29,6 +29,13 @@ export async function middleware(request: NextRequest) {
 
   const permission = requiredPermission(request.nextUrl.pathname);
   if (permission && !can(roleOf(user), permission)) {
+    // A signed-in customer must not learn that /admin exists.
+    if (permission === "admin" && user) {
+      const hidden = request.nextUrl.clone();
+      hidden.pathname = "/404";
+      hidden.search = "";
+      return NextResponse.rewrite(hidden);
+    }
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.search = `?next=${encodeURIComponent(request.nextUrl.pathname)}`;
@@ -42,5 +49,7 @@ export const config = {
   // Only the protected routes — keeps a Supabase Auth round-trip off every
   // public catalog page. The browser client refreshes the session elsewhere.
   // Keep in sync with PROTECTED_ROUTES in lib/rbac.ts.
+  // "/admin/:path*" stays off while ADMIN_PUBLIC is true in lib/rbac.ts.
+  // Put it back here together with that flag.
   matcher: ["/account/:path*", "/favorites/:path*"],
 };

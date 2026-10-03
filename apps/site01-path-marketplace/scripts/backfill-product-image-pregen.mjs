@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Generate `*_thumb.webp`, `*_gallery.webp`, `*_hero.webp` for product images
- * in the `characters` / `toys` buckets, and record them on products.images.
+ * in the catalog buckets plus legacy `characters` / `toys`.
  *
  * Usage (from apps/site01-path-marketplace):
  *   node scripts/backfill-product-image-pregen.mjs [--dry-run] [--limit 100] [--slug labubu-the-monsters-s3]

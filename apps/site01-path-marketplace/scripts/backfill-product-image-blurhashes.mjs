@@ -7,8 +7,8 @@
  * Usage (from apps/site01-path-marketplace):
  *   node scripts/backfill-product-image-blurhashes.mjs [--dry-run] [--limit 50] [--slug …] [--force]
  */
-import { encode } from "blurhash";
 import {
+  blurhashFromBytes,
   createSupabaseAdmin,
   downloadObject,
   errorMessage,
@@ -21,11 +21,6 @@ import {
   variantObjectPath,
 } from "./lib/product-images.mjs";
 
-// 32×32 sample, 4×3 components — same settings as the business-cards backfill.
-const BLUR_SAMPLE_SIZE = 32;
-const COMPONENTS_X = 4;
-const COMPONENTS_Y = 3;
-
 function parseArgs(argv) {
   const args = argv.slice(2);
   return {
@@ -34,22 +29,6 @@ function parseArgs(argv) {
     limit: parseLimit(args, 200),
     slug: argValue(args, "--slug"),
   };
-}
-
-// Decode → 32×32 RGBA → blurhash.
-async function blurhashFromBytes(bytes) {
-  const sharp = (await import("sharp")).default;
-  const { data, info } = await sharp(bytes)
-    .rotate()
-    .resize(BLUR_SAMPLE_SIZE, BLUR_SAMPLE_SIZE, { fit: "cover" })
-    .ensureAlpha()
-    .raw()
-    .toBuffer({ resolveWithObject: true });
-  if (info.channels !== 4 || data.length !== info.width * info.height * 4) {
-    throw new Error(`unexpected pixel buffer (${info.channels} ch, ${data.length} bytes)`);
-  }
-  const pixels = new Uint8ClampedArray(data.buffer, data.byteOffset, data.byteLength);
-  return encode(pixels, info.width, info.height, COMPONENTS_X, COMPONENTS_Y);
 }
 
 // Prefer the thumb (if pregen recorded it), then the original.
