@@ -55,7 +55,7 @@ export function AdminToolbar({ filters, onChange, onAdd }: AdminToolbarProps) {
           Search
           <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Title or slug" className={CONTROL} />
         </label>
-        <button type="submit" className="rounded-full bg-[#111] px-6 py-3 text-sm font-medium text-yellow-400 hover:bg-[#222]">
+        <button type="submit" className="rounded-full bg-[#111] px-6 py-3 text-sm font-medium text-brand hover:bg-[#222]">
           Search
         </button>
       </form>

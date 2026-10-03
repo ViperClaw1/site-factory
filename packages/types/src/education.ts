@@ -28,6 +28,13 @@ export interface Course {
   instructor_id: string | null;
   status: CourseStatus;
   duration_minutes: number | null;
+  duration_months?: number | null;
+  students?: number;
+  badge?: "bestseller" | "new" | "popular" | null;
+  /** Written by scripts/backfill-course-covers.mjs; variants sit next to cover_image (x.webp → x_thumb.webp). */
+  cover_meta?: { blurhash?: string; variants?: ("thumb" | "gallery" | "hero")[]; v?: string } | null;
+  /** Server-decoded cover_meta.blurhash (data URL) for next/image's blurDataURL. Not a column. */
+  cover_blur?: string;
   created_at: string;
   updated_at: string;
   i18n?: ContentI18n | null;
