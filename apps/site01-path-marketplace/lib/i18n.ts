@@ -9,43 +9,85 @@ export type { MessageKey } from "./messages";
 
 // Display order of the nav dropdown / footer bar. English stays the default
 // (server render + first client render) regardless of position here.
-export const LOCALES = ["en", "ru", "de", "fr", "es", "it", "zh", "ja"] as const;
+export const LOCALES = [
+  "en",
+  "de",
+  "fr",
+  "es",
+  "pt",
+  "id",
+  "ar",
+  "zh",
+  "ja",
+  "th",
+  "vi",
+  "ko",
+  "it",
+  "sw",
+  "ha",
+  "am",
+] as const;
 export type Locale = (typeof LOCALES)[number];
 
 // Short labels used by the nav dropdown and the footer language bar.
 export const LOCALE_LABELS: Record<Locale, string> = {
-  ru: "RU",
   en: "EN",
   de: "DE",
   fr: "FR",
   es: "ES",
+  pt: "PT",
+  id: "ID",
+  ar: "AR",
+  zh: "ZH",
+  ja: "JA",
+  th: "TH",
+  vi: "VI",
+  ko: "KO",
   it: "IT",
-  zh: "中文",
-  ja: "JP",
+  sw: "SW",
+  ha: "HA",
+  am: "AM",
 };
 
-// Flag + native name for the header language menu.
+// Native name + short code for the header language menu.
 export const LOCALE_OPTIONS: Record<Locale, { name: string; code: string }> = {
   en: { name: "English", code: "EN" },
-  ru: { name: "Русский", code: "RU" },
   de: { name: "Deutsch", code: "DE" },
   fr: { name: "Français", code: "FR" },
   es: { name: "Español", code: "ES" },
+  pt: { name: "Português", code: "PT" },
+  id: { name: "Bahasa Indonesia", code: "ID" },
+  ar: { name: "العربية", code: "AR" },
+  zh: { name: "中文", code: "ZH" },
+  ja: { name: "日本語", code: "JA" },
+  th: { name: "ไทย", code: "TH" },
+  vi: { name: "Tiếng Việt", code: "VI" },
+  ko: { name: "한국어", code: "KO" },
   it: { name: "Italiano", code: "IT" },
-  zh: { name: "中文", code: "中文" },
-  ja: { name: "日本語", code: "日本語" },
+  sw: { name: "Kiswahili", code: "SW" },
+  ha: { name: "Hausa", code: "HA" },
+  am: { name: "አማርኛ", code: "AM" },
 };
 
 // BCP 47 tags for <html lang> and Intl number formatting.
+// Japanese is ja-JP: "ja-SP" is not a valid region tag.
 const LOCALE_TAGS: Record<Locale, string> = {
-  ru: "ru-RU",
   en: "en-US",
   de: "de-DE",
   fr: "fr-FR",
   es: "es-ES",
-  it: "it-IT",
+  pt: "pt-PT",
+  id: "id-ID",
+  ar: "ar",
   zh: "zh-CN",
   ja: "ja-JP",
+  th: "th-TH",
+  vi: "vi-VN",
+  ko: "ko-KR",
+  it: "it-IT",
+  sw: "sw",
+  ha: "ha",
+  am: "am",
 };
 
 function isLocale(value: unknown): value is Locale {
@@ -70,7 +112,7 @@ export const useLocaleStore = create<LocaleState>()(
     {
       name: "toyverse-locale",
       skipHydration: true,
-      // Ignore a saved locale that's no longer offered (e.g. "ko" from before
+      // Ignore a saved locale that's no longer offered (e.g. "ru" from before
       // the locale set changed) instead of indexing MESSAGES with it.
       merge: (persisted, current) => {
         const locale = (persisted as Partial<LocaleState> | undefined)?.locale;

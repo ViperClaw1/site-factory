@@ -16,7 +16,8 @@ body {
   /* Outfit is Latin-only (and has no bundled fallback — see layout.tsx), so
      Cyrillic falls through to Onest; zh/ja to the native CJK faces. */
   font-family: var(--font-body), var(--font-body-cyrillic), "PingFang SC", "Hiragino Sans",
-    "Noto Sans CJK SC", system-ui, sans-serif;
+    "Noto Sans CJK SC", "Noto Sans Arabic", "Noto Sans Thai", "Malgun Gothic", "Ebrima",
+    system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 

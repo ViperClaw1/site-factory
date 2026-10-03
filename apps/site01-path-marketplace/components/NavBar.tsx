@@ -69,6 +69,7 @@ export function NavBar() {
   // Keep <html lang> in sync so screen readers/fonts pick the right language.
   useEffect(() => {
     document.documentElement.lang = localeTag(locale);
+    document.documentElement.dir = locale === "ar" ? "rtl" : "ltr";
   }, [locale]);
 
   // Close the mobile panel on navigation.
@@ -139,7 +140,7 @@ export function NavBar() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -6 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-full z-50 mt-2 w-56 rounded-2xl border border-black/10 bg-white p-1.5 shadow-lg"
+                  className="absolute right-0 top-full z-50 mt-2 max-h-[min(28rem,70vh)] w-64 overflow-y-auto rounded-2xl border border-black/10 bg-white p-1.5 shadow-lg"
                 >
                   {LOCALES.map((code) => {
                     const option = LOCALE_OPTIONS[code];
