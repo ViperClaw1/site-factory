@@ -39,6 +39,14 @@ const FLAGS: Record<Locale, JSX.Element> = {
       <circle cx="8" cy="7" r="2.2" fill="#FFCC00" />
     </>
   ),
+  tr: (
+    <>
+      <rect width="20" height="14" fill="#E30A17" />
+      <circle cx="8" cy="7" r="3.1" fill="#fff" />
+      <circle cx="8.9" cy="7" r="2.45" fill="#E30A17" />
+      <polygon points="12.2,7 11.3,7.35 11.55,6.4 10.7,6.05 11.65,5.9 12.05,5 12.45,5.9 13.4,6.05 12.55,6.4 12.8,7.35" fill="#fff" />
+    </>
+  ),
   id: (
     <>
       <rect width="20" height="14" fill="#fff" />
@@ -84,11 +92,26 @@ const FLAGS: Record<Locale, JSX.Element> = {
       <path d="M10 3.9 A3.1 3.1 0 0 0 10 10.1 A1.55 1.55 0 0 1 10 6.95 A1.55 1.55 0 0 0 10 3.9" fill="#0047A0" />
     </>
   ),
+  hi: (
+    <>
+      <rect width="20" height="14" fill="#FF9933" />
+      <rect y="4.67" width="20" height="4.66" fill="#fff" />
+      <rect y="9.33" width="20" height="4.67" fill="#138808" />
+      <circle cx="10" cy="7" r="1.45" fill="none" stroke="#000080" strokeWidth="0.35" />
+    </>
+  ),
   it: (
     <>
       <rect width="20" height="14" fill="#fff" />
       <rect width="6.67" height="14" fill="#009246" />
       <rect x="13.33" width="6.67" height="14" fill="#CE2B37" />
+    </>
+  ),
+  ru: (
+    <>
+      <rect width="20" height="14" fill="#fff" />
+      <rect y="4.67" width="20" height="4.66" fill="#0039A6" />
+      <rect y="9.33" width="20" height="4.67" fill="#D52B1E" />
     </>
   ),
   sw: (

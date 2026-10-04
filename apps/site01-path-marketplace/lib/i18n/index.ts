@@ -35,7 +35,7 @@ export const useLocaleStore = create<LocaleState>()(
         },
         removeItem: (key) => localStorage.removeItem(key),
       })),
-      // Ignore a saved locale that's no longer offered (e.g. "ru") instead of
+      // Ignore a saved locale that's no longer offered instead of
       // indexing dictionaries with it.
       merge: (persisted, current) => {
         const locale = (persisted as Partial<LocaleState> | undefined)?.locale;

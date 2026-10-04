@@ -6,11 +6,14 @@ import { en, type Dict } from "./en";
 import { es } from "./es";
 import { fr } from "./fr";
 import { ha } from "./ha";
+import { hi } from "./hi";
 import { id } from "./id";
 import { it } from "./it";
 import { ja } from "./ja";
 import { ko } from "./ko";
 import { pt } from "./pt";
+import { ru } from "./ru";
+import { tr } from "./tr";
 import { sw } from "./sw";
 import { th } from "./th";
 import { vi } from "./vi";
@@ -25,6 +28,7 @@ export const dictionaries: Record<Lang, Dict> = {
   fr,
   es,
   pt,
+  tr,
   id,
   ar,
   zh,
@@ -32,7 +36,9 @@ export const dictionaries: Record<Lang, Dict> = {
   th,
   vi,
   ko,
+  hi,
   it,
+  ru,
   sw,
   ha,
   am,
