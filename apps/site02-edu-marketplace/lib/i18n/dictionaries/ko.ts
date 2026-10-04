@@ -1,4 +1,4 @@
-import type { Dict } from "./en";
+﻿import type { Dict } from "./en";
 
 export const ko: Dict = {
   nav: {
@@ -237,7 +237,7 @@ export const ko: Dict = {
         excerpt: "노트, 코드, 멘토 피드백을 한곳에 모은 새 레슨 플레이어를 만나 보세요.",
       },
       hiring: {
-        title: "2025년 채용 담당자가 보는 것",
+        title: "2026년 채용 담당자가 보는 것",
         excerpt: "테크 리드 7명이 첫 면접 전에 주니어 포트폴리오를 돋보이게 하는 점을 이야기합니다.",
       },
       mina: {

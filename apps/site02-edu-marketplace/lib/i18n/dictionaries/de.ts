@@ -1,4 +1,4 @@
-import type { Dict } from "./en";
+﻿import type { Dict } from "./en";
 
 export const de: Dict = {
   nav: {
@@ -237,7 +237,7 @@ export const de: Dict = {
         excerpt: "Der neue Lektionsplayer hält Notizen, Code und Mentor-Feedback an einem Ort.",
       },
       hiring: {
-        title: "Worauf Personalverantwortliche 2025 achten",
+        title: "Worauf Personalverantwortliche 2026 achten",
         excerpt: "Sieben Tech-Leads erzählen, was ein Junior-Portfolio vor dem ersten Gespräch hervorhebt.",
       },
       mina: {

@@ -37,11 +37,11 @@ export function LanguageMenu() {
         aria-expanded={open}
         aria-label={t.nav.language}
         onClick={() => setOpen((value) => !value)}
-        className="flex h-10 items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 text-sm font-medium transition hover:border-white/25 hover:bg-white/[0.08]"
+        className="flex h-10 w-10 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] text-sm font-medium transition hover:border-white/25 hover:bg-white/[0.08] sm:w-auto sm:px-3"
       >
         <Flag code={current.code} />
-        <span>{current.label}</span>
-        <ChevronDownIcon className={`h-4 w-4 text-white/50 transition-transform ${open ? "rotate-180" : ""}`} />
+        <span className="hidden sm:inline">{current.label}</span>
+        <ChevronDownIcon className={`hidden h-4 w-4 text-white/50 transition-transform sm:block ${open ? "rotate-180" : ""}`} />
       </button>
 
       {open && (

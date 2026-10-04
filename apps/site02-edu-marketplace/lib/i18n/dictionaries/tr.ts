@@ -1,4 +1,4 @@
-import type { Dict } from "./en";
+﻿import type { Dict } from "./en";
 
 export const tr: Dict = {
   nav: {
@@ -237,7 +237,7 @@ export const tr: Dict = {
         excerpt: "Notları, kodu ve mentor geri bildirimini bir arada tutan yenilenmiş ders oynatıcısı.",
       },
       hiring: {
-        title: "İşe alım yöneticileri 2025'te ne arıyor",
+        title: "İşe alım yöneticileri 2026'te ne arıyor",
         excerpt: "Yedi teknoloji lideri, ilk görüşmeden önce bir junior portföyünü öne çıkaran şeyi anlatıyor.",
       },
       mina: {

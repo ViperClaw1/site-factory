@@ -1,4 +1,4 @@
-import type { Dict } from "./en";
+﻿import type { Dict } from "./en";
 
 export const hi: Dict = {
   nav: {
@@ -237,7 +237,7 @@ export const hi: Dict = {
         excerpt: "नया पाठ प्लेयर: नोट, कोड और मेंटर फ़ीडबैक एक जगह।",
       },
       hiring: {
-        title: "2025 में हायरिंग मैनेजर क्या देखते हैं",
+        title: "2026 में हायरिंग मैनेजर क्या देखते हैं",
         excerpt: "सात टेक लीड बताते हैं कि पहली इंटरव्यू से पहले जूनियर पोर्टफोलियो कैसे अलग दिखता है।",
       },
       mina: {

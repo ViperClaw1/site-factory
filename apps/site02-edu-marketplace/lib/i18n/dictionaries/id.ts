@@ -1,4 +1,4 @@
-import type { Dict } from "./en";
+﻿import type { Dict } from "./en";
 
 export const id: Dict = {
   nav: {
@@ -237,7 +237,7 @@ export const id: Dict = {
         excerpt: "Kenali pemutar pelajaran yang didesain ulang: catatan, kode, dan umpan balik mentor di satu tempat.",
       },
       hiring: {
-        title: "Apa yang dicari manajer perekrutan di 2025",
+        title: "Apa yang dicari manajer perekrutan di 2026",
         excerpt: "Tujuh pemimpin teknologi berbagi apa yang membuat portofolio junior menonjol sebelum wawancara pertama.",
       },
       mina: {

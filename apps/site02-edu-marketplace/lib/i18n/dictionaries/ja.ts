@@ -1,4 +1,4 @@
-import type { Dict } from "./en";
+﻿import type { Dict } from "./en";
 
 export const ja: Dict = {
   nav: {
@@ -223,7 +223,7 @@ export const ja: Dict = {
         excerpt: "ノート、コード、メンターのフィードバックを一つにまとめた新しいレッスンプレーヤー。",
       },
       hiring: {
-        title: "2025年、採用担当が見ているもの",
+        title: "2026年、採用担当が見ているもの",
         excerpt: "7人のテックリードが、最初の面接の前にジュニアのポートフォリオを際立たせるポイントを語ります。",
       },
       mina: {

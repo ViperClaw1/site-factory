@@ -1,4 +1,4 @@
-import type { Dict } from "./en";
+﻿import type { Dict } from "./en";
 
 export const am: Dict = {
   nav: {
@@ -237,7 +237,7 @@ export const am: Dict = {
         excerpt: "እንደገና የተነደፈውን የትምህርት ማጫወቻ ተወቁ፦ ማስታወሻ፣ ኮድ እና የአማካሪ አስተያየት በአንድ ቦታ።",
       },
       hiring: {
-        title: "በ2025 የቅጥር ኃላፊዎች የሚፈልጉት",
+        title: "በ2026 የቅጥር ኃላፊዎች የሚፈልጉት",
         excerpt: "ሰባት የቴክ መሪዎች የጀማሪ ፖርትፎሊዮ ከመጀመሪያው ቃለ መጠይቅ በፊት እንዴት እንደሚለይ ይናገራሉ።",
       },
       mina: {

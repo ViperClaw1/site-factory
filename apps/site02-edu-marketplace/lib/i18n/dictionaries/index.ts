@@ -1,4 +1,4 @@
-import type { Lang } from "../locales";
+﻿import type { Lang } from "../locales";
 import { am } from "./am";
 import { ar } from "./ar";
 import { de } from "./de";

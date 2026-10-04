@@ -1,4 +1,4 @@
-import type { Dict } from "./en";
+﻿import type { Dict } from "./en";
 
 export const fr: Dict = {
   nav: {
@@ -237,7 +237,7 @@ export const fr: Dict = {
         excerpt: "Découvrez le lecteur de leçons repensé : notes, code et retours des mentors au même endroit.",
       },
       hiring: {
-        title: "Ce que les recruteurs cherchent en 2025",
+        title: "Ce que les recruteurs cherchent en 2026",
         excerpt: "Sept responsables tech expliquent ce qui fait ressortir un portfolio junior avant le premier entretien.",
       },
       mina: {

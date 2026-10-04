@@ -1,4 +1,4 @@
-import type { Dict } from "./en";
+﻿import type { Dict } from "./en";
 
 export const zh: Dict = {
   nav: {
@@ -222,7 +222,7 @@ export const zh: Dict = {
         excerpt: "认识重新设计的课时播放器：笔记、代码和导师反馈都在一处。",
       },
       hiring: {
-        title: "2025 年招聘负责人在看什么",
+        title: "2026 年招聘负责人在看什么",
         excerpt: "七位技术负责人分享，初级作品集怎样在第一次面试前脱颖而出。",
       },
       mina: {

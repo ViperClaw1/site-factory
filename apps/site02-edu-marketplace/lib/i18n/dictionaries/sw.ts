@@ -1,4 +1,4 @@
-import type { Dict } from "./en";
+﻿import type { Dict } from "./en";
 
 export const sw: Dict = {
   nav: {
@@ -237,7 +237,7 @@ export const sw: Dict = {
         excerpt: "Kutana na kichezaji kipya cha masomo: madokezo, msimbo na maoni ya mshauri mahali pamoja.",
       },
       hiring: {
-        title: "Wanachotafuta wasimamizi wa kuajiri mwaka 2025",
+        title: "Wanachotafuta wasimamizi wa kuajiri mwaka 2026",
         excerpt: "Viongozi saba wa teknolojia wanaeleza kinachofanya kumbukumbu ya mwanafunzi chipukizi ionekane kabla ya mahojiano ya kwanza.",
       },
       mina: {

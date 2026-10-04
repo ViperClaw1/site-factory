@@ -1,4 +1,4 @@
-import type { Dict } from "./en";
+﻿import type { Dict } from "./en";
 
 export const vi: Dict = {
   nav: {
@@ -237,7 +237,7 @@ export const vi: Dict = {
         excerpt: "Làm quen trình phát bài học mới: ghi chú, mã nguồn và góp ý của mentor ở cùng một nơi.",
       },
       hiring: {
-        title: "Nhà tuyển dụng tìm kiếm điều gì năm 2025",
+        title: "Nhà tuyển dụng tìm kiếm điều gì năm 2026",
         excerpt: "Bảy trưởng nhóm công nghệ chia sẻ điều khiến portfolio cấp junior nổi bật trước buổi phỏng vấn đầu tiên.",
       },
       mina: {

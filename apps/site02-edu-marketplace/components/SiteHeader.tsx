@@ -3,15 +3,17 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
+import { LOCALES } from "@/lib/i18n/locales";
 import { useUser } from "@/features/auth/hooks";
 import { useCartIds } from "@/features/cart/store";
 import { CartIcon, CloseIcon, HeartIcon, MenuIcon, UserIcon } from "./icons";
+import { Flag } from "./Flag";
 import { LanguageMenu } from "./LanguageMenu";
 import { Logo } from "./Logo";
 import { ThemeSwitch } from "./ThemeSwitch";
 
 export function SiteHeader() {
-  const { t } = useI18n();
+  const { t, lang, setLang } = useI18n();
   const { user, ready } = useUser();
   const cartCount = useCartIds().length;
   const [scrolled, setScrolled] = useState(false);
@@ -45,10 +47,10 @@ export function SiteHeader() {
         glass ? "border-white/10 bg-canvas/70 backdrop-blur-xl backdrop-saturate-150" : "border-transparent bg-transparent"
       }`}
     >
-      <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-2 px-4 sm:gap-4 sm:px-6 xl:gap-6 xl:px-8">
         <Logo />
 
-        <nav className="hidden items-center gap-7 text-sm font-medium text-white/65 lg:flex">
+        <nav className="hidden items-center gap-5 whitespace-nowrap text-sm font-medium text-white/65 xl:flex 2xl:gap-7">
           {nav.map((item) => (
             <Link key={item.href} href={item.href} className="transition hover:text-white">
               {item.label}
@@ -56,8 +58,8 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2 sm:gap-3">
-          <Link href="/admin" className="hidden px-2 text-sm font-semibold text-white/80 hover:text-brand lg:inline">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
+          <Link href="/admin" className="hidden whitespace-nowrap px-2 text-sm font-semibold text-white/80 hover:text-brand xl:inline">
             Admin
           </Link>
           <ThemeSwitch />
@@ -94,13 +96,13 @@ export function SiteHeader() {
               <>
                 <Link
                   href="/login"
-                  className="hidden h-10 items-center px-3 text-sm font-medium text-white/75 transition hover:text-white sm:inline-flex"
+                  className="hidden h-10 items-center whitespace-nowrap px-3 text-sm font-medium text-white/75 transition hover:text-white sm:inline-flex"
                 >
                   {t.nav.login}
                 </Link>
                 <Link
                   href="/#pricing"
-                  className="hidden h-10 items-center rounded-full bg-brand px-5 text-sm font-bold text-ink transition hover:bg-brand-dark md:inline-flex"
+                  className="hidden h-10 items-center whitespace-nowrap rounded-full bg-brand px-5 text-sm font-bold text-ink transition hover:bg-brand-dark md:inline-flex"
                 >
                   {t.nav.cta}
                 </Link>
@@ -112,7 +114,7 @@ export function SiteHeader() {
             aria-label={t.nav.menu}
             aria-expanded={mobileOpen}
             onClick={() => setMobileOpen((value) => !value)}
-            className="grid h-10 w-10 place-items-center rounded-full border border-white/10 lg:hidden"
+            className="grid h-10 w-10 place-items-center rounded-full border border-white/10 xl:hidden"
           >
             {mobileOpen ? <CloseIcon /> : <MenuIcon />}
           </button>
@@ -121,7 +123,7 @@ export function SiteHeader() {
 
       {/* ---- Mobile drawer ---- */}
       {mobileOpen && (
-        <nav className="anim-fade-up border-t border-white/10 px-4 pb-6 pt-2 sm:px-6 lg:hidden">
+        <nav className="anim-fade-up border-t border-white/10 px-4 pb-6 pt-2 sm:px-6 xl:hidden">
           <Link href="/admin" onClick={() => setMobileOpen(false)} className="block border-b border-white/5 py-3.5 text-base font-medium text-white/80">
             Admin
           </Link>
@@ -135,6 +137,26 @@ export function SiteHeader() {
               {item.label}
             </Link>
           ))}
+          <div className="mt-4 grid grid-cols-8 gap-1.5" role="group" aria-label={t.nav.language}>
+            {LOCALES.map((locale) => {
+              const selected = locale.code === lang;
+              return (
+                <button
+                  key={locale.code}
+                  type="button"
+                  onClick={() => setLang(locale.code)}
+                  aria-pressed={selected}
+                  aria-label={locale.native}
+                  title={locale.native}
+                  className={`grid h-9 place-items-center rounded-lg transition ${
+                    selected ? "bg-white/10 ring-1 ring-brand/60" : "bg-white/[0.04] hover:bg-white/[0.08]"
+                  }`}
+                >
+                  <Flag code={locale.code} className="h-4 w-6" />
+                </button>
+              );
+            })}
+          </div>
           {ready && !user && (
           <div className="mt-5 flex gap-3">
             <Link

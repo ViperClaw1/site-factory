@@ -1,4 +1,4 @@
-import type { Dict } from "./en";
+﻿import type { Dict } from "./en";
 
 export const ha: Dict = {
   nav: {
@@ -237,7 +237,7 @@ export const ha: Dict = {
         excerpt: "Sadu da sabon na'urar darasi: bayanin kula, lamba da ra'ayin jagora a wuri ɗaya.",
       },
       hiring: {
-        title: "Abin da masu daukar ma'aikata ke nema a 2025",
+        title: "Abin da masu daukar ma'aikata ke nema a 2026",
         excerpt: "Shugabanni bakwai na fasaha sun bayyana abin da ke sa fayil ɗin matashi ya fito kafin hira ta farko.",
       },
       mina: {

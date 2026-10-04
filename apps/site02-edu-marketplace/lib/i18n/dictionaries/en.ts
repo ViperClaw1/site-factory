@@ -1,4 +1,4 @@
-export const en = {
+﻿export const en = {
   nav: {
     news: "News",
     profile: "Profile",
@@ -235,7 +235,7 @@ export const en = {
         excerpt: "Meet the redesigned lesson player, built to keep your notes, code, and mentor feedback in one place.",
       },
       hiring: {
-        title: "What hiring managers look for in 2025",
+        title: "What hiring managers look for in 2026",
         excerpt: "Seven tech leads share what makes a junior portfolio stand out before the first interview.",
       },
       mina: {
