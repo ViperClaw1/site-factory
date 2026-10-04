@@ -30,6 +30,16 @@ export interface CardItem {
   category?: string;
 }
 
+/** Collab titles are stored as "× …" with the character in a separate field. */
+export function productHeading(title: string, character?: string | null): string {
+  const text = title.trim();
+  const name = character?.trim();
+  if (!name || text.toLowerCase().includes(name.toLowerCase())) return text;
+  if (!/^[×x]\s+/i.test(text)) return text;
+  const label = name.replace(/\b\p{L}/gu, (letter) => letter.toLocaleUpperCase());
+  return `${label} ${text}`;
+}
+
 export function unsplash(id: string, width = 800, height = width): string {
   return `https://images.unsplash.com/photo-${id}?w=${width}&h=${height}&fit=crop&auto=format`;
 }

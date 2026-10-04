@@ -80,7 +80,7 @@ export const zh: Dict = {
   "footer.emailPlaceholder": "你的邮箱",
   "footer.subscribe": "订阅",
   "footer.subscribed": "谢谢！订阅功能即将上线。",
-  "footer.rights": "© {year} ToyVerse 版权所有。",
+  "footer.rights": "© {year} Path Kids 版权所有。",
   "footer.newArrivals": "新品上架",
   "footer.giftCards": "礼品卡",
   "footer.faq": "常见问题",
@@ -178,4 +178,9 @@ export const zh: Dict = {
   "fav.empty": "还没有收藏——点击任意商品上的爱心即可收藏。",
   "fav.add": "加入收藏",
   "fav.remove": "取消收藏",
+  "footer.privacy": "隐私政策",
+  "footer.terms": "使用条款",
+  "legal.privacy.title": "隐私政策",
+  "legal.terms.title": "使用条款",
+  "legal.pending": "全文尚未发布。此页面将用于放置该文本。",
 };

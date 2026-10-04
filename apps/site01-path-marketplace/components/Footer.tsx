@@ -17,6 +17,11 @@ const SHOP_LINKS: { key: MessageKey; href: string }[] = [
 ];
 
 // Support pages don't exist yet — these render as plain labels until they do.
+const LEGAL_LINKS: { key: MessageKey; href: string }[] = [
+  { key: "footer.privacy", href: "/privacy" },
+  { key: "footer.terms", href: "/terms" },
+];
+
 const SUPPORT_KEYS: MessageKey[] = [
   "footer.faq",
   "footer.shipping",
@@ -151,7 +156,14 @@ export function Footer() {
       {/* Bottom bar: copyright + language switcher (synced with the nav dropdown). */}
       <div className="border-t border-black/5">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-5 text-xs text-black/45 sm:flex-row sm:px-6 lg:px-8">
-          <p>{t("footer.rights", { year: new Date().getFullYear() })}</p>
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+            <p>{t("footer.rights", { year: new Date().getFullYear() })}</p>
+            {LEGAL_LINKS.map((link) => (
+              <Link key={link.href} href={link.href} className="underline-offset-2 hover:text-pink hover:underline">
+                {t(link.key)}
+              </Link>
+            ))}
+          </div>
           <div className="flex flex-wrap items-center justify-center gap-2" role="group" aria-label={t("nav.language")}>
             {LOCALES.map((item) => {
               const selected = item.code === locale;

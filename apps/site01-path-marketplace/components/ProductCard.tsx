@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuthStore } from "@/lib/auth";
-import type { BadgeKind, CardItem } from "@/lib/catalog";
+import { productHeading, type BadgeKind, type CardItem } from "@/lib/catalog";
 import { useCartStore } from "@/lib/cart";
 import { useT, type MessageKey } from "@/lib/i18n";
 import Link from "next/link";
@@ -60,7 +60,7 @@ export function useAddToCart(item: CardItem, authGate = false) {
     addItem({
       productId: item.id,
       slug: item.slug,
-      title: item.title,
+      title: productHeading(item.title, item.character),
       price: item.price,
       currency: item.currency,
       image: item.image,
@@ -87,6 +87,7 @@ export function ProductCard({ item, compact = false, authGate = false }: Product
   const router = useRouter();
   const { add, added } = useAddToCart(item, authGate);
   const href = `/p/${item.slug}`;
+  const heading = productHeading(item.title, item.character);
 
   function buyNow() {
     if (!add()) return;
@@ -142,7 +143,7 @@ export function ProductCard({ item, compact = false, authGate = false }: Product
         {item.character && <p className="eyebrow !text-[9px] text-black/40">{item.character}</p>}
         <h3 className={`mt-1 font-semibold leading-snug text-ink ${compact ? "text-xs" : "text-sm"}`}>
           <Link href={href} className="transition-colors hover:text-pink">
-            {item.title}
+            {heading}
           </Link>
         </h3>
         {item.subtitle && <p className="mt-0.5 text-[11px] text-black/40">{item.subtitle}</p>}

@@ -74,7 +74,7 @@ export const ko: Dict = {
   "footer.emailPlaceholder": "you@email.com",
   "footer.subscribe": "구독",
   "footer.subscribed": "감사합니다! 뉴스레터 신청은 곧 열립니다.",
-  "footer.rights": "© {year} ToyVerse. All rights reserved.",
+  "footer.rights": "© {year} Path Kids. All rights reserved.",
   "footer.newArrivals": "신상품",
   "footer.giftCards": "기프트 카드",
   "footer.faq": "FAQ",
@@ -167,4 +167,9 @@ export const ko: Dict = {
   "fav.empty": "즐겨찾기가 없습니다. 상품의 하트를 눌러 보세요.",
   "fav.add": "즐겨찾기에 추가",
   "fav.remove": "즐겨찾기에서 삭제",
+  "footer.privacy": "개인정보 처리방침",
+  "footer.terms": "이용약관",
+  "legal.privacy.title": "개인정보 처리방침",
+  "legal.terms.title": "이용약관",
+  "legal.pending": "전문은 아직 게시되지 않았습니다. 이 페이지가 그 자리입니다.",
 };

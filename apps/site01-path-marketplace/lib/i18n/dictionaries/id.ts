@@ -74,7 +74,7 @@ export const id: Dict = {
   "footer.emailPlaceholder": "email@anda.com",
   "footer.subscribe": "Berlangganan",
   "footer.subscribed": "Terima kasih! Pendaftaran nawala segera dibuka.",
-  "footer.rights": "© {year} ToyVerse. Hak cipta dilindungi.",
+  "footer.rights": "© {year} Path Kids. Hak cipta dilindungi.",
   "footer.newArrivals": "Produk baru",
   "footer.giftCards": "Kartu hadiah",
   "footer.faq": "FAQ",
@@ -167,4 +167,9 @@ export const id: Dict = {
   "fav.empty": "Belum ada favorit — ketuk hati pada produk.",
   "fav.add": "Tambah ke favorit",
   "fav.remove": "Hapus dari favorit",
+  "footer.privacy": "Kebijakan privasi",
+  "footer.terms": "Ketentuan penggunaan",
+  "legal.privacy.title": "Kebijakan privasi",
+  "legal.terms.title": "Ketentuan penggunaan",
+  "legal.pending": "Teks lengkap belum dipublikasikan. Halaman ini adalah tempatnya.",
 };

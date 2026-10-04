@@ -5,6 +5,7 @@ import { CatalogImage } from "@/components/CatalogImage";
 import { useAddToCart } from "@/components/ProductCard";
 import { Shape } from "@/components/Shape";
 import { useT } from "@/lib/i18n";
+import { productHeading } from "@/lib/catalog";
 import { circularCountdown, freshSaleIndex, type FreshSaleDeal } from "@/lib/placeholders";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -43,7 +44,7 @@ function DealPanel({ deal }: { deal: FreshSaleDeal }) {
         </p>
         <h2 className="font-display mt-3 text-4xl md:text-5xl">
           <Link href={`/p/${item.slug}`} className="hover:text-pink">
-            {item.title}
+            {productHeading(item.title, item.character)}
           </Link>
         </h2>
         <p className="mt-2 text-sm text-white/50">

@@ -74,7 +74,7 @@ export const sw: Dict = {
   "footer.emailPlaceholder": "wewe@email.com",
   "footer.subscribe": "Jiandikishe",
   "footer.subscribed": "Asante! Usajili wa barua pepe utaanza hivi karibuni.",
-  "footer.rights": "© {year} ToyVerse. Haki zote zimehifadhiwa.",
+  "footer.rights": "© {year} Path Kids. Haki zote zimehifadhiwa.",
   "footer.newArrivals": "Bidhaa mpya",
   "footer.giftCards": "Kadi za zawadi",
   "footer.faq": "Maswali",
@@ -167,4 +167,9 @@ export const sw: Dict = {
   "fav.empty": "Bado hakuna vipendwa — gusa moyo kwenye bidhaa.",
   "fav.add": "Ongeza kwa vipendwa",
   "fav.remove": "Ondoa kutoka vipendwa",
+  "footer.privacy": "Sera ya faragha",
+  "footer.terms": "Masharti ya matumizi",
+  "legal.privacy.title": "Sera ya faragha",
+  "legal.terms.title": "Masharti ya matumizi",
+  "legal.pending": "Maandishi kamili bado hayajachapishwa. Ukurasa huu ndio mahali pake.",
 };

@@ -252,19 +252,23 @@ export function NavBar() {
                   Admin
                 </Link>
               )}
-              <div className="mt-4 flex flex-wrap gap-2">
-                {LOCALES.map((item) => (
-                  <button
-                    key={item.code}
-                    type="button"
-                    onClick={() => setLocale(item.code)}
-                    className={`px-3 py-1.5 text-xs font-semibold ${
-                      item.code === locale ? "bg-ink text-white" : "bg-black/5 text-ink"
-                    }`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
+              <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label={t("nav.language")}>
+                {LOCALES.map((item) => {
+                  const selected = item.code === locale;
+                  return (
+                    <button
+                      key={item.code}
+                      type="button"
+                      onClick={() => setLocale(item.code)}
+                      aria-pressed={selected}
+                      aria-label={item.native}
+                      title={item.native}
+                      className={`px-3 py-1.5 ${selected ? "bg-ink" : "bg-black/5"}`}
+                    >
+                      <FlagIcon locale={item.code} className="h-4 w-6 rounded-[3px]" />
+                    </button>
+                  );
+                })}
               </div>
             </nav>
           </motion.div>

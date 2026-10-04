@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 import { dictionaries, type MessageKey } from "./dictionaries";
 import { DEFAULT_LANG, isLang, localeTag, type Lang } from "./locales";
 
@@ -25,8 +25,16 @@ export const useLocaleStore = create<LocaleState>()(
       setLocale: (locale) => set({ locale }),
     }),
     {
-      name: "toyverse-locale",
+      name: "path-kids-locale",
       skipHydration: true,
+      storage: createJSONStorage(() => ({
+        getItem: (key) => localStorage.getItem(key) ?? localStorage.getItem("toyverse-locale"),
+        setItem: (key, value) => {
+          localStorage.setItem(key, value);
+          localStorage.removeItem("toyverse-locale");
+        },
+        removeItem: (key) => localStorage.removeItem(key),
+      })),
       // Ignore a saved locale that's no longer offered (e.g. "ru") instead of
       // indexing dictionaries with it.
       merge: (persisted, current) => {

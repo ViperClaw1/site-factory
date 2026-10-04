@@ -10,7 +10,7 @@ module.exports = {
   ],
   theme: {
     extend: {
-      // ToyVerse Memphis palette — hot pink / golden yellow / electric blue on
+      // Path Kids Memphis palette — hot pink / golden yellow / electric blue on
       // near-black ink and a warm off-white "cream" for alternate sections.
       colors: {
         pink: { DEFAULT: "#FF2D55", dark: "#D6153F", soft: "#FFE3EA" },

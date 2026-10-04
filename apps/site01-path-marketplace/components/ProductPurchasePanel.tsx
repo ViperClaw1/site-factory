@@ -2,6 +2,7 @@
 
 import { useCartStore } from "@/lib/cart";
 import { useT } from "@/lib/i18n";
+import { productHeading } from "@/lib/catalog";
 import { coverImage } from "@/lib/media";
 import type { Product } from "@repo/types";
 import Link from "next/link";
@@ -25,7 +26,7 @@ export function ProductPurchasePanel({ product, soldOut = false }: ProductPurcha
     addItem({
       productId: product.id,
       slug: product.slug,
-      title: product.title,
+      title: productHeading(product.title, product.character),
       price: product.base_price,
       currency: product.currency,
       image: coverImage(product)?.url,

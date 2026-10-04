@@ -80,7 +80,7 @@ export const it: Dict = {
   "footer.emailPlaceholder": "tua@email.it",
   "footer.subscribe": "Iscriviti",
   "footer.subscribed": "Grazie! L'iscrizione alla newsletter apre a breve.",
-  "footer.rights": "© {year} ToyVerse. Tutti i diritti riservati.",
+  "footer.rights": "© {year} Path Kids. Tutti i diritti riservati.",
   "footer.newArrivals": "Novità",
   "footer.giftCards": "Carte regalo",
   "footer.faq": "FAQ",
@@ -178,4 +178,9 @@ export const it: Dict = {
   "fav.empty": "Nessun preferito — tocca il cuore su qualsiasi prodotto.",
   "fav.add": "Aggiungi ai preferiti",
   "fav.remove": "Rimuovi dai preferiti",
+  "footer.privacy": "Informativa sulla privacy",
+  "footer.terms": "Termini di utilizzo",
+  "legal.privacy.title": "Informativa sulla privacy",
+  "legal.terms.title": "Termini di utilizzo",
+  "legal.pending": "Il testo completo non è ancora pubblicato. Questa pagina è il posto previsto.",
 };

@@ -74,7 +74,7 @@ export const th: Dict = {
   "footer.emailPlaceholder": "you@email.com",
   "footer.subscribe": "สมัคร",
   "footer.subscribed": "ขอบคุณ! การสมัครจดหมายข่าวจะเปิดเร็ว ๆ นี้",
-  "footer.rights": "© {year} ToyVerse. สงวนลิขสิทธิ์",
+  "footer.rights": "© {year} Path Kids. สงวนลิขสิทธิ์",
   "footer.newArrivals": "สินค้าใหม่",
   "footer.giftCards": "บัตรของขวัญ",
   "footer.faq": "คำถามที่พบบ่อย",
@@ -167,4 +167,9 @@ export const th: Dict = {
   "fav.empty": "ยังไม่มีรายการโปรด — แตะหัวใจบนสินค้า",
   "fav.add": "เพิ่มในรายการโปรด",
   "fav.remove": "เอาออกจากรายการโปรด",
+  "footer.privacy": "นโยบายความเป็นส่วนตัว",
+  "footer.terms": "ข้อกำหนดการใช้งาน",
+  "legal.privacy.title": "นโยบายความเป็นส่วนตัว",
+  "legal.terms.title": "ข้อกำหนดการใช้งาน",
+  "legal.pending": "ข้อความฉบับเต็มยังไม่เผยแพร่ หน้านี้คือที่สำหรับข้อความนั้น",
 };

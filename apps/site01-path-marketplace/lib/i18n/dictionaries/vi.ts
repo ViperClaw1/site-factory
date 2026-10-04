@@ -74,7 +74,7 @@ export const vi: Dict = {
   "footer.emailPlaceholder": "ban@email.com",
   "footer.subscribe": "Đăng ký",
   "footer.subscribed": "Cảm ơn! Đăng ký bản tin sẽ mở sớm.",
-  "footer.rights": "© {year} ToyVerse. Bảo lưu mọi quyền.",
+  "footer.rights": "© {year} Path Kids. Bảo lưu mọi quyền.",
   "footer.newArrivals": "Hàng mới",
   "footer.giftCards": "Thẻ quà",
   "footer.faq": "FAQ",
@@ -167,4 +167,9 @@ export const vi: Dict = {
   "fav.empty": "Chưa có mục yêu thích — chạm trái tim trên sản phẩm.",
   "fav.add": "Thêm vào yêu thích",
   "fav.remove": "Xóa khỏi yêu thích",
+  "footer.privacy": "Chính sách bảo mật",
+  "footer.terms": "Điều khoản sử dụng",
+  "legal.privacy.title": "Chính sách bảo mật",
+  "legal.terms.title": "Điều khoản sử dụng",
+  "legal.pending": "Toàn văn chưa được công bố. Trang này là nơi dành cho nội dung đó.",
 };

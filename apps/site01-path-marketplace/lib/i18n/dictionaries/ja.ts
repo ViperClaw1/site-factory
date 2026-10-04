@@ -80,7 +80,7 @@ export const ja: Dict = {
   "footer.emailPlaceholder": "メールアドレス",
   "footer.subscribe": "登録",
   "footer.subscribed": "ありがとうございます！登録受付は近日開始します。",
-  "footer.rights": "© {year} ToyVerse. All rights reserved.",
+  "footer.rights": "© {year} Path Kids. All rights reserved.",
   "footer.newArrivals": "新着アイテム",
   "footer.giftCards": "ギフトカード",
   "footer.faq": "よくある質問",
@@ -178,4 +178,9 @@ export const ja: Dict = {
   "fav.empty": "お気に入りはまだありません。商品のハートをタップしてください。",
   "fav.add": "お気に入りに追加",
   "fav.remove": "お気に入りから削除",
+  "footer.privacy": "プライバシーポリシー",
+  "footer.terms": "利用規約",
+  "legal.privacy.title": "プライバシーポリシー",
+  "legal.terms.title": "利用規約",
+  "legal.pending": "全文はまだ公開されていません。このページがその場所です。",
 };

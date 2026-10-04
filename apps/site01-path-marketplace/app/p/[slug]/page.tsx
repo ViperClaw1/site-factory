@@ -10,6 +10,7 @@ import {
 } from "@/lib/placeholders";
 import { CatalogImage } from "@/components/CatalogImage";
 import { blurhashToDataUrl } from "@/lib/blurhash";
+import { productHeading } from "@/lib/catalog";
 import { coverImage } from "@/lib/media";
 import { generateProductJsonLd, generateMetadata as seo } from "@repo/lib";
 import { Container } from "@repo/ui";
@@ -60,7 +61,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     return { robots: { index: false } };
   }
   const cover = coverImage(real);
-  return seo(real.title, (real.description ?? "").slice(0, 160), cover?.url, `/p/${real.slug}`);
+  return seo(productHeading(real.title, real.character), (real.description ?? "").slice(0, 160), cover?.url, `/p/${real.slug}`);
 }
 
 export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
@@ -71,6 +72,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
     ? { product: real, character: real.character, soldOut: false }
     : buildPlaceholderProduct(params.slug);
   const cover = coverImage(product);
+  const heading = productHeading(product.title, character);
 
   return (
     <Container className="py-12 lg:py-16">
@@ -110,7 +112,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
           {/* Copy + purchase */}
           <div className="lg:pt-6">
             {character && <p className="eyebrow text-pink">{character}</p>}
-            <h1 className="font-display mt-2 text-4xl leading-tight text-ink md:text-5xl">{product.title}</h1>
+            <h1 className="font-display mt-2 text-4xl leading-tight text-ink md:text-5xl">{heading}</h1>
             {product.series && <p className="mt-2 text-sm text-black/45">{product.series}</p>}
             <div className="mt-8">
               <ProductPurchasePanel product={product} soldOut={soldOut} />

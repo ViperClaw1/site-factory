@@ -74,7 +74,7 @@ export const am: Dict = {
   "footer.emailPlaceholder": "you@email.com",
   "footer.subscribe": "ተመዝገብ",
   "footer.subscribed": "አመሰግናለሁ! የጋዜጣ ምዝገባ በቅርቡ ይጀምራል።",
-  "footer.rights": "© {year} ToyVerse. መብቱ በህግ የተጠበቀ ነው።",
+  "footer.rights": "© {year} Path Kids. መብቱ በህግ የተጠበቀ ነው።",
   "footer.newArrivals": "አዲስ መጪዎች",
   "footer.giftCards": "የስጦታ ካርዶች",
   "footer.faq": "ጥያቄዎች",
@@ -167,4 +167,9 @@ export const am: Dict = {
   "fav.empty": "ገና ተወዳጅ የለም — በማንኛውም እቃ ላይ ልብን ይንኩ።",
   "fav.add": "ወደ ተወዳጆች ጨምር",
   "fav.remove": "ከተወዳጆች አስወግድ",
+  "footer.privacy": "የግላዊነት ፖሊሲ",
+  "footer.terms": "የአጠቃቀም ውሎች",
+  "legal.privacy.title": "የግላዊነት ፖሊሲ",
+  "legal.terms.title": "የአጠቃቀም ውሎች",
+  "legal.pending": "ሙሉ ጽሑፉ ገና አልታተመም። ይህ ገጽ የሚቀመጥበት ቦታ ነው።",
 };

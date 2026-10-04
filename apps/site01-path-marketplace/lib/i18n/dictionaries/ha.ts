@@ -74,7 +74,7 @@ export const ha: Dict = {
   "footer.emailPlaceholder": "kai@email.com",
   "footer.subscribe": "Yi rijista",
   "footer.subscribed": "Na gode! Rijistar jarida za ta buɗe nan ba da jimawa ba.",
-  "footer.rights": "© {year} ToyVerse. Duk haƙƙoƙi na ajiye.",
+  "footer.rights": "© {year} Path Kids. Duk haƙƙoƙi na ajiye.",
   "footer.newArrivals": "Sabbin kaya",
   "footer.giftCards": "Katunan kyauta",
   "footer.faq": "Tambayoyi",
@@ -167,4 +167,9 @@ export const ha: Dict = {
   "fav.empty": "Babu zaɓaɓɓu tukuna — danna zuciya a kan kaya.",
   "fav.add": "Ƙara zuwa zaɓaɓɓu",
   "fav.remove": "Cire daga zaɓaɓɓu",
+  "footer.privacy": "Manufar sirri",
+  "footer.terms": "Sharuɗɗan amfani",
+  "legal.privacy.title": "Manufar sirri",
+  "legal.terms.title": "Sharuɗɗan amfani",
+  "legal.pending": "Cikakken rubutu ba a buga ba tukuna. Wannan shafi ne wurinsa.",
 };
