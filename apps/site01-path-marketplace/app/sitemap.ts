@@ -9,6 +9,9 @@ export const revalidate = 3600;
 const CATEGORIES = ["toys", "collectible_toys", "books", "artbooks", "designs", "merch", "figures"];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  // Demo: advertise nothing. Delete this return when the site is public.
+  return [];
+
   const base = process.env.BASE_URL;
   if (!base) {
     throw new Error("BASE_URL is not set");

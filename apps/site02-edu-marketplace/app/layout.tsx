@@ -28,6 +28,8 @@ export const metadata: Metadata = {
   metadataBase: process.env.BASE_URL ? new URL(process.env.BASE_URL) : undefined,
   title: "Path.courses — online IT school",
   description: "Interactive courses in programming, data, design and AI with mentors and hands-on practice.",
+  // Demo: drop this when the site is meant to be indexed.
+  robots: { index: false, follow: false },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

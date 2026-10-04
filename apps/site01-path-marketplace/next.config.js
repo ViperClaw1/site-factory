@@ -28,6 +28,14 @@ const nextConfig = {
       { protocol: "https", hostname: "images.unsplash.com" },
     ],
   },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
+    ];
+  },
   async rewrites() {
     const plausibleUrl = process.env.NEXT_PUBLIC_PLAUSIBLE_URL;
     if (!plausibleUrl) {

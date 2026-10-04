@@ -56,6 +56,8 @@ export const metadata: Metadata = {
   title: { default: "Path Kids — Collectibles Marketplace", template: "%s — Path Kids" },
   description:
     "A multilingual marketplace for designer toys, blind boxes, figures, art books and digital collectibles.",
+  // Demo: drop this when the site is meant to be indexed.
+  robots: { index: false, follow: false },
   icons: {
     icon: [{ url: "/brand/path-kids-badge.webp", type: "image/webp" }],
     apple: "/brand/path-kids-badge.webp",

@@ -5,6 +5,9 @@ import { getCourses } from "@/features/catalog/api/courses";
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  // Demo: advertise nothing. Delete this return when the site is public.
+  return [];
+
   const base = process.env.BASE_URL ?? "http://localhost:3002";
 
   const courses = await getCourses();

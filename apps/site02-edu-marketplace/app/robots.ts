@@ -1,24 +1,11 @@
 import type { MetadataRoute } from "next";
 
-// Catalog and marketing are public; API, auth, per-user and lesson-player pages have nothing to index.
+// Demo lock. Crawling stays allowed so bots can see the noindex header and
+// drop already-known URLs. The public allow-list and sitemap belong back here
+// when the site launches:
+//   allow: "/", disallow: /api /auth /account /learn /cart /checkout and auth routes
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: {
-      userAgent: "*",
-      allow: "/",
-      disallow: [
-        "/api/",
-        "/auth/",
-        "/account",
-        "/learn",
-        "/cart",
-        "/checkout",
-        "/login",
-        "/signup",
-        "/forgot-password",
-        "/reset-password",
-      ],
-    },
-    sitemap: `${process.env.BASE_URL ?? "http://localhost:3002"}/sitemap.xml`,
+    rules: { userAgent: "*", allow: "/" },
   };
 }
