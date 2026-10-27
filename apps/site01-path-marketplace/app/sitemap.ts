@@ -12,10 +12,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Demo: advertise nothing. Delete this return when the site is public.
   return [];
 
-  const base = process.env.BASE_URL;
-  if (!base) {
-    throw new Error("BASE_URL is not set");
-  }
+  // The early return above makes this unreachable, so a plain `if (!base) throw`
+  // does not narrow the env var. `?? never` keeps the guard and types `base` as string.
+  const base =
+    process.env.BASE_URL ??
+    (() => {
+      throw new Error("BASE_URL is not set");
+    })();
 
   const [collections, characters] = await Promise.all([getCollections(), getCharacters()]);
 
