@@ -3,7 +3,7 @@ tags: [project/task-4-site-factory, type/spec, status/draft]
 project: "Task 4 - Site Factory"
 status: draft
 created: 2026-07-27
-updated: 2026-09-21
+updated: 2026-11-06
 aliases: [Implementation Plan, Timeline, Roadmap, Фазы реализации, Educational Marketplace, Edu Marketplace]
 ---
 
@@ -12,7 +12,7 @@ aliases: [Implementation Plan, Timeline, Roadmap, Фазы реализации,
 Обновляет [[Implementation Plan]] с учётом:
 - PayMesh Gateway как единого фасада платёжной интеграции
 - API контракта Dashboard v2.0 (`dashboard/docs/API_CONTRACT_v2.0.md`)
-- Supabase Cloud Pro для коммерческих сайтов и дашборда (не self-hosted)
+- ~~Supabase Cloud Pro для коммерческих сайтов и дашборда~~ → один self-hosted стек Supabase в США на все сайты и каналы ([[adr-008-unified-commerce-and-auth|ADR-008]], 2026-11-06)
 - Ревью кода `site01-path-marketplace` (состояние на 2026-07-29)
 - Архитектуры `site02-edu-marketplace` — маркетплейс курсов (SKU + LMS-плеер), UI-референс [irreplaceable-ai.ru](https://irreplaceable-ai.ru/)
 
@@ -24,6 +24,25 @@ aliases: [Implementation Plan, Timeline, Roadmap, Фазы реализации,
 | B | `apps/site02-edu-marketplace` | `edu-marketplace` | Курсы как SKU (видео / аудио / текст), одноразовая покупка, плеер после оплаты |
 
 Подписки на обоих треках — отдельный спринт (блокер AnyBill).
+
+### Фазы ADR-008 (единая база коммерции)
+
+Идут поверх треков A и B и меняют их коммерческую часть: схему, auth и checkout.
+
+```
+1 ADR + документы ─▶ 2.5 инфра ─▶ 2 общая схема (packages/db) ─┬─▶ 3 auth + checkout по ссылке ─▶ запуск продаж
+                                                               └─▶ 4 CMP + PostHog (параллельно с 3, до запуска)
+6 B2B-граф компаний — параллельно после шага 1, от коммерции не зависит
+```
+
+| Шаг | Что | Оценка |
+|---|---|---|
+| 1 | ADR-008, правки документов | 1–2 дня |
+| 2.5 | Сервер коммерции + staging, PITR-бэкапы во внешний S3, Supavisor с лимитами на сайт, firewall провайдера | 3–5 дней |
+| 2 | Baseline-схема: customers/identities/consents, общие заказы, остатки и движения, payment_links, outbox; функции `SECURITY DEFINER`, RLS, pgTAP; перенос каталога site01 и курсов site02 | 5–7 дней |
+| 3 | Email OTP, общий пул пользователей, `pay.<бренд>/l/<slug>`, `packages/checkout`, вебхук PayMesh → `confirm_order` | 8–10 дней |
+| 4 | CMP (`packages/consent`), PostHog Cloud US, таксономия событий (`packages/analytics`), серверные события из outbox, удаление Plausible | 5–7 дней |
+| 6 | B2B-граф компаний рядом с dashboard (GLEIF, SEC EDGAR, OpenCorporates) | 2–3 недели |
 
 ---
 
@@ -41,6 +60,9 @@ aliases: [Implementation Plan, Timeline, Roadmap, Фазы реализации,
 | App VPS готов, Coolify установлен, домены в Cloudflare | Алексей Rubitco1 | ⏳ ожидает |
 | DB VPS готов, PostgreSQL 16 + pgvector | Алексей Rubitco1 | ⏳ ожидает |
 | Directus задеплоен, API токен выдан | Никита (после VPS) | ⏳ ожидает |
+| VPS в США под стек коммерции (8 vCPU, 16–32 ГБ) + малый staging (ADR-008) | Алексей Rubitco1 | ⏳ ожидает |
+| Транзакционный почтовый провайдер / SMTP (OTP, чеки) | TBD | ⏳ ожидает |
+| Аккаунт PostHog Cloud US + прокси-поддомен `e.<бренд>` | TBD | ⏳ ожидает |
 
 ### Только site01
 
@@ -53,7 +75,6 @@ aliases: [Implementation Plan, Timeline, Roadmap, Фазы реализации,
 | Что нужно | От кого | Статус |
 |---|---|---|
 | Домен site02 + DNS в Cloudflare | Алексей Rubitco1 | ⏳ TBD |
-| Отдельный проект Supabase Cloud Pro для LMS/коммерции курсов (не схема игрушек) | Никита | ⏳ ожидает |
 | Приватный R2 bucket `path-edu-videos` + API-токен Read & Write только на этот bucket | Никита | ⏳ ожидает |
 | Directus `CORS_ORIGIN`: добавить домен site02 | Инфра | ⏳ после домена |
 | `site_slug='edu-marketplace'` + `site_instance_id` в Dashboard | Алексей Ханипов | ⏳ ожидает |
@@ -72,6 +93,8 @@ aliases: [Implementation Plan, Timeline, Roadmap, Фазы реализации,
 Выполняется параллельно пока ждём VPS от Rubitco1. Всё делается на локальной машине с `.env.local`.
 
 ### 0a. Supabase Cloud
+
+> **Устарело (ADR-008).** Проект Cloud Pro не создаём: все сайты работают на одном self-hosted стеке, схема — baseline из `packages/db`. Ниже оставлено для истории.
 
 - Создать проект на supabase.com, тариф **Pro** ($25/мес)
 - В SQL editor выполнить `supabase/migrations/20260722000000_init_commerce_schema.sql`
@@ -548,7 +571,7 @@ apps/site02-edu-marketplace/
 
 ## B. Модель данных Supabase (MVP)
 
-Отдельный проект Cloud Pro. Миграции в `apps/site02-edu-marketplace/supabase/migrations/`.
+~~Отдельный проект Cloud Pro.~~ По ADR-008 курсы живут в общей базе коммерции (`courses.product_id` → `products`), миграции — в `packages/db`. Модель ниже — исходная, при переносе её поля переходят в baseline.
 
 ```sql
 -- enums
@@ -717,7 +740,7 @@ Framer Motion: только `'use client'`, `useReducedMotion()`, variants из 
 
 ### E0b. Supabase + R2 + Directus
 
-- Проект Cloud Pro, миграции LMS + RLS
+- ~~Проект Cloud Pro~~ общий self-hosted стек (ADR-008), миграции LMS + RLS
 - Seed 4–6 курсов: модули, уроки всех трёх типов, минимум один `is_preview` на курс
 - R2 bucket `path-edu-videos`, проверка `rclone ls`
 - Directus: `INSERT sites` (slug `edu-marketplace`), блок-типы лендинга, коллекция `instructors` с `site_id`

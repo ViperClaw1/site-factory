@@ -1,20 +1,22 @@
 ---
-tags: [project/task-4-site-factory, type/adr, status/approved]
+tags: [project/task-4-site-factory, type/adr, status/superseded]
 project: "Task 4 - Site Factory"
-status: approved
+status: superseded
 created: 2026-07-17
-updated: 2026-07-17
+updated: 2026-11-06
 aliases: []
 adr-id: "005"
 supersedes: []
-superseded-by: []
+superseded-by: ["008"]
 ---
 
 # ADR-005: Analytics
 
 ## Status
 
-Approved — Plausible Analytics (self-hosted, single instance).
+Superseded by [[adr-008-unified-commerce-and-auth|ADR-008]]: PostHog Cloud US with a consent banner; Plausible is retired. Code removal happens with the CMP/analytics step.
+
+Originally: Approved — Plausible Analytics (self-hosted, single instance).
 
 ## Context
 

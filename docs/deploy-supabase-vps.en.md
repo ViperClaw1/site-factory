@@ -2,6 +2,12 @@
 
 Russian version: [`deploy-supabase-vps.ru.md`](./deploy-supabase-vps.ru.md)
 
+> **Interim guide.** The target per [ADR-008](../adr/adr-008-unified-commerce-and-auth.md)
+> is **one** Supabase stack for all sites, with migrations in `packages/db`.
+> The two-stack layout below applies only until that baseline ships, because
+> the current per-site schemas can't share a database. This guide will be
+> rewritten for one stack at that point.
+
 Audience: the DevOps engineer who owns the VPS. This guide covers two apps:
 `apps/site01-path-marketplace` (toy marketplace) and
 `apps/site02-edu-marketplace` (course marketplace). For these two apps it
@@ -33,10 +39,10 @@ Not implemented in site02 yet: `/api/checkout/create-order`,
 `/api/paymesh/webhook`, and `/api/media/[lessonId]` all return `501`. You
 don't need payment or media configuration for site02.
 
-**The two apps need two separate Supabase instances.** Both schemas define
-`orders`, `order_status`, and `set_updated_at()`, and site02's migration says
-so explicitly ("Dedicated Supabase project — do not apply on the toys
-marketplace database").
+**For now the two apps need two separate Supabase instances.** Both legacy
+schemas define `orders`, `order_status`, and `set_updated_at()`, so they can't
+share a database. This is temporary: ADR-008 replaces them with one shared
+schema in `packages/db`.
 
 ---
 

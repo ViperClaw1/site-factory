@@ -3,7 +3,7 @@ tags: [project/task-4-site-factory, type/adr, status/approved]
 project: "Task 4 - Site Factory"
 status: approved
 created: 2026-07-17
-updated: 2026-07-17
+updated: 2026-11-06
 aliases: []
 adr-id: "002"
 supersedes: []
@@ -15,6 +15,8 @@ superseded-by: []
 ## Status
 
 Approved — Directus (self-hosted, single instance) chosen.
+
+Amended by [[adr-008-unified-commerce-and-auth|ADR-008]]: Directus runs on the shared commerce database and also manages the catalog and stock.
 
 ## Context
 

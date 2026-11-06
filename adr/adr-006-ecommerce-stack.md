@@ -1,20 +1,22 @@
 ---
-tags: [project/task-4-site-factory, type/adr, status/draft]
+tags: [project/task-4-site-factory, type/adr, status/superseded]
 project: "Task 4 - Site Factory"
-status: draft
+status: superseded
 created: 2026-07-17
-updated: 2026-07-17
+updated: 2026-11-06
 aliases: []
 adr-id: "006"
 supersedes: []
-superseded-by: []
+superseded-by: ["008"]
 ---
 
 # ADR-006: E-Commerce Stack
 
 ## Status
 
-Draft — Supabase + Stripe proposed, pending account access confirmation.
+Superseded by [[adr-008-unified-commerce-and-auth|ADR-008]]: one self-hosted Supabase stack for all sites instead of a dedicated project per site; PayMesh instead of Stripe.
+
+Originally: Draft — Supabase + Stripe proposed, pending account access confirmation.
 
 ## Context
 

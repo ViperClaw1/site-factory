@@ -36,9 +36,10 @@
 | `NEXT_PUBLIC_SUPABASE_URL` | да | Все три клиента: browser/public/server |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | да | anon-ключ, RLS ограничивает доступ на уровне БД (см. `supabase/migrations/`) |
 
-Supabase Cloud Pro сейчас, self-hosted — в плане. Код не завязан ни на что
-специфичное для облака (только URL + anon key), переезд должен быть сменой
-`.env`, не кода — см. `docs/conventions.md`.
+Один self-hosted стек Supabase на все сайты (ADR-008): у всех сайтов одинаковые
+URL и anon key, сайт различается по `site_id` в данных. Код зависит только от
+URL + anon key, поэтому смена инстанса — это смена `.env`, а не кода, см.
+`docs/conventions.md`.
 
 ## Прочее
 

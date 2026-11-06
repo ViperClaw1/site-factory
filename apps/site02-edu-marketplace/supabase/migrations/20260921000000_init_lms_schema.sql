@@ -1,5 +1,7 @@
 -- LMS + commerce schema for site02-edu-marketplace.
--- Dedicated Supabase project — do not apply on the toys marketplace database.
+-- Legacy per-site schema: conflicts with the toys schema (orders, order_status),
+-- so it can't share a database with it. Superseded by the shared baseline in
+-- packages/db (ADR-008).
 
 create extension if not exists pgcrypto;
 

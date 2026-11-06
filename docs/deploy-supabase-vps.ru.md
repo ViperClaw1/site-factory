@@ -2,6 +2,12 @@
 
 English version: [`deploy-supabase-vps.en.md`](./deploy-supabase-vps.en.md)
 
+> **Временная инструкция.** По [ADR-008](../adr/adr-008-unified-commerce-and-auth.md)
+> цель — **один** стек Supabase на все сайты, миграции в `packages/db`.
+> Схема с двумя стеками ниже действует, пока не выйдет этот baseline: текущие
+> схемы сайтов не уживаются в одной базе. После этого документ будет переписан
+> под один стек.
+
 Для кого: DevOps-инженер, который отвечает за VPS. Документ описывает два
 приложения: `apps/site01-path-marketplace` (магазин игрушек) и
 `apps/site02-edu-marketplace` (маркетплейс курсов). Для этих двух сайтов он
@@ -33,10 +39,10 @@ English version: [`deploy-supabase-vps.en.md`](./deploy-supabase-vps.en.md)
 `/api/paymesh/webhook` и `/api/media/[lessonId]`: все три отвечают `501`.
 Настраивать платежи и медиа для site02 не нужно.
 
-**Приложениям нужны два отдельных инстанса Supabase.** Обе схемы определяют
-`orders`, `order_status` и `set_updated_at()`, а в миграции site02 это сказано
-прямо («Dedicated Supabase project — do not apply on the toys marketplace
-database»).
+**Пока приложениям нужны два отдельных инстанса Supabase.** Обе старые схемы
+определяют `orders`, `order_status` и `set_updated_at()`, поэтому в одной базе
+не уживаются. Это временно: по ADR-008 их заменяет одна общая схема в
+`packages/db`.
 
 ---
 
