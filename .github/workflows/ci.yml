@@ -12,10 +12,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+      # Secret scan via gitleaks CLI (the action needs a paid-org license key)
+      - name: gitleaks
+        run: |
+          VER=8.21.2
+          curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v${VER}/gitleaks_${VER}_linux_x64.tar.gz | tar -xz gitleaks
+          ./gitleaks detect --source . --redact -v
 
   lint-typecheck-build:
     runs-on: ubuntu-latest
