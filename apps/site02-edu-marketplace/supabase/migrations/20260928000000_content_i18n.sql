@@ -1,9 +1,9 @@
 -- Per-language content overrides. Base text columns stay the default (ru);
 -- i18n = { "<lang>": { "<field>": "<text>" } }, read via lib/i18n/localize.ts.
 
-alter table courses add column i18n jsonb not null default '{}'::jsonb;
-alter table course_modules add column i18n jsonb not null default '{}'::jsonb;
-alter table lessons add column i18n jsonb not null default '{}'::jsonb;
+alter table courses add column if not exists i18n jsonb not null default '{}'::jsonb;
+alter table course_modules add column if not exists i18n jsonb not null default '{}'::jsonb;
+alter table lessons add column if not exists i18n jsonb not null default '{}'::jsonb;
 
 -- Translations for the seed content (20260921000001_seed_courses.sql).
 update courses set i18n = '{"en":{"title":"Path Animation Fundamentals","subtitle":"From frame to motion","description":"The first course: how the pipeline works and how to build a short study."},"de":{"title":"Grundlagen der Path-Animation","subtitle":"Vom Bild zur Bewegung","description":"Der erste Kurs: wie die Pipeline funktioniert und wie man eine kurze Studie erstellt."},"fr":{"title":"Les bases de l''animation Path","subtitle":"De l''image au mouvement","description":"Premier cours : comment fonctionne le pipeline et comment réaliser une courte étude."},"es":{"title":"Fundamentos de la animación Path","subtitle":"Del fotograma al movimiento","description":"El primer curso: cómo funciona el pipeline y cómo crear un estudio corto."},"it":{"title":"Fondamenti dell''animazione Path","subtitle":"Dal fotogramma al movimento","description":"Il primo corso: come funziona la pipeline e come realizzare un breve studio."},"zh":{"title":"路径动画基础","subtitle":"从画面到运动","description":"第一门课：制作流程如何运作，以及如何完成一个短小的练习作品。"},"ja":{"title":"パスアニメーションの基礎","subtitle":"フレームから動きへ","description":"最初のコース：パイプラインの仕組みと短い習作の作り方。"}}'::jsonb where id = 'a1000000-0000-0000-0000-000000000001';

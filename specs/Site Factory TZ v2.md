@@ -1,10 +1,17 @@
 ---
 tags: [project/task-4-site-factory, type/spec, status/draft]
-project: "Task 4 - Site Factory"
+project: 'Task 4 - Site Factory'
 status: draft
 created: 2026-07-27
 updated: 2026-07-29
-aliases: [Site Factory TZ v2, TZ v2.0, PayMesh Gateway Integration, Dashboard Integration, Фабрика сайтов ТЗ v2]
+aliases:
+  [
+    Site Factory TZ v2,
+    TZ v2.0,
+    PayMesh Gateway Integration,
+    Dashboard Integration,
+    Фабрика сайтов ТЗ v2,
+  ]
 ---
 
 # Фабрика сайтов + Маркетплейс Path Animation — ТЗ v2.0
@@ -21,15 +28,15 @@ aliases: [Site Factory TZ v2, TZ v2.0, PayMesh Gateway Integration, Dashboard In
 
 ## Что изменилось в v2.0 относительно v1.0
 
-| Тема | Было | Стало |
-|---|---|---|
-| Платёжная интеграция | Маркетплейс вызывает Hyperswitch/BTCPay напрямую | Маркетплейс вызывает только `POST /payments` PayMesh Gateway |
-| Webhook от провайдеров | Маркетплейс обрабатывает webhook Hyperswitch и BTCPay | Gateway обрабатывает, отправляет подписанный webhook маркетплейсу |
-| Formance | Маркетплейс пишет в Formance сам | Gateway пишет в Formance через `adapters/formance` |
-| Dashboard | Маркетплейс пушит агрегаты в дашборд | `POST /orders` — маркетплейс; `POST /financial_transactions` — PayMesh через `adapters/crmreporting` |
-| Dashboard стек | Vite + React (прототип HTML) | Vite + React + TypeScript + Tailwind + Supabase Realtime (уже реализован) |
-| Подписки | Не реализованы, stub | AnyBill adapter stub в Gateway — ждёт данных по тарифам |
-| Supabase маркетплейса | Self-hosted на DB VPS | Облачный Supabase Cloud Pro ($25/мес) — меньше ops-нагрузки, бэкапы из коробки |
+| Тема                   | Было                                                  | Стало                                                                                                |
+| ---------------------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Платёжная интеграция   | Маркетплейс вызывает Hyperswitch/BTCPay напрямую      | Маркетплейс вызывает только `POST /payments` PayMesh Gateway                                         |
+| Webhook от провайдеров | Маркетплейс обрабатывает webhook Hyperswitch и BTCPay | Gateway обрабатывает, отправляет подписанный webhook маркетплейсу                                    |
+| Formance               | Маркетплейс пишет в Formance сам                      | Gateway пишет в Formance через `adapters/formance`                                                   |
+| Dashboard              | Маркетплейс пушит агрегаты в дашборд                  | `POST /orders` — маркетплейс; `POST /financial_transactions` — PayMesh через `adapters/crmreporting` |
+| Dashboard стек         | Vite + React (прототип HTML)                          | Vite + React + TypeScript + Tailwind + Supabase Realtime (уже реализован)                            |
+| Подписки               | Не реализованы, stub                                  | AnyBill adapter stub в Gateway — ждёт данных по тарифам                                              |
+| Supabase маркетплейса  | Self-hosted на DB VPS                                 | Облачный Supabase Cloud Pro ($25/мес) — меньше ops-нагрузки, бэкапы из коробки                       |
 
 ---
 
@@ -143,29 +150,36 @@ interfaces/   — HTTP API (X-API-Key auth), webhook receivers
 ### Что важно для интеграции с маркетплейсом
 
 **Аутентификация маркетплейса в Gateway:**
+
 ```
 X-API-Key: pm_live_a1b2c3...
 ```
+
 Ключ выдаётся оператором через `cmd/keys`. Не самосервисный. Нужно получить у Алексея Астафьева.
 
 **Суммы — ТОЛЬКО integer minor units:**
+
 ```
 10.00 RUB  → amount: 1000    (копейки)
 25.00 USD  → amount: 2500    (центы)
 25.00 USDT → amount: 25000000 (USDT имеет 6 minor digits)
 0.00015 BTC → amount: 15000  (satoshis, 8 minor digits)
 ```
+
 Gateway эхует `amount_display` — проверять при интеграции.
 
 **ETH ceiling:** `int64` переполняется выше ~9.2 ETH. Известное ограничение, зафиксировано в roadmap Gateway.
 
 **Идемпотентность:**
+
 ```
 Idempotency-Key: order_48213   (заголовок запроса)
 ```
+
 Ретрай с тем же ключом возвращает оригинальный платёж, не создаёт дубль.
 
 **Webhook от Gateway к маркетплейсу:**
+
 ```
 POST {MARKETPLACE_WEBHOOK_URL}
 X-PayMesh-Signature: sha256=<hex>    ← HMAC-SHA256(body, webhook_secret)
@@ -180,6 +194,7 @@ Content-Type: application/json
   "amount_display": "10.00 USD"
 }
 ```
+
 Верификация: `HMAC-SHA256(rawBody, PAYMESH_WEBHOOK_SECRET)` constant-time сравнение.
 
 **Known limitation Gateway:** No retry на outbound webhook. Держать polling `GET /payments/{id}` как fallback.
@@ -193,6 +208,7 @@ Content-Type: application/json
 ## 4. Dashboard — особенности реализации
 
 Dashboard (Модуль №19, Алексей Ханипов) — самостоятельное React-приложение:
+
 - **Стек:** Vite + React 18 + TypeScript + Tailwind CSS
 - **БД:** Supabase (PostgreSQL 16) — отдельный инстанс, не маркетплейсовый
 - **Realtime:** Supabase Realtime на таблицах `leads`, `scenario_events`, `orders`, `financial_transactions`
@@ -255,21 +271,21 @@ PayMesh Gateway → Маркетплейс
 export async function createPayMeshPayment(
   order: Order,
   paymentMethod: 'fiat' | 'crypto',
-  counterpartyId: string
+  counterpartyId: string,
 ) {
   const res = await fetch(`${process.env.PAYMESH_GATEWAY_URL}/payments`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'X-API-Key': process.env.PAYMESH_API_KEY!,
-      'Idempotency-Key': order.id,   // order.id как idempotency key
+      'Idempotency-Key': order.id, // order.id как idempotency key
     },
     body: JSON.stringify({
       counterparty_id: counterpartyId,
       amount: toMinorUnits(order.total, order.currency),
       currency: order.currency,
-      method: paymentMethod            // 'fiat' или 'crypto'
-    })
+      method: paymentMethod, // 'fiat' или 'crypto'
+    }),
   });
 
   if (!res.ok) throw new Error(`PayMesh: ${res.status} ${await res.text()}`);
@@ -280,19 +296,23 @@ export async function createPayMeshPayment(
 
   return {
     paymentIntentId: payment.payment_intent_id,
-    checkoutUrl: payment.checkout_url,   // redirect покупателя сюда
-    status: payment.status
+    checkoutUrl: payment.checkout_url, // redirect покупателя сюда
+    status: payment.status,
   };
 }
 
 // Конвертация в minor units по правилам Gateway
 function toMinorUnits(amount: number, currency: string): number {
   const minorDigits: Record<string, number> = {
-    USD: 2, EUR: 2, GBP: 2, RUB: 2,
+    USD: 2,
+    EUR: 2,
+    GBP: 2,
+    RUB: 2,
     JPY: 0,
-    USDT: 6, USDC: 6,
+    USDT: 6,
+    USDC: 6,
     BTC: 8,
-    ETH: 18  // осторожно: overflow выше ~9.2 ETH
+    ETH: 18, // осторожно: overflow выше ~9.2 ETH
   };
   const digits = minorDigits[currency] ?? 2;
   return Math.round(amount * Math.pow(10, digits));
@@ -307,13 +327,15 @@ function toMinorUnits(amount: number, currency: string): number {
 import { createHmac, timingSafeEqual } from 'crypto';
 
 export async function POST(req: Request) {
-  const sig = req.headers.get('x-paymesh-signature');  // "sha256=<hex>"
+  const sig = req.headers.get('x-paymesh-signature'); // "sha256=<hex>"
   const rawBody = await req.text();
 
   // Верификация подписи
-  const expected = 'sha256=' + createHmac('sha256', process.env.PAYMESH_WEBHOOK_SECRET!)
-    .update(rawBody)
-    .digest('hex');
+  const expected =
+    'sha256=' +
+    createHmac('sha256', process.env.PAYMESH_WEBHOOK_SECRET!)
+      .update(rawBody)
+      .digest('hex');
 
   if (!timingSafeEqual(Buffer.from(sig ?? ''), Buffer.from(expected))) {
     return Response.json({ error: 'Invalid signature' }, { status: 401 });
@@ -330,12 +352,8 @@ export async function POST(req: Request) {
       .single();
 
     if (order) {
-      const hasDigital = order.items.some(i => i.product_type === 'digital');
-      await handlePaymentSuccess(
-        order.id,
-        event.payment_intent_id,
-        hasDigital
-      );
+      const hasDigital = order.items.some((i) => i.product_type === 'digital');
+      await handlePaymentSuccess(order.id, event.payment_intent_id, hasDigital);
     }
   }
 
@@ -350,7 +368,7 @@ export async function POST(req: Request) {
 export async function handlePaymentSuccess(
   orderId: string,
   paymentId: string,
-  hasDigital: boolean
+  hasDigital: boolean,
 ) {
   // 1. Обновить order в Supabase маркетплейса
   const { data: order } = await supabaseAdmin
@@ -365,22 +383,24 @@ export async function handlePaymentSuccess(
     if (item.product_type === 'physical') {
       await supabaseAdmin.rpc('decrement_stock', {
         variant_id: item.variant_id,
-        qty: item.qty
+        qty: item.qty,
       });
     }
   }
 
   // 3. Digital access
   if (hasDigital) {
-    const digitalItems = order.items.filter(i => i.product_type === 'digital');
+    const digitalItems = order.items.filter(
+      (i) => i.product_type === 'digital',
+    );
     await supabaseAdmin.from('digital_access').insert(
-      digitalItems.map(item => ({
+      digitalItems.map((item) => ({
         user_id: order.user_id,
         product_id: item.product_id,
         order_id: orderId,
         expires_at: null,
-        max_downloads: 5
-      }))
+        max_downloads: 5,
+      })),
     );
   }
 
@@ -402,9 +422,9 @@ export async function postOrderToDashboard(order: any, orderId: string) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.DASHBOARD_SUPABASE_ANON_KEY}`,
-          'apikey': process.env.DASHBOARD_SUPABASE_ANON_KEY!,
-          'Prefer': 'return=minimal'
+          Authorization: `Bearer ${process.env.DASHBOARD_SUPABASE_ANON_KEY}`,
+          apikey: process.env.DASHBOARD_SUPABASE_ANON_KEY!,
+          Prefer: 'return=minimal',
         },
         body: JSON.stringify({
           id: orderId,
@@ -413,15 +433,18 @@ export async function postOrderToDashboard(order: any, orderId: string) {
           customer_email: order.customer_email,
           amount_minor: toMinorUnits(order.total, order.currency),
           currency: order.currency,
-          items: order.items.map(i => ({
+          items: order.items.map((i) => ({
             product_id: i.product_id,
             title: i.title,
             quantity: i.qty,
-            unit_amount_minor: toMinorUnits(i.price_at_purchase, order.currency)
+            unit_amount_minor: toMinorUnits(
+              i.price_at_purchase,
+              order.currency,
+            ),
           })),
-          created_at: new Date().toISOString()
-        })
-      }
+          created_at: new Date().toISOString(),
+        }),
+      },
     );
     // 409 = already exists = ok (idempotent)
     if (!res.ok && res.status !== 409) {
@@ -453,6 +476,7 @@ tools/scripts/
 ```
 
 **Удаляются (больше не нужны):**
+
 ```
 lib/hyperswitch.ts        # заменён paymesh.ts
 lib/btcpay.ts             # заменён paymesh.ts
@@ -507,6 +531,7 @@ NEXT_PUBLIC_PLAUSIBLE_URL=https://analytics.yourdomain.com
 ```
 
 **Убраны:**
+
 ```
 HYPERSWITCH_URL, HYPERSWITCH_API_KEY, HYPERSWITCH_WEBHOOK_SECRET
 BTCPAY_URL, BTCPAY_STORE_ID, BTCPAY_API_KEY, BTCPAY_WEBHOOK_SECRET
@@ -550,6 +575,7 @@ FORMANCE_URL, FORMANCE_LEDGER, FORMANCE_API_KEY
 ## 10. Обновлённые фазы имплементации
 
 **Фаза 0 — Setup (2-3 дня)**
+
 - Создать проект в Supabase Cloud (supabase.com), тариф Pro ($25/мес)
 - Выполнить `supabase/migrations/20260722000000_init_commerce_schema.sql` через Supabase SQL editor
 - Включить Realtime: `ALTER PUBLICATION supabase_realtime ADD TABLE product_variants;`
@@ -564,6 +590,7 @@ FORMANCE_URL, FORMANCE_LEDGER, FORMANCE_API_KEY
 **Фаза 2 — PDP + Collectible UI (1.5 недели)** — без изменений
 
 **Фаза 3 — Commerce (1 неделя)**
+
 - Zustand cart + CartDrawer
 - `PaymentMethodSelector` (fiat / crypto — два варианта вместо трёх)
 - `POST /api/checkout/create-order` → `createPayMeshPayment()` → `payment.checkout_url`
@@ -584,51 +611,51 @@ FORMANCE_URL, FORMANCE_LEDGER, FORMANCE_API_KEY
 
 ### Payments VPS (выделенный, новый)
 
-| ПО | Версия | Назначение |
-|---|---|---|
-| Ubuntu Server | 22.04 LTS | ОС |
-| Docker Engine | 25.x | контейнеризация |
-| Docker Compose | v2.x | оркестрация |
-| Go | 1.22+ | рантайм Gateway (или бинарник в Docker) |
-| PayMesh Gateway | latest | `paymesh-gateway` репо |
-| Hyperswitch | v1.125.0 | fiat payments (pin версия из deploy/hyperswitch/README.md) |
-| BTCPay Server | 1.13.x | crypto payments |
-| Formance Ledger | latest | только `ledger` сервис из Formance стека |
-| PostgreSQL | 15.x | Gateway собственная БД (PaymentIntent, APIKey) |
-| Redis | 7.x | кэш |
-| ufw | — | firewall (443 открыт, 5432 только internal) |
-| rclone | 1.66.x | бэкапы платёжного контура → R2 отдельный bucket |
+| ПО              | Версия    | Назначение                                                 |
+| --------------- | --------- | ---------------------------------------------------------- |
+| Ubuntu Server   | 22.04 LTS | ОС                                                         |
+| Docker Engine   | 25.x      | контейнеризация                                            |
+| Docker Compose  | v2.x      | оркестрация                                                |
+| Go              | 1.22+     | рантайм Gateway (или бинарник в Docker)                    |
+| PayMesh Gateway | latest    | `paymesh-gateway` репо                                     |
+| Hyperswitch     | v1.125.0  | fiat payments (pin версия из deploy/hyperswitch/README.md) |
+| BTCPay Server   | 1.13.x    | crypto payments                                            |
+| Formance Ledger | latest    | только `ledger` сервис из Formance стека                   |
+| PostgreSQL      | 15.x      | Gateway собственная БД (PaymentIntent, APIKey)             |
+| Redis           | 7.x       | кэш                                                        |
+| ufw             | —         | firewall (443 открыт, 5432 только internal)                |
+| rclone          | 1.66.x    | бэкапы платёжного контура → R2 отдельный bucket            |
 
 ### Dashboard (Модуль №19 — Алексей Ханипов)
 
-| ПО | Версия | Назначение |
-|---|---|---|
-| Node.js | 20.x LTS | рантайм сборки |
-| Vite | 5.x | сборщик |
-| React | 18.x | UI |
-| TypeScript | 5.x strict | типы |
-| Tailwind CSS | 3.x | стили |
-| @supabase/supabase-js | 2.x | Realtime + PostgREST клиент |
-| Supabase Cloud Pro | $25/мес, PostgreSQL + Realtime + Auth | хранилище дашборда — облачный, без ops |
+| ПО                    | Версия                                | Назначение                             |
+| --------------------- | ------------------------------------- | -------------------------------------- |
+| Node.js               | 20.x LTS                              | рантайм сборки                         |
+| Vite                  | 5.x                                   | сборщик                                |
+| React                 | 18.x                                  | UI                                     |
+| TypeScript            | 5.x strict                            | типы                                   |
+| Tailwind CSS          | 3.x                                   | стили                                  |
+| @supabase/supabase-js | 2.x                                   | Realtime + PostgREST клиент            |
+| Supabase Cloud Pro    | $25/мес, PostgreSQL + Realtime + Auth | хранилище дашборда — облачный, без ops |
 
 ---
 
 ## 12. Порядок запуска — обновлённый
 
-1. **Инфраструктура** — App VPS + DB VPS: Ubuntu, Docker, ufw, Coolify *(Алексей `Rubitco1`)*
-2. **Payments VPS** — Ubuntu, Docker, Hyperswitch v1.125.0, BTCPay 1.13.x, Formance, Gateway *(Алексей Астафьев)*
-3. **Gateway ключи** — `cmd/keys` → `pm_test_...` для маркетплейса, webhook secret *(Алексей Астафьев)*
-4. **Dashboard** — Supabase schema `001_init_schema.sql`, deploy Vite app *(Алексей Ханипов)*
-5. **Dashboard ключи** — `DASHBOARD_SUPABASE_URL`, `DASHBOARD_SUPABASE_ANON_KEY` → Никите *(Алексей Ханипов)*
-6. **GitHub** — репо `site-factory`, branch protection *(владелец)*
-7. **DB VPS** — PostgreSQL 16 + pgvector *(Алексей `Rubitco1`)*
-7a. **Supabase Cloud** — создать проект на supabase.com, выполнить `supabase/migrations/20260722000000_init_commerce_schema.sql`, получить `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` *(Никита)*
-8. **Directus** — Coolify деплой, коллекции, API токен *(Никита)*
-9. **Monorepo bootstrap** — packages/ui, lib, types, config, шаблон site01 *(Никита)*
-10. **site01 Фаза 0** — Supabase schema, R2 bucket, seed данные *(Никита)*
-11. **Интеграция Gateway** — `lib/paymesh.ts`, тест с `pm_test_...` ключом, проверить `amount_display` *(Никита)*
-12. **Интеграция Dashboard** — `lib/dashboard.ts`, `POST /rest/v1/orders`, `sync-traffic.ts` *(Никита)*
-13. **Фазы 1-4** — каталог, PDP, checkout, account, SEO, деплой *(Никита)*
+1. **Инфраструктура** — App VPS + DB VPS: Ubuntu, Docker, ufw, Coolify _(Алексей `Rubitco1`)_
+2. **Payments VPS** — Ubuntu, Docker, Hyperswitch v1.125.0, BTCPay 1.13.x, Formance, Gateway _(Алексей Астафьев)_
+3. **Gateway ключи** — `cmd/keys` → `pm_test_...` для маркетплейса, webhook secret _(Алексей Астафьев)_
+4. **Dashboard** — Supabase schema `001_init_schema.sql`, deploy Vite app _(Алексей Ханипов)_
+5. **Dashboard ключи** — `DASHBOARD_SUPABASE_URL`, `DASHBOARD_SUPABASE_ANON_KEY` → Никите _(Алексей Ханипов)_
+6. **GitHub** — репо `site-factory`, branch protection _(владелец)_
+7. **DB VPS** — PostgreSQL 16 + pgvector _(Алексей `Rubitco1`)_
+   7a. **Supabase Cloud** — создать проект на supabase.com, выполнить `supabase/migrations/20260722000000_init_commerce_schema.sql`, получить `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` _(Никита)_
+8. **Directus** — Coolify деплой, коллекции, API токен _(Никита)_
+9. **Monorepo bootstrap** — packages/ui, lib, types, config, шаблон site01 _(Никита)_
+10. **site01 Фаза 0** — Supabase schema, R2 bucket, seed данные _(Никита)_
+11. **Интеграция Gateway** — `lib/paymesh.ts`, тест с `pm_test_...` ключом, проверить `amount_display` _(Никита)_
+12. **Интеграция Dashboard** — `lib/dashboard.ts`, `POST /rest/v1/orders`, `sync-traffic.ts` _(Никита)_
+13. **Фазы 1-4** — каталог, PDP, checkout, account, SEO, деплой _(Никита)_
 
 Шаги 1-5 блокируют всё остальное. Шаг 10 можно начинать параллельно с 7-9 на локальной машине.
 

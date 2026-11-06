@@ -76,7 +76,8 @@ values
     'RUB',
     'active',
     110
-  );
+  )
+on conflict (id) do nothing;
 
 insert into course_modules (id, course_id, title, description, sort, is_preview)
 values
@@ -85,7 +86,8 @@ values
   ('b1000000-0000-0000-0000-000000000003', 'a1000000-0000-0000-0000-000000000002', 'Сцена', null, 0, true),
   ('b1000000-0000-0000-0000-000000000004', 'a1000000-0000-0000-0000-000000000003', 'Этапы', null, 0, true),
   ('b1000000-0000-0000-0000-000000000005', 'a1000000-0000-0000-0000-000000000004', 'Монтаж', null, 0, true),
-  ('b1000000-0000-0000-0000-000000000006', 'a1000000-0000-0000-0000-000000000005', 'Выпуск', null, 0, true);
+  ('b1000000-0000-0000-0000-000000000006', 'a1000000-0000-0000-0000-000000000005', 'Выпуск', null, 0, true)
+on conflict (id) do nothing;
 
 insert into lessons (id, module_id, slug, title, type, duration_seconds, sort, is_preview, content_md, media_storage_path)
 values
@@ -220,4 +222,5 @@ values
     false,
     null,
     'courses/release-short/reel-voice.mp3'
-  );
+  )
+on conflict (id) do nothing;

@@ -2,13 +2,26 @@
 -- Legacy per-site schema: conflicts with the toys schema (orders, order_status),
 -- so it can't share a database with it. Superseded by the shared baseline in
 -- packages/db (ADR-008).
+-- Idempotent: safe to re-run on the same database.
 
 create extension if not exists pgcrypto;
 
-create type course_status as enum ('draft', 'active', 'archived');
-create type lesson_type as enum ('video', 'audio', 'text');
-create type enrollment_status as enum ('active', 'revoked');
-create type order_status as enum ('pending', 'paid', 'cancelled', 'refunded');
+do $$ begin
+  create type course_status as enum ('draft', 'active', 'archived');
+exception when duplicate_object then null;
+end $$;
+do $$ begin
+  create type lesson_type as enum ('video', 'audio', 'text');
+exception when duplicate_object then null;
+end $$;
+do $$ begin
+  create type enrollment_status as enum ('active', 'revoked');
+exception when duplicate_object then null;
+end $$;
+do $$ begin
+  create type order_status as enum ('pending', 'paid', 'cancelled', 'refunded');
+exception when duplicate_object then null;
+end $$;
 
 create or replace function set_updated_at()
 returns trigger as $$
@@ -18,7 +31,7 @@ begin
 end;
 $$ language plpgsql;
 
-create table courses (
+create table if not exists courses (
   id uuid primary key default gen_random_uuid(),
   slug text not null unique,
   title text not null,
@@ -39,14 +52,14 @@ create table courses (
   updated_at timestamptz not null default now()
 );
 
-create index courses_status_idx on courses (status);
-create index courses_category_idx on courses (category);
+create index if not exists courses_status_idx on courses (status);
+create index if not exists courses_category_idx on courses (category);
 
-create trigger courses_set_updated_at
+create or replace trigger courses_set_updated_at
   before update on courses
   for each row execute function set_updated_at();
 
-create table course_modules (
+create table if not exists course_modules (
   id uuid primary key default gen_random_uuid(),
   course_id uuid not null references courses (id) on delete cascade,
   title text not null,
@@ -55,9 +68,9 @@ create table course_modules (
   is_preview boolean not null default false
 );
 
-create index course_modules_course_id_idx on course_modules (course_id);
+create index if not exists course_modules_course_id_idx on course_modules (course_id);
 
-create table lessons (
+create table if not exists lessons (
   id uuid primary key default gen_random_uuid(),
   module_id uuid not null references course_modules (id) on delete cascade,
   slug text not null,
@@ -71,9 +84,9 @@ create table lessons (
   unique (module_id, slug)
 );
 
-create index lessons_module_id_idx on lessons (module_id);
+create index if not exists lessons_module_id_idx on lessons (module_id);
 
-create table orders (
+create table if not exists orders (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users (id) on delete cascade,
   status order_status not null default 'pending',
@@ -88,14 +101,14 @@ create table orders (
   updated_at timestamptz not null default now()
 );
 
-create index orders_user_id_idx on orders (user_id);
-create index orders_status_idx on orders (status);
+create index if not exists orders_user_id_idx on orders (user_id);
+create index if not exists orders_status_idx on orders (status);
 
-create trigger orders_set_updated_at
+create or replace trigger orders_set_updated_at
   before update on orders
   for each row execute function set_updated_at();
 
-create table enrollments (
+create table if not exists enrollments (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users (id) on delete cascade,
   course_id uuid not null references courses (id) on delete cascade,
@@ -105,9 +118,9 @@ create table enrollments (
   unique (user_id, course_id)
 );
 
-create index enrollments_user_id_idx on enrollments (user_id);
+create index if not exists enrollments_user_id_idx on enrollments (user_id);
 
-create table lesson_progress (
+create table if not exists lesson_progress (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users (id) on delete cascade,
   lesson_id uuid not null references lessons (id) on delete cascade,
@@ -116,7 +129,7 @@ create table lesson_progress (
   unique (user_id, lesson_id)
 );
 
-create index lesson_progress_user_id_idx on lesson_progress (user_id);
+create index if not exists lesson_progress_user_id_idx on lesson_progress (user_id);
 
 -- Row Level Security
 
@@ -127,10 +140,12 @@ alter table orders enable row level security;
 alter table enrollments enable row level security;
 alter table lesson_progress enable row level security;
 
+drop policy if exists "active courses are publicly readable" on courses;
 create policy "active courses are publicly readable"
   on courses for select
   using (status = 'active');
 
+drop policy if exists "modules of active courses are publicly readable" on course_modules;
 create policy "modules of active courses are publicly readable"
   on course_modules for select
   using (
@@ -143,6 +158,7 @@ create policy "modules of active courses are publicly readable"
 
 -- E0: catalog needs lesson titles for every lesson. Body/path stay unused
 -- in public UI; signed-URL route will still gate media in E4.
+drop policy if exists "lessons of active courses are publicly readable" on lessons;
 create policy "lessons of active courses are publicly readable"
   on lessons for select
   using (
@@ -154,26 +170,32 @@ create policy "lessons of active courses are publicly readable"
     )
   );
 
+drop policy if exists "users can view their own orders" on orders;
 create policy "users can view their own orders"
   on orders for select
   using (auth.uid() = user_id);
 
+drop policy if exists "users can create their own orders" on orders;
 create policy "users can create their own orders"
   on orders for insert
   with check (auth.uid() = user_id);
 
+drop policy if exists "users can view their own enrollments" on enrollments;
 create policy "users can view their own enrollments"
   on enrollments for select
   using (auth.uid() = user_id);
 
+drop policy if exists "users can view their own progress" on lesson_progress;
 create policy "users can view their own progress"
   on lesson_progress for select
   using (auth.uid() = user_id);
 
+drop policy if exists "users can upsert their own progress" on lesson_progress;
 create policy "users can upsert their own progress"
   on lesson_progress for insert
   with check (auth.uid() = user_id);
 
+drop policy if exists "users can update their own progress" on lesson_progress;
 create policy "users can update their own progress"
   on lesson_progress for update
   using (auth.uid() = user_id)
