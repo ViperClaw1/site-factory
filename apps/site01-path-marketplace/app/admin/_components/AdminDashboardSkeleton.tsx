@@ -68,15 +68,9 @@ export function AdminDashboardSkeleton() {
         </ControlSkeleton>
         <div className="flex items-end gap-2">
           <ControlSkeleton label="Search">
-            <input className={CONTROL_CLASS} defaultValue="" placeholder="Title or slug" tabIndex={-1} readOnly />
+            <input className={CONTROL_CLASS} defaultValue="" placeholder="Title or slug, then Enter" tabIndex={-1} readOnly />
             <Shimmer className="absolute inset-0" />
           </ControlSkeleton>
-          <span className="relative">
-            <Button type="button" variant="secondary" tabIndex={-1} className="invisible">
-              Search
-            </Button>
-            <Shimmer className="absolute inset-0 rounded-full" />
-          </span>
         </div>
         <div className="ml-auto flex flex-wrap gap-2">
           <span className="relative">

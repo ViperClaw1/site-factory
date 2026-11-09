@@ -19,9 +19,10 @@ interface AdminToolbarProps {
   exporting: boolean;
   onExportSelected: () => void;
   onExportAll: () => void;
+  onDeleteSelected: () => void;
 }
 
-export function AdminToolbar({ filters, onChange, onAdd, onBulk, selectedCount, exporting, onExportSelected, onExportAll }: AdminToolbarProps) {
+export function AdminToolbar({ filters, onChange, onAdd, onBulk, selectedCount, exporting, onExportSelected, onExportAll, onDeleteSelected }: AdminToolbarProps) {
   const [query, setQuery] = useState(filters.q);
   const filtered = Boolean(filters.category || filters.status || filters.q);
 
@@ -55,6 +56,7 @@ export function AdminToolbar({ filters, onChange, onAdd, onBulk, selectedCount, 
           <option value="archived">archived</option>
         </select>
       </label>
+      {/* No button: Enter submits the search. */}
       <form
         className="flex items-end gap-2"
         onSubmit={(event) => {
@@ -65,17 +67,20 @@ export function AdminToolbar({ filters, onChange, onAdd, onBulk, selectedCount, 
         <label className="text-xs font-semibold uppercase tracking-wide text-black/45">
           Search
           <input
+            type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Title or slug"
+            placeholder="Title or slug, then Enter"
             className="mt-1 block border-2 border-black/15 px-3 py-2 text-sm font-normal normal-case tracking-normal text-ink"
           />
         </label>
-        <Button type="submit" variant="secondary">
-          Search
-        </Button>
       </form>
       <div className="ml-auto flex flex-wrap gap-2">
+        {selectedCount > 0 && (
+          <Button type="button" variant="secondary" onClick={onDeleteSelected}>
+            Delete rows ({selectedCount})
+          </Button>
+        )}
         {selectedCount > 0 && (
           <Button type="button" variant="secondary" disabled={exporting} onClick={onExportSelected}>
             Export selected ({selectedCount})

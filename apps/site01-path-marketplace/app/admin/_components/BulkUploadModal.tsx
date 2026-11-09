@@ -36,12 +36,12 @@ const STEPS: { id: Step; label: string }[] = [
 ];
 
 // Checkpoint progress: finished steps get a check, the current one is outlined.
-function Stepper({ step }: { step: Step }) {
+function Stepper({ step, finished = false }: { step: Step; finished?: boolean }) {
   const current = STEPS.findIndex((item) => item.id === step);
   return (
     <ol className="mt-4 flex items-center" aria-label="Progress">
       {STEPS.map((item, position) => {
-        const done = position < current;
+        const done = position < current || (finished && position === current);
         const active = position === current;
         return (
           <li key={item.id} className="flex flex-1 items-center last:flex-none" aria-current={active ? "step" : undefined}>
@@ -265,7 +265,8 @@ export function BulkUploadModal({ open, onOpenChange, onFinished }: BulkUploadMo
         onOpenChange(next);
       }}
     >
-      <Stepper step={step} />
+      {/* Import gets its check once the queue has run and stopped. */}
+      <Stepper step={step} finished={step === "import" && !queue.running && queue.states.length > 0} />
 
       {step === "files" && (
         <div className="mt-6 space-y-4">
@@ -503,7 +504,18 @@ export function BulkUploadModal({ open, onOpenChange, onFinished }: BulkUploadMo
             <Button type="button" variant="ghost" disabled={queue.states.every((state) => state.status !== "error")} onClick={downloadErrors}>
               Download error report
             </Button>
-            <Button type="button" onClick={() => onOpenChange(false)} disabled={queue.running}>
+            <Button type="button" variant="secondary" onClick={reset} disabled={queue.running}>
+              Start over
+            </Button>
+            {/* Closing from here bypasses the Modal handler, so reset explicitly: the next open starts clean. */}
+            <Button
+              type="button"
+              onClick={() => {
+                reset();
+                onOpenChange(false);
+              }}
+              disabled={queue.running}
+            >
               Close
             </Button>
           </div>

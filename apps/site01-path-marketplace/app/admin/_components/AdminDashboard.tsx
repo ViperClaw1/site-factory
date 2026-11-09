@@ -2,7 +2,7 @@
 
 import { AdminToolbar, type AdminFilters } from "@/app/admin/_components/AdminToolbar";
 import { BulkUploadModal } from "@/app/admin/_components/BulkUploadModal";
-import { DeleteProductDialog } from "@/app/admin/_components/DeleteProductDialog";
+import { DeleteProductDialog, type DeleteTarget } from "@/app/admin/_components/DeleteProductDialog";
 import { ProductFormModal } from "@/app/admin/_components/ProductFormModal";
 import { ProductsTable } from "@/app/admin/_components/ProductsTable";
 import { StatsCards } from "@/app/admin/_components/StatsCards";
@@ -23,7 +23,8 @@ export function AdminDashboard({ rows, total, page, stats, filters }: AdminDashb
   const router = useRouter();
   const [addOpen, setAddOpen] = useState(false);
   const [bulkOpen, setBulkOpen] = useState(false);
-  const [pendingDelete, setPendingDelete] = useState<AdminProductRow | null>(null);
+  // One row from its trash icon, or the whole selection from "Delete rows".
+  const [deleteTargets, setDeleteTargets] = useState<DeleteTarget[]>([]);
   const [notice, setNotice] = useState<string | null>(null);
   const [goneIds, setGoneIds] = useState<ReadonlySet<string>>(new Set());
   // Export selection survives paging, so products can be picked across pages.
@@ -115,6 +116,7 @@ export function AdminDashboard({ rows, total, page, stats, filters }: AdminDashb
         selectedCount={selected.size}
         exporting={exporting}
         onExportSelected={() => void exportCatalog({ ids: [...selected] })}
+        onDeleteSelected={() => setDeleteTargets([...selected].map((id) => rows.find((row) => row.id === id) ?? { id }))}
         onExportAll={() => void exportCatalog(filters)}
       />
       <ProductsTable
@@ -127,7 +129,7 @@ export function AdminDashboard({ rows, total, page, stats, filters }: AdminDashb
         onPage={(nextPage) => push(filters, nextPage)}
         onAdd={() => setAddOpen(true)}
         onBulk={() => setBulkOpen(true)}
-        onDelete={setPendingDelete}
+        onDelete={(row) => setDeleteTargets([row])}
       />
       <ProductFormModal
         open={addOpen}
@@ -139,20 +141,21 @@ export function AdminDashboard({ rows, total, page, stats, filters }: AdminDashb
         }}
       />
       <DeleteProductDialog
-        product={pendingDelete}
+        targets={deleteTargets}
         onOpenChange={(open) => {
-          if (!open) setPendingDelete(null);
+          if (!open) setDeleteTargets([]);
         }}
-        onDeleted={(id, slug, warnings) => {
+        onFinished={(deletedIds, failed, warnings) => {
+          for (const id of deletedIds) dropRow(id);
+          const single = deleteTargets.length === 1 ? deleteTargets[0] : null;
+          const summary =
+            single && deletedIds.length === 1
+              ? `Deleted ${single.slug ?? "the product"}.`
+              : `Deleted ${deletedIds.length} product${deletedIds.length === 1 ? "" : "s"}.`;
+          const failure = failed > 0 ? ` Could not delete ${failed}.` : "";
           const extra = warnings.length > 0 ? ` ${warnings.join(" ")}` : "";
-          dropRow(id);
-          setNotice(`Deleted ${slug}.${extra}`);
-          setPendingDelete(null);
-          router.refresh();
-        }}
-        onError={(message) => {
-          setNotice(message);
-          setPendingDelete(null);
+          setNotice(`${summary}${failure}${extra}`);
+          setDeleteTargets([]);
           router.refresh();
         }}
       />

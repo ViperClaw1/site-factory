@@ -128,12 +128,29 @@ function NestedDetails({ row }: { row: DraftRow }) {
 
 export function BulkPreviewTable({ rows, files, previews, conflicts, excluded, onChange, onToggle, onRemove }: BulkPreviewTableProps) {
   const index = fileIndex(files);
+  // Only rows without errors can be ticked, so "all" means all valid rows.
+  const valid = rows.filter((row) => Object.keys(inspectDraft(row, index).errors).length === 0);
+  const ticked = valid.filter((row) => !excluded.has(row.id)).length;
   return (
     <div className="overflow-x-auto">
       <table className="w-full border-collapse text-left text-sm">
         <thead>
           <tr className="text-xs uppercase tracking-wide text-black/45">
-            <th className="p-2">Use</th>
+            <th className="p-2">
+              <input
+                type="checkbox"
+                aria-label="Select all valid rows"
+                disabled={valid.length === 0}
+                title={valid.length === 0 ? "No row is ready: fix the highlighted errors first" : undefined}
+                checked={valid.length > 0 && ticked === valid.length}
+                ref={(node) => {
+                  if (node) node.indeterminate = ticked > 0 && ticked < valid.length;
+                }}
+                onChange={(event) => {
+                  for (const row of valid) onToggle(row.id, event.target.checked);
+                }}
+              />
+            </th>
             <th className="p-2">Media</th>
             <th className="p-2">Title</th>
             <th className="p-2">Slug</th>

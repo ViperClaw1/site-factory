@@ -253,8 +253,14 @@ test("bulk upload previews a json file with images and unticks existing slugs", 
   await expect(page.getByText("2 variants")).toBeVisible();
   await expect(page.getByRole("button", { name: "Import 1 product", exact: true })).toBeEnabled();
 
-  await oldRow.check();
+  const all = page.getByRole("checkbox", { name: "Select all valid rows" });
+  await all.check();
+  await expect(oldRow).toBeChecked();
   await expect(page.getByRole("button", { name: "Import 2 products", exact: true })).toBeEnabled();
+  await all.uncheck();
+  await expect(page.getByRole("button", { name: "Import 0 products", exact: true })).toBeDisabled();
+  await oldRow.check();
+  await expect(page.getByRole("button", { name: "Import 1 product", exact: true })).toBeEnabled();
 });
 
 test("the json template downloads from the bulk modal", async ({ page }) => {
@@ -262,4 +268,35 @@ test("the json template downloads from the bulk modal", async ({ page }) => {
   await openBulkModal(page);
   const [download] = await Promise.all([page.waitForEvent("download"), page.getByRole("button", { name: "Download JSON template" }).click()]);
   expect(download.suggestedFilename()).toBe("catalog-template.json");
+});
+
+// DELETE is mocked, so the real catalog is untouched. Needs at least two products to select.
+test("selected rows are deleted together after one confirmation", async ({ page }) => {
+  const deleted: string[] = [];
+  await page.route("**/api/admin/products/*", async (route) => {
+    if (route.request().method() !== "DELETE") return route.fallback();
+    deleted.push(route.request().url());
+    await route.fulfill({ json: { slug: "x", warnings: [] } });
+  });
+  await page.goto("/admin");
+  const boxes = page.getByRole("checkbox", { name: /^Select (?!all)/ });
+  test.skip((await boxes.count()) < 2, "needs a catalog with at least two products");
+
+  await expect(page.getByRole("button", { name: "Search", exact: true })).toHaveCount(0);
+  const [first, second] = [boxes.nth(0), boxes.nth(1)];
+  await expect(async () => {
+    await first.check();
+    await second.check();
+    await expect(page.getByRole("button", { name: "Delete rows (2)" })).toBeVisible({ timeout: 2000 });
+  }).toPass({ timeout: 30_000 });
+
+  await page.getByRole("button", { name: "Delete rows (2)" }).click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toContainText("Delete 2 products?");
+  await dialog.getByRole("button", { name: "Delete", exact: true }).click();
+
+  await expect(page.getByRole("status")).toContainText("Deleted 2 products.");
+  expect(deleted).toHaveLength(2);
+  // Selection clears. Rows themselves come back on refresh, since the mock deleted nothing.
+  await expect(page.getByRole("button", { name: /^Delete rows/ })).toHaveCount(0);
 });
