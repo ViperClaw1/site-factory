@@ -1,4 +1,5 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+import sharp from "sharp";
 import {
   CATALOG_TEMPLATE,
   fileIndex,
@@ -10,10 +11,6 @@ import {
 } from "../lib/admin/catalog-json";
 import { CATEGORIES } from "../lib/catalog-taxonomy.mjs";
 
-const PNG = Buffer.from(
-  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M/wHwAEBgIApD5fRAAAAABJRU5ErkJggg==",
-  "base64"
-);
 
 function attach(...names: string[]) {
   return fileIndex(names.map((name) => new File([new Uint8Array([1])], name)));
@@ -21,6 +18,14 @@ function attach(...names: string[]) {
 
 function catalog(...products: unknown[]): string {
   return JSON.stringify({ version: 1, products });
+}
+
+// A click that lands before hydration does nothing on a cold dev server, so retry until the modal is up.
+async function openBulkModal(page: Page) {
+  await expect(async () => {
+    await page.getByRole("button", { name: "Bulk upload" }).first().click();
+    await expect(page.getByTestId("bulk-files")).toBeAttached({ timeout: 2000 });
+  }).toPass({ timeout: 30_000 });
 }
 
 // TEMPORARY while ADMIN_PUBLIC is true. Restore the login redirect and 401
@@ -197,50 +202,43 @@ test("an export loads back, including older seeded rows", async () => {
 test("bulk upload previews a json file with images and unticks existing slugs", async ({ page }) => {
   await page.route("**/api/admin/products/slugs", (route) => route.fulfill({ json: { existing: ["old-toy"] } }));
   await page.goto("/admin");
-  await page.getByRole("button", { name: "Bulk upload" }).first().click();
+  await openBulkModal(page);
 
   const manifest = catalog(
-    { title: "Old Toy", category: "toys", price: 5, slug: "old-toy", media: [{ file: "toy.png", alt: "Old toy photo" }] },
+    { title: "Old Toy", category: "toys", price: 5, slug: "old-toy", media: [{ file: "toy.webp", alt: "Old toy photo" }] },
     {
       title: "New Toy",
       category: "toys",
       price: 6,
       slug: "new-toy",
-      media: [{ file: "toy.png", alt: "New toy photo" }, { file: "absent.png" }],
+      media: [{ file: "toy.webp", alt: "New toy photo" }, { file: "absent.png" }],
       variants: [
         { sku: "NEW-A", stock: 1 },
         { sku: "NEW-B", stock: 2 },
       ],
     },
-    { title: "Ready Toy", category: "toys", price: 7, slug: "ready-toy", media: [{ file: "toy.png", alt: "Ready toy photo" }] },
+    { title: "Ready Toy", category: "toys", price: 7, slug: "ready-toy", media: [{ file: "toy.webp", alt: "Ready toy photo" }] },
     { title: "Drop Me", category: "toys", price: 8, slug: "drop-me", media: [{ file: "never.png" }] }
   );
 
-  // The JSON first and the image second: picks accumulate instead of replacing.
-  const input = page.getByTestId("bulk-files");
-  await input.setInputFiles({ name: "catalog.json", mimeType: "application/json", buffer: Buffer.from(manifest) });
-  const card = page.getByTestId("catalog-file");
-  await expect(card).toContainText("catalog.json");
-  await expect(card).toContainText("4 products");
-  await input.setInputFiles({ name: "toy.png", mimeType: "image/png", buffer: PNG });
-  await expect(card).toContainText("1 attached");
-  await expect(card).toContainText("catalog.json");
+  // Loading the JSON alone jumps straight to the preview; Files is checked off.
+  await page.getByTestId("bulk-files").setInputFiles({ name: "catalog.json", mimeType: "application/json", buffer: Buffer.from(manifest) });
+  const progress = page.getByRole("list", { name: "Progress" });
+  await expect(progress.locator("[aria-current=step]")).toContainText("Preview");
+  await expect(page.getByText("Attach 3 files named in the JSON, or drop them here: toy.webp, absent.png, never.png")).toBeVisible();
+  await expect(page.getByRole("img", { name: "Not attached: never.png" })).toBeVisible();
 
-  // File preview: dashboard-style product rows with a decoded local thumbnail,
-  // a note naming the file still to attach, and per-row removal.
-  const products = card.getByTestId("product-card");
-  await expect(products).toHaveCount(4);
-  const thumb = card.getByRole("img", { name: "Old toy photo" });
+  // Per-row removal.
+  await page.getByRole("button", { name: "Remove Drop Me" }).click();
+  await expect(page.getByRole("checkbox", { name: "Include Drop Me" })).toHaveCount(0);
+
+  // A real WebP attached on the preview step decodes into the thumbnail.
+  const webp = await sharp({ create: { width: 4, height: 4, channels: 3, background: "#e91e63" } }).webp().toBuffer();
+  await page.getByTestId("bulk-attach").setInputFiles({ name: "toy.webp", mimeType: "image/webp", buffer: webp });
+  const thumb = page.getByRole("img", { name: "Old toy photo" });
   await expect(thumb).toBeVisible();
   await expect.poll(() => thumb.evaluate((node: HTMLImageElement) => node.naturalWidth)).toBeGreaterThan(0);
-  await expect(card.getByText("Attach 2 files named in the JSON: absent.png, never.png")).toBeVisible();
-  await expect(card.getByRole("img", { name: "Not attached: never.png" })).toBeVisible();
-  await card.getByRole("button", { name: "Remove Drop Me" }).click();
-  await expect(products).toHaveCount(3);
-  await expect(card).toContainText("3 products");
-  await expect(card.getByText("Attach 1 file named in the JSON: absent.png")).toBeVisible();
-
-  await page.getByRole("button", { name: "Continue" }).click();
+  await expect(page.getByText("Attach 1 file named in the JSON, or drop them here: absent.png")).toBeVisible();
 
   // Preview table: existing slug unticked but tickable, missing file blocks, valid row ready.
   await expect(page.getByText("Already exists — tick to import as a copy")).toHaveCount(1);
@@ -261,7 +259,7 @@ test("bulk upload previews a json file with images and unticks existing slugs", 
 
 test("the json template downloads from the bulk modal", async ({ page }) => {
   await page.goto("/admin");
-  await page.getByRole("button", { name: "Bulk upload" }).first().click();
+  await openBulkModal(page);
   const [download] = await Promise.all([page.waitForEvent("download"), page.getByRole("button", { name: "Download JSON template" }).click()]);
   expect(download.suggestedFilename()).toBe("catalog-template.json");
 });

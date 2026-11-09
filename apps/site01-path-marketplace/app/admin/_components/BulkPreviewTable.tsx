@@ -1,7 +1,6 @@
 "use client";
 
-import { statusBadge } from "@/app/admin/_components/StatsCards";
-import { basename, inspectDraft, isVideoMedia, normalizePrice, type DraftIssue, type DraftMedia, type DraftRow, fileIndex } from "@/lib/admin/catalog-json";
+import { basename, inspectDraft, isVideoMedia, type DraftIssue, type DraftMedia, type DraftRow, fileIndex } from "@/lib/admin/catalog-json";
 import { CATEGORIES } from "@/lib/catalog-taxonomy.mjs";
 import { variantUrl } from "@/lib/image-variants";
 import { useState } from "react";
@@ -75,73 +74,6 @@ function RemoveButton({ title, onRemove }: { title: string; onRemove: () => void
     >
       <i className="fa-solid fa-trash" aria-hidden="true" />
     </button>
-  );
-}
-
-// Product rows in the dashboard's style, shown as soon as the JSON is read.
-export function ProductCards({
-  rows,
-  files,
-  previews,
-  onRemove,
-}: {
-  rows: DraftRow[];
-  files: File[];
-  previews: ReadonlyMap<string, string>;
-  onRemove: (id: string) => void;
-}) {
-  const index = fileIndex(files);
-  return (
-    <div className="max-h-[22rem] overflow-auto">
-      <table className="w-full border-collapse text-left text-sm">
-        <thead className="sticky top-0 bg-white">
-          <tr className="text-xs uppercase tracking-wide text-black/40">
-            <th className="p-2"> </th>
-            <th className="p-2">Title</th>
-            <th className="p-2">Slug</th>
-            <th className="p-2">Category</th>
-            <th className="p-2">Price</th>
-            <th className="p-2">Status</th>
-            <th className="p-2">Stock</th>
-            <th className="p-2">Media</th>
-            <th className="p-2">
-              <span className="sr-only">Actions</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => {
-            const { errors, input } = inspectDraft(row, index);
-            const price = normalizePrice(row.price);
-            const problems = Object.values(errors);
-            const stock = input ? (input.variants ?? [input]).reduce((sum, item) => sum + item.stock, 0) : row.stock || "—";
-            return (
-              <tr key={row.id} data-testid="product-card" className="border-t border-black/10">
-                <td className="p-2">{row.media[0] ? <MediaThumb item={row.media[0]} previews={previews} size="h-10 w-10" /> : <span className="block h-10 w-10 bg-black/5" />}</td>
-                <td className="p-2">
-                  <p className="font-medium text-ink">{row.title || "Untitled"}</p>
-                  {problems.length > 0 && (
-                    <p className="text-xs text-pink-dark" title={problems.join("\n")}>
-                      {problems[0]}
-                      {problems.length > 1 ? ` (+${problems.length - 1})` : ""}
-                    </p>
-                  )}
-                </td>
-                <td className="p-2 text-black/60">{row.slug}</td>
-                <td className="p-2">{row.category.replace(/_/g, " ")}</td>
-                <td className="p-2">{price === null ? row.price || "—" : `$${price.toFixed(2)}`}</td>
-                <td className="p-2">{statusBadge(row.status)}</td>
-                <td className="p-2">{stock}</td>
-                <td className="p-2">{row.media.length}</td>
-                <td className="p-2 text-right">
-                  <RemoveButton title={row.title} onRemove={() => onRemove(row.id)} />
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
   );
 }
 

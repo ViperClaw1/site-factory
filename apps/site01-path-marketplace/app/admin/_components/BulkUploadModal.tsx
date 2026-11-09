@@ -1,6 +1,6 @@
 "use client";
 
-import { BulkPreviewTable, ProductCards } from "@/app/admin/_components/BulkPreviewTable";
+import { BulkPreviewTable } from "@/app/admin/_components/BulkPreviewTable";
 import { useUploadQueue, type LocalMedia } from "@/app/admin/_components/useUploadQueue";
 import {
   basename,
@@ -28,6 +28,40 @@ interface BulkUploadModalProps {
 }
 
 type Step = "files" | "preview" | "import";
+
+const STEPS: { id: Step; label: string }[] = [
+  { id: "files", label: "Files" },
+  { id: "preview", label: "Preview" },
+  { id: "import", label: "Import" },
+];
+
+// Checkpoint progress: finished steps get a check, the current one is outlined.
+function Stepper({ step }: { step: Step }) {
+  const current = STEPS.findIndex((item) => item.id === step);
+  return (
+    <ol className="mt-4 flex items-center" aria-label="Progress">
+      {STEPS.map((item, position) => {
+        const done = position < current;
+        const active = position === current;
+        return (
+          <li key={item.id} className="flex flex-1 items-center last:flex-none" aria-current={active ? "step" : undefined}>
+            <span className="flex items-center gap-2">
+              <span
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 text-sm font-semibold transition-colors ${
+                  done ? "border-pink bg-pink text-white" : active ? "border-pink text-pink" : "border-black/20 text-black/40"
+                }`}
+              >
+                {done ? <i className="fa-solid fa-check text-xs" aria-hidden="true" /> : position + 1}
+              </span>
+              <span className={`text-sm font-semibold ${done || active ? "text-ink" : "text-black/40"}`}>{item.label}</span>
+            </span>
+            {position < STEPS.length - 1 && <span aria-hidden className={`mx-3 h-0.5 flex-1 ${done ? "bg-pink" : "bg-black/15"}`} />}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
 
 async function filesFromList(list: DataTransferItemList | FileList): Promise<File[]> {
   if (list instanceof FileList) return [...list];
@@ -129,6 +163,8 @@ export function BulkUploadModal({ open, onOpenChange, onFinished }: BulkUploadMo
     setCatalogFile({ name: json.name, size: json.size });
     setParseErrors(parsed.errors);
     setRows(parsed.rows);
+    // Straight to the preview. A file with no usable products stays here with its errors.
+    if (parsed.rows.length > 0) await checkSlugs(parsed.rows);
   }
 
   function removeRow(id: string) {
@@ -147,22 +183,22 @@ export function BulkUploadModal({ open, onOpenChange, onFinished }: BulkUploadMo
   }
 
   async function continueToPreview() {
-    if (!catalogFile) {
-      const drafts = draftsFromFiles(files, category, groupByPrefix);
-      setRows(drafts);
-      setParseErrors(drafts.length === 0 ? ["Drop at least one image."] : []);
-      setConflicts(new Set());
-      setExcluded(new Set());
-      setStep("preview");
-      return;
-    }
+    if (catalogFile) return checkSlugs(rows);
+    const drafts = draftsFromFiles(files, category, groupByPrefix);
+    setRows(drafts);
+    setParseErrors(drafts.length === 0 ? ["Drop at least one image."] : []);
+    setConflicts(new Set());
+    setExcluded(new Set());
+    setStep("preview");
+  }
 
+  async function checkSlugs(target: DraftRow[]) {
     // Rows whose slug is already in the catalog start unticked. If the check fails,
     // stay on this step: importing blind could create duplicates without warning.
     setChecking(true);
     setNotice(null);
     try {
-      const slugs = [...new Set(rows.map((row) => row.slug).filter(Boolean))];
+      const slugs = [...new Set(target.map((row) => row.slug).filter(Boolean))];
       let existing: string[] = [];
       if (slugs.length > 0) {
         const response = await fetch("/api/admin/products/slugs", {
@@ -175,7 +211,7 @@ export function BulkUploadModal({ open, onOpenChange, onFinished }: BulkUploadMo
       }
       const taken = new Set(existing);
       setConflicts(taken);
-      setExcluded(new Set(rows.filter((row) => taken.has(row.slug)).map((row) => row.id)));
+      setExcluded(new Set(target.filter((row) => taken.has(row.slug)).map((row) => row.id)));
       setStep("preview");
     } catch {
       setNotice("Could not check for existing products. Try again.");
@@ -229,14 +265,7 @@ export function BulkUploadModal({ open, onOpenChange, onFinished }: BulkUploadMo
         onOpenChange(next);
       }}
     >
-      <ol className="mt-4 flex gap-4 text-sm font-semibold">
-        {(["files", "preview", "import"] as const).map((name, indexNumber) => (
-          <li key={name} className={step === name ? "text-pink" : "text-black/40"}>
-            {indexNumber + 1} {name[0]?.toUpperCase()}
-            {name.slice(1)}
-          </li>
-        ))}
-      </ol>
+      <Stepper step={step} />
 
       {step === "files" && (
         <div className="mt-6 space-y-4">
@@ -283,29 +312,16 @@ export function BulkUploadModal({ open, onOpenChange, onFinished }: BulkUploadMo
             </div>
           </div>
           {catalogFile ? (
-            // File preview: what the JSON holds, before moving on to the full table.
-            <div data-testid="catalog-file" className="border border-black/15 p-3">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0 text-sm">
-                  <p className="truncate font-semibold text-ink">{catalogFile.name}</p>
-                  <p className="text-xs text-black/50">
-                    {formatSize(catalogFile.size)} · {rows.length} product{rows.length === 1 ? "" : "s"} · {fileMedia.length} media item{fileMedia.length === 1 ? "" : "s"} · {files.length} attached
-                  </p>
-                </div>
-                <Button type="button" variant="ghost" onClick={removeCatalogFile}>
-                  Remove
-                </Button>
-              </div>
-              {notAttached.length > 0 && (
-                <p className="mt-2 text-xs text-pink-dark">
-                  Attach {notAttached.length} file{notAttached.length === 1 ? "" : "s"} named in the JSON: {notAttached.join(", ")}
+            <div data-testid="catalog-file" className="flex items-center justify-between gap-3 border border-black/15 px-3 py-2">
+              <div className="min-w-0 text-sm">
+                <p className="truncate font-semibold text-ink">{catalogFile.name}</p>
+                <p className="text-xs text-black/50">
+                  {formatSize(catalogFile.size)} · {rows.length} product{rows.length === 1 ? "" : "s"} · {fileMedia.length} media item{fileMedia.length === 1 ? "" : "s"} · {files.length} attached
                 </p>
-              )}
-              {rows.length > 0 && (
-                <div className="mt-3">
-                  <ProductCards rows={rows} files={files} previews={previews} onRemove={removeRow} />
-                </div>
-              )}
+              </div>
+              <Button type="button" variant="ghost" onClick={removeCatalogFile}>
+                Remove
+              </Button>
             </div>
           ) : (
             <p className="text-xs text-black/50">
@@ -348,7 +364,35 @@ export function BulkUploadModal({ open, onOpenChange, onFinished }: BulkUploadMo
       )}
 
       {step === "preview" && (
-        <div className="mt-6 space-y-4">
+        <div
+          className="mt-6 space-y-4"
+          onDragOver={(event) => event.preventDefault()}
+          onDrop={(event) => {
+            event.preventDefault();
+            void filesFromList(event.dataTransfer.items).then((dropped) => takeFiles(dropped));
+          }}
+        >
+          {notAttached.length > 0 && (
+            <div className="flex flex-wrap items-center justify-between gap-3 border border-dashed border-pink/60 bg-pink-soft px-3 py-2">
+              <p className="min-w-0 flex-1 text-xs text-pink-dark">
+                Attach {notAttached.length} file{notAttached.length === 1 ? "" : "s"} named in the JSON, or drop them here: {notAttached.join(", ")}
+              </p>
+              <label className="cursor-pointer border border-black/20 bg-white px-3 py-2 text-xs font-semibold">
+                Attach files
+                <input
+                  data-testid="bulk-attach"
+                  type="file"
+                  multiple
+                  accept="image/jpeg,image/png,image/webp,image/avif,video/mp4,video/webm"
+                  className="sr-only"
+                  onChange={(event) => {
+                    if (event.target.files) void takeFiles([...event.target.files]);
+                    event.target.value = "";
+                  }}
+                />
+              </label>
+            </div>
+          )}
           {parseErrors.map((error) => (
             <p key={error} role="alert" className="text-sm text-pink-dark">
               {error}
