@@ -20,7 +20,8 @@ export interface LocalMedia {
 export interface QueueJob {
   id: string;
   fields: ProductFields;
-  media: LocalMedia[];
+  // A function runs inside the job, so a failed URL download fails only this row and can be retried.
+  media: LocalMedia[] | (() => Promise<LocalMedia[]>);
   onFile?: (fileId: string, progress: number) => void;
 }
 
@@ -186,7 +187,8 @@ export function useUploadQueue() {
         if (!job) return;
         update(job.id, { status: "uploading", error: undefined, fieldErrors: undefined });
         try {
-          const result = await submitProduct(job.fields, job.media, job.onFile, (phase) => {
+          const media = typeof job.media === "function" ? await job.media() : job.media;
+          const result = await submitProduct(job.fields, media, job.onFile, (phase) => {
             if (phase === "processing") update(job.id, { status: "processing" });
           });
           update(job.id, { status: "done", slug: result.slug, warnings: result.warnings });

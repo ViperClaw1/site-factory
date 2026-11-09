@@ -1,5 +1,27 @@
 import { expect, test } from "@playwright/test";
-import { CSV_TEMPLATE, fileIndex, inspectDraft, parseCatalogCsv, titleFromFilename } from "../lib/admin/csv";
+import {
+  CATALOG_TEMPLATE,
+  fileIndex,
+  inspectDraft,
+  parseCatalogJson,
+  productToJson,
+  titleFromFilename,
+  type CatalogDbRow,
+} from "../lib/admin/catalog-json";
+import { CATEGORIES } from "../lib/catalog-taxonomy.mjs";
+
+const PNG = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M/wHwAEBgIApD5fRAAAAABJRU5ErkJggg==",
+  "base64"
+);
+
+function attach(...names: string[]) {
+  return fileIndex(names.map((name) => new File([new Uint8Array([1])], name)));
+}
+
+function catalog(...products: unknown[]): string {
+  return JSON.stringify({ version: 1, products });
+}
 
 // TEMPORARY while ADMIN_PUBLIC is true. Restore the login redirect and 401
 // assertions when the admin role gate comes back.
@@ -11,32 +33,224 @@ test("catalog admin is reachable without a session", async ({ page, request }) =
   expect((await request.get("/api/admin/products")).status()).toBe(200);
   expect((await request.post("/api/admin/products", { data: {} })).status()).toBe(400);
   expect((await request.post("/api/admin/uploads/sign", { data: {} })).status()).toBe(400);
+  expect((await request.post("/api/admin/products/export", { data: { ids: ["nope"] } })).status()).toBe(400);
+  expect((await request.post("/api/admin/products/slugs", { data: { slugs: [] } })).status()).toBe(400);
 });
 
-// Same checks the bulk preview runs on each row. No Supabase and no admin session:
-// the preview never uploads, it only validates the manifest against the dropped files.
-test("catalog csv preview rejects a bad price and a missing file", async () => {
+// The template is the documentation people copy from, so it must stay importable.
+test("json template validates and covers every category", async () => {
+  const parsed = parseCatalogJson(CATALOG_TEMPLATE);
+  expect(parsed.errors).toEqual([]);
+  expect(parsed.rows.map((row) => row.category).sort()).toEqual([...CATEGORIES].sort());
+
+  const names = parsed.rows.flatMap((row) => row.media.flatMap((item) => (item.file ? [item.file] : [])));
+  const files = attach(...names);
+  for (const row of parsed.rows) {
+    expect(inspectDraft(row, files).errors).toEqual({});
+  }
+});
+
+// Same checks the bulk preview runs. No Supabase and no admin session:
+// the preview never uploads, it only validates the file against the dropped media.
+test("catalog json reports structural problems against the file", async () => {
   expect(titleFromFilename("img_0818.webp")).toBe("Img 0818");
 
-  const parsed = parseCatalogCsv(CSV_TEMPLATE);
-  expect(parsed.errors).toEqual([]);
-  expect(parsed.rows).toHaveLength(1);
+  expect(parseCatalogJson("{ nope").errors[0]).toContain("Not valid JSON");
+  expect(parseCatalogJson(JSON.stringify({ version: 2, products: [] })).errors[0]).toContain("version");
+  expect(parseCatalogJson(catalog()).errors[0]).toContain("no products");
 
-  const files = fileIndex([
-    new File([new Uint8Array([1])], "molly-1.webp", { type: "image/webp" }),
-    new File([new Uint8Array([1])], "molly-2.webp", { type: "image/webp" }),
-    new File([new Uint8Array([1])], "teaser.mp4", { type: "video/mp4" }),
-  ]);
-  expect(inspectDraft(parsed.rows[0]!, files).input?.price).toBe(16.99);
+  // A bad entry is reported by position and the good one still loads.
+  const good = { title: "Good Toy", category: "toys", price: 5, media: [{ file: "a.webp" }] };
+  const typo = parseCatalogJson(catalog({ ...good, slug: "typo", weigthGrams: 5 }, good));
+  expect(typo.errors).toHaveLength(1);
+  expect(typo.errors[0]).toContain("products[0]");
+  expect(typo.errors[0]).toContain("weigthGrams");
+  expect(typo.rows).toHaveLength(1);
 
-  const broken = parseCatalogCsv(
-    "title,category,price,description,media\nGhost,toys,nope,x,missing.webp\nOk Toy,toys,$12.50,Fine,molly-1.webp\n"
+  const both = parseCatalogJson(catalog({ ...good, media: [{ file: "a.webp", url: "https://example.com/a.webp" }] }));
+  expect(both.errors[0]).toContain("products[0].media[0]");
+
+  const unsafe = parseCatalogJson(catalog({ ...good, media: [{ url: "javascript:alert(1)" }] }));
+  expect(unsafe.rows).toHaveLength(0);
+
+  const repeatedSlug = parseCatalogJson(catalog(good, good));
+  expect(repeatedSlug.rows).toHaveLength(1);
+  expect(repeatedSlug.errors[0]).toContain('duplicate slug "good-toy"');
+
+  const variant = { sku: "SAME", stock: 1 };
+  const repeatedSku = parseCatalogJson(catalog({ ...good, variants: [variant, variant] }));
+  expect(repeatedSku.errors[0]).toContain('duplicate SKU "SAME"');
+});
+
+test("catalog json preview rejects a bad price and a missing file", async () => {
+  const parsed = parseCatalogJson(
+    catalog(
+      { title: "Ghost", category: "toys", price: "nope", media: [{ file: "missing.webp" }] },
+      { title: "Ok Toy", category: "toys", price: "$12.50", media: [{ file: "Sub/A.WEBP" }] },
+      { title: "Remote Toy", category: "toys", price: 3, media: [{ url: "https://example.com/toy.webp" }] },
+      { title: "Bare Toy", category: "nowhere", price: 3 }
+    )
   );
-  const bad = inspectDraft(broken.rows[0]!, files);
-  const good = inspectDraft(broken.rows[1]!, files);
-  expect(bad.errors.price).toBeTruthy();
-  expect(bad.missingFiles).toContain("missing.webp");
-  expect(bad.input).toBeUndefined();
-  expect(good.input?.title).toBe("Ok Toy");
-  expect(good.input?.price).toBe(12.5);
+  expect(parsed.errors).toEqual([]);
+
+  const files = attach("a.webp");
+  const [bad, ok, remote, bare] = parsed.rows.map((row) => inspectDraft(row, files));
+  expect(bad?.errors.price).toBeTruthy();
+  expect(bad?.missingFiles).toContain("missing.webp");
+  expect(bad?.input).toBeUndefined();
+  expect(ok?.input?.price).toBe(12.5);
+  expect(remote?.errors).toEqual({});
+  expect(bare?.errors.media).toBeTruthy();
+  expect(bare?.errors.category).toBeTruthy();
+});
+
+test("nested fields reach the product input", async () => {
+  const [row] = parseCatalogJson(
+    catalog({
+      title: "Limited Bear",
+      category: "collectible_toys",
+      price: 120,
+      status: "archived",
+      weightGrams: 500,
+      collection: "limited",
+      collectible: { editionSize: 50, story: [{ title: "Forest", body: "Woke early.", image: "/seed/bear.jpg" }] },
+      media: [{ url: "https://example.com/bear.webp", alt: "Bear" }],
+      variants: [
+        { sku: "BEAR-A", attributes: { edition: "a" }, stock: 3 },
+        { sku: "BEAR-B", attributes: { edition: "b" }, price: 150, stock: 4 },
+      ],
+    })
+  ).rows;
+
+  const { input } = inspectDraft(row!, attach());
+  expect(input).toMatchObject({
+    status: "archived",
+    stock: 7,
+    weightGrams: 500,
+    collection: "limited",
+    isCollectible: true,
+    editionSize: 50,
+    story: [{ title: "Forest" }],
+    variants: [{ sku: "BEAR-A" }, { sku: "BEAR-B", price: 150 }],
+  });
+
+  // The stock cell edits a lone variant.
+  const [single] = parseCatalogJson(
+    catalog({ title: "Solo", category: "toys", price: 1, media: [{ url: "/a.webp" }], variants: [{ sku: "S", stock: 1 }] })
+  ).rows;
+  expect(inspectDraft({ ...single!, stock: "9" }, attach()).input?.variants?.[0]?.stock).toBe(9);
+});
+
+test("an export loads back, including older seeded rows", async () => {
+  const stored: CatalogDbRow = {
+    slug: "limited-bear",
+    title: "Limited Bear",
+    description: "Numbered",
+    category: "collectible_toys",
+    product_type: "physical",
+    collection: "limited",
+    character: "bear",
+    is_collectible: true,
+    edition_size: 50,
+    series: "bears",
+    images: [{ type: "image", url: "https://example.com/bear.webp", alt: "Bear", variants: ["thumb"] }],
+    base_price: "120.00",
+    weight_grams: 500,
+    collectible_story: [{ title: "Forest", body: "Woke early.", image: "https://example.com/forest.webp" }],
+    status: "archived",
+    product_variants: [{ sku: "BEAR-STD", attributes: { edition: "standard" }, price: "130.00", stock: 3 }],
+  };
+  const parsed = parseCatalogJson(catalog(productToJson(stored)));
+  expect(parsed.errors).toEqual([]);
+  expect(inspectDraft(parsed.rows[0]!, attach()).input).toMatchObject({
+    slug: "limited-bear",
+    price: 120,
+    status: "archived",
+    character: "bear",
+    weightGrams: 500,
+    isCollectible: true,
+    editionSize: 50,
+    variants: [{ sku: "BEAR-STD", price: 130, stock: 3, attributes: { edition: "standard" } }],
+  });
+  expect(parsed.rows[0]?.media).toEqual([{ url: "https://example.com/bear.webp", alt: "Bear" }]);
+
+  // Seed format: string images, story `text`, null attributes, edition without the flag.
+  const seeded: CatalogDbRow = {
+    ...stored,
+    slug: "robot-buddy",
+    is_collectible: false,
+    edition_size: 100,
+    images: ["/seed/robot.jpg"],
+    collectible_story: [{ title: "Tin", text: "Wound up.", image: "/seed/tin.jpg" }],
+    product_variants: [{ sku: "ROBOT-STD", attributes: null, price: null, stock: 2 }],
+  };
+  const legacy = parseCatalogJson(catalog(productToJson(seeded)));
+  expect(legacy.errors).toEqual([]);
+  const input = inspectDraft(legacy.rows[0]!, attach()).input;
+  expect(input?.isCollectible).toBe(false);
+  expect(input?.editionSize).toBe(100);
+  expect(input?.story?.[0]?.body).toBe("Wound up.");
+  expect(legacy.rows[0]?.media).toEqual([{ url: "/seed/robot.jpg" }]);
+});
+
+// Real modal in a real browser. The slug check is mocked and nothing is imported.
+test("bulk upload previews a json file with images and unticks existing slugs", async ({ page }) => {
+  await page.route("**/api/admin/products/slugs", (route) => route.fulfill({ json: { existing: ["old-toy"] } }));
+  await page.goto("/admin");
+  await page.getByRole("button", { name: "Bulk upload" }).first().click();
+
+  const manifest = catalog(
+    { title: "Old Toy", category: "toys", price: 5, slug: "old-toy", media: [{ file: "toy.png", alt: "Old toy photo" }] },
+    {
+      title: "New Toy",
+      category: "toys",
+      price: 6,
+      slug: "new-toy",
+      media: [{ file: "toy.png", alt: "New toy photo" }, { file: "absent.png" }],
+      variants: [
+        { sku: "NEW-A", stock: 1 },
+        { sku: "NEW-B", stock: 2 },
+      ],
+    },
+    { title: "Ready Toy", category: "toys", price: 7, slug: "ready-toy", media: [{ file: "toy.png", alt: "Ready toy photo" }] }
+  );
+
+  // The JSON first and the image second: picks accumulate instead of replacing.
+  const input = page.getByTestId("bulk-files");
+  await input.setInputFiles({ name: "catalog.json", mimeType: "application/json", buffer: Buffer.from(manifest) });
+  const card = page.getByTestId("catalog-file");
+  await expect(card).toContainText("catalog.json");
+  await expect(card).toContainText("3 products");
+  await input.setInputFiles({ name: "toy.png", mimeType: "image/png", buffer: PNG });
+  await expect(card).toContainText("1 attached");
+  await expect(card).toContainText("catalog.json");
+
+  // File preview: decoded local thumbnail and a marker for the file not attached yet.
+  const thumb = card.getByRole("img", { name: "Old toy photo" });
+  await expect(thumb).toBeVisible();
+  await expect.poll(() => thumb.evaluate((node: HTMLImageElement) => node.naturalWidth)).toBeGreaterThan(0);
+  await expect(card.getByRole("img", { name: "Not available: absent.png" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Continue" }).click();
+
+  // Preview table: existing slug unticked but tickable, missing file blocks, valid row ready.
+  await expect(page.getByText("Already exists — tick to import as a copy")).toHaveCount(1);
+  const oldRow = page.getByRole("checkbox", { name: "Include Old Toy" });
+  await expect(oldRow).not.toBeChecked();
+  await expect(oldRow).toBeEnabled();
+  await expect(page.getByRole("checkbox", { name: "Include New Toy" })).toBeDisabled();
+  await expect(page.getByText("Missing file: absent.png")).toBeVisible();
+  await expect(page.getByRole("checkbox", { name: "Include Ready Toy" })).toBeChecked();
+  await expect(page.getByText("2 variants")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Import 1 product", exact: true })).toBeEnabled();
+
+  await oldRow.check();
+  await expect(page.getByRole("button", { name: "Import 2 products", exact: true })).toBeEnabled();
+});
+
+test("the json template downloads from the bulk modal", async ({ page }) => {
+  await page.goto("/admin");
+  await page.getByRole("button", { name: "Bulk upload" }).first().click();
+  const [download] = await Promise.all([page.waitForEvent("download"), page.getByRole("button", { name: "Download JSON template" }).click()]);
+  expect(download.suggestedFilename()).toBe("catalog-template.json");
 });

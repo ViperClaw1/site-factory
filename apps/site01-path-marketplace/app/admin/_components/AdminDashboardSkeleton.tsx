@@ -78,7 +78,13 @@ export function AdminDashboardSkeleton() {
             <Shimmer className="absolute inset-0 rounded-full" />
           </span>
         </div>
-        <div className="ml-auto flex gap-2">
+        <div className="ml-auto flex flex-wrap gap-2">
+          <span className="relative">
+            <Button type="button" variant="secondary" tabIndex={-1} className="invisible">
+              Export all
+            </Button>
+            <Shimmer className="absolute inset-0 rounded-full" />
+          </span>
           <span className="relative">
             <Button type="button" variant="secondary" tabIndex={-1} className="invisible">
               Bulk upload
@@ -99,6 +105,7 @@ export function AdminDashboardSkeleton() {
             <thead>
               <tr className="text-xs uppercase tracking-wide text-black/40">
                 <th className="p-2"> </th>
+                <th className="p-2"> </th>
                 <th className="p-2">Title</th>
                 <th className="p-2">Slug</th>
                 <th className="p-2">Category</th>
@@ -115,6 +122,9 @@ export function AdminDashboardSkeleton() {
             <tbody>
               {Array.from({ length: ROW_COUNT }, (_, index) => (
                 <tr key={index} className="border-t border-black/10">
+                  <td className="p-2">
+                    <Shimmer className="h-4 w-4" />
+                  </td>
                   <td className="p-2">
                     <Shimmer className="h-10 w-10" />
                   </td>
