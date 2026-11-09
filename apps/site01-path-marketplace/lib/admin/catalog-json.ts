@@ -67,6 +67,9 @@ const catalogFileSchema = z
   })
   .strict();
 
+// Template photos are the storefront's Unsplash placeholders, so the template previews and imports as is.
+const photo = (id: string) => `https://images.unsplash.com/photo-${id}?w=800&h=800&fit=crop&fm=jpg`;
+
 // One example per category. Size and format differences live in variants[].attributes.
 const TEMPLATE_PRODUCTS: CatalogProduct[] = [
   {
@@ -77,7 +80,7 @@ const TEMPLATE_PRODUCTS: CatalogProduct[] = [
     description: "Handmade wooden train with 24 track pieces.",
     weightGrams: 1200,
     collection: "classics",
-    media: [{ file: "train-1.webp", alt: "Train on its track" }, { file: "train-2.webp" }],
+    media: [{ url: photo("1668119065964-8e78fddc5dfe"), alt: "Train on its track" }, { file: "train-2.webp" }],
   },
   {
     title: "Fantasia Blind Box",
@@ -92,9 +95,9 @@ const TEMPLATE_PRODUCTS: CatalogProduct[] = [
     collection: "fantasia",
     collectible: {
       editionSize: 500,
-      story: [{ title: "The Den", body: "Molly finds the door behind the stage.", image: "https://example.com/molly-den.webp" }],
+      story: [{ title: "The Den", body: "Molly finds the door behind the stage.", image: photo("1615531880011-8c776c07a818") }],
     },
-    media: [{ file: "molly-1.webp", alt: "Front of the box" }, { url: "https://example.com/molly-2.webp" }, { file: "teaser.mp4" }],
+    media: [{ url: photo("1615531880394-84fde621fcfc"), alt: "Front of the box" }, { file: "molly-2.webp" }, { file: "teaser.mp4" }],
     variants: [
       { sku: "MOLLY-BOX-STD", attributes: { edition: "standard" }, stock: 25 },
       { sku: "MOLLY-BOX-GOLD", attributes: { edition: "gold" }, price: 29.99, stock: 5 },
@@ -107,7 +110,7 @@ const TEMPLATE_PRODUCTS: CatalogProduct[] = [
     slug: "forest-tales",
     description: "Short stories for kids, 96 pages.",
     weightGrams: 350,
-    media: [{ file: "forest-tales.webp" }],
+    media: [{ url: photo("1634828221818-503587f33d02") }],
     variants: [
       { sku: "FOREST-TALES-SOFT", attributes: { format: "softcover" }, stock: 40 },
       { sku: "FOREST-TALES-HARD", attributes: { format: "hardcover" }, price: 26, stock: 15 },
@@ -121,7 +124,7 @@ const TEMPLATE_PRODUCTS: CatalogProduct[] = [
     description: "Environment paintings, 90 pages, PDF.",
     type: "digital",
     collection: "forest",
-    media: [{ file: "forest-worlds.webp" }],
+    media: [{ url: photo("1579958746164-e0adaf13ae50") }],
   },
   {
     title: "Lantern Poster Design",
@@ -131,7 +134,7 @@ const TEMPLATE_PRODUCTS: CatalogProduct[] = [
     description: "Printable poster artwork.",
     type: "digital",
     status: "draft",
-    media: [{ file: "lantern-poster.webp" }],
+    media: [{ url: photo("1579958746164-e0adaf13ae50") }],
   },
   {
     title: "Fantasia Hoodie",
@@ -141,7 +144,7 @@ const TEMPLATE_PRODUCTS: CatalogProduct[] = [
     description: "Heavy cotton hoodie.",
     weightGrams: 600,
     character: "Molly",
-    media: [{ file: "hoodie-front.webp" }, { file: "hoodie-back.webp" }],
+    media: [{ url: photo("1630549316063-7ae02749d2cc") }],
     variants: [
       { sku: "FANTASIA-HOODIE-M", attributes: { size: "M", color: "black" }, stock: 12 },
       { sku: "FANTASIA-HOODIE-L", attributes: { size: "L", color: "black" }, stock: 8 },
@@ -156,7 +159,7 @@ const TEMPLATE_PRODUCTS: CatalogProduct[] = [
     weightGrams: 500,
     character: "Thor",
     collectible: { editionSize: 100 },
-    media: [{ file: "thor-figure.webp" }],
+    media: [{ url: photo("1781196208914-24e9fc9276aa") }],
     variants: [{ sku: "THOR-FIGURE-STD", attributes: { material: "resin" }, stock: 100 }],
   },
 ];

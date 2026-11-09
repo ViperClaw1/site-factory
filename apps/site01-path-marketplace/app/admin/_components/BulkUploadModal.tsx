@@ -1,6 +1,6 @@
 "use client";
 
-import { BulkPreviewTable, MediaStrip } from "@/app/admin/_components/BulkPreviewTable";
+import { BulkPreviewTable, ProductCards } from "@/app/admin/_components/BulkPreviewTable";
 import { useUploadQueue, type LocalMedia } from "@/app/admin/_components/useUploadQueue";
 import {
   basename,
@@ -87,6 +87,11 @@ export function BulkUploadModal({ open, onOpenChange, onFinished }: BulkUploadMo
   const index = useMemo(() => fileIndex(files), [files]);
   const extras = useMemo(() => (catalogFile ? unmatchedFiles(rows, files) : []), [catalogFile, rows, files]);
   const fileMedia = useMemo(() => rows.flatMap((row) => row.media), [rows]);
+  // Names the JSON points at that were not dropped yet, so the admin knows what to attach.
+  const notAttached = useMemo(
+    () => [...new Set(fileMedia.flatMap((item) => (item.file && !index.has(basename(item.file)) ? [item.file] : [])))],
+    [fileMedia, index]
+  );
 
   // Object URLs for attached files, shared by the file card and the preview table.
   const previews = useMemo(() => new Map(files.map((file) => [basename(file.name), URL.createObjectURL(file)])), [files]);
@@ -124,6 +129,15 @@ export function BulkUploadModal({ open, onOpenChange, onFinished }: BulkUploadMo
     setCatalogFile({ name: json.name, size: json.size });
     setParseErrors(parsed.errors);
     setRows(parsed.rows);
+  }
+
+  function removeRow(id: string) {
+    setRows((current) => current.filter((row) => row.id !== id));
+    setExcluded((current) => {
+      const next = new Set(current);
+      next.delete(id);
+      return next;
+    });
   }
 
   function removeCatalogFile() {
@@ -282,10 +296,14 @@ export function BulkUploadModal({ open, onOpenChange, onFinished }: BulkUploadMo
                   Remove
                 </Button>
               </div>
-              {fileMedia.length > 0 && (
+              {notAttached.length > 0 && (
+                <p className="mt-2 text-xs text-pink-dark">
+                  Attach {notAttached.length} file{notAttached.length === 1 ? "" : "s"} named in the JSON: {notAttached.join(", ")}
+                </p>
+              )}
+              {rows.length > 0 && (
                 <div className="mt-3">
-                  <MediaStrip media={fileMedia.slice(0, 12)} previews={previews} />
-                  {fileMedia.length > 12 && <p className="mt-1 text-xs text-black/50">+{fileMedia.length - 12} more in the next step</p>}
+                  <ProductCards rows={rows} files={files} previews={previews} onRemove={removeRow} />
                 </div>
               )}
             </div>
@@ -377,6 +395,7 @@ export function BulkUploadModal({ open, onOpenChange, onFinished }: BulkUploadMo
             previews={previews}
             conflicts={conflicts}
             excluded={excluded}
+            onRemove={removeRow}
             onChange={(id, patch) => setRows((current) => current.map((row) => (row.id === id ? { ...row, ...patch } : row)))}
             onToggle={(id, include) =>
               setExcluded((current) => {

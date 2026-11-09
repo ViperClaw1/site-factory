@@ -212,7 +212,8 @@ test("bulk upload previews a json file with images and unticks existing slugs", 
         { sku: "NEW-B", stock: 2 },
       ],
     },
-    { title: "Ready Toy", category: "toys", price: 7, slug: "ready-toy", media: [{ file: "toy.png", alt: "Ready toy photo" }] }
+    { title: "Ready Toy", category: "toys", price: 7, slug: "ready-toy", media: [{ file: "toy.png", alt: "Ready toy photo" }] },
+    { title: "Drop Me", category: "toys", price: 8, slug: "drop-me", media: [{ file: "never.png" }] }
   );
 
   // The JSON first and the image second: picks accumulate instead of replacing.
@@ -220,16 +221,24 @@ test("bulk upload previews a json file with images and unticks existing slugs", 
   await input.setInputFiles({ name: "catalog.json", mimeType: "application/json", buffer: Buffer.from(manifest) });
   const card = page.getByTestId("catalog-file");
   await expect(card).toContainText("catalog.json");
-  await expect(card).toContainText("3 products");
+  await expect(card).toContainText("4 products");
   await input.setInputFiles({ name: "toy.png", mimeType: "image/png", buffer: PNG });
   await expect(card).toContainText("1 attached");
   await expect(card).toContainText("catalog.json");
 
-  // File preview: decoded local thumbnail and a marker for the file not attached yet.
+  // File preview: dashboard-style product rows with a decoded local thumbnail,
+  // a note naming the file still to attach, and per-row removal.
+  const products = card.getByTestId("product-card");
+  await expect(products).toHaveCount(4);
   const thumb = card.getByRole("img", { name: "Old toy photo" });
   await expect(thumb).toBeVisible();
   await expect.poll(() => thumb.evaluate((node: HTMLImageElement) => node.naturalWidth)).toBeGreaterThan(0);
-  await expect(card.getByRole("img", { name: "Not available: absent.png" })).toBeVisible();
+  await expect(card.getByText("Attach 2 files named in the JSON: absent.png, never.png")).toBeVisible();
+  await expect(card.getByRole("img", { name: "Not attached: never.png" })).toBeVisible();
+  await card.getByRole("button", { name: "Remove Drop Me" }).click();
+  await expect(products).toHaveCount(3);
+  await expect(card).toContainText("3 products");
+  await expect(card.getByText("Attach 1 file named in the JSON: absent.png")).toBeVisible();
 
   await page.getByRole("button", { name: "Continue" }).click();
 
@@ -240,6 +249,8 @@ test("bulk upload previews a json file with images and unticks existing slugs", 
   await expect(oldRow).toBeEnabled();
   await expect(page.getByRole("checkbox", { name: "Include New Toy" })).toBeDisabled();
   await expect(page.getByText("Missing file: absent.png")).toBeVisible();
+  await expect(page.getByRole("img", { name: "Not attached: absent.png" })).toBeVisible();
+  await expect(page.getByRole("checkbox", { name: "Include Drop Me" })).toHaveCount(0);
   await expect(page.getByRole("checkbox", { name: "Include Ready Toy" })).toBeChecked();
   await expect(page.getByText("2 variants")).toBeVisible();
   await expect(page.getByRole("button", { name: "Import 1 product", exact: true })).toBeEnabled();
