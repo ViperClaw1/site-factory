@@ -10,11 +10,13 @@ import {
   variantObjectPath,
 } from "@/lib/media/pipeline.mjs";
 import { coverImage } from "@/lib/media";
+import { CATALOG_VERSION, productToJson, type CatalogDbRow, type CatalogProduct } from "@/lib/admin/catalog-json";
 import {
   extensionForMime,
   IMAGE_MAX_BYTES,
   MAX_MEDIA_FILES,
   VIDEO_MAX_BYTES,
+  type ExportRequest,
   type ProductInput,
   type SignRequest,
 } from "@/lib/admin/schema";
@@ -317,6 +319,13 @@ export async function signUploads(input: SignRequest): Promise<{
   return { slug, bucket, uploads };
 }
 
+interface VariantWrite {
+  sku: string;
+  attributes: Record<string, string> | null;
+  price: number | null;
+  stock: number;
+}
+
 interface ProductWrite {
   slug: string;
   title: string;
@@ -327,24 +336,47 @@ interface ProductWrite {
   is_collectible: boolean;
   edition_size: number | null;
   series: string | null;
+  collection: string | null;
+  weight_grams: number | null;
+  collectible_story: ProductInput["story"] | null;
   images: ProductImage[];
   base_price: number;
   currency: string;
-  status: "active" | "draft";
-  stock: number;
+  status: "active" | "draft" | "archived";
+  variants: VariantWrite[];
 }
 
 function isMissingRpc(message: string): boolean {
   return /admin_create_product|schema cache|PGRST202/i.test(message);
 }
 
+// Slug conflicts are retried with a new slug. A SKU clash would repeat, so it is reported instead.
+function uniqueViolation(error: { message: string }): Error {
+  if (/product_variants_sku/i.test(error.message)) return new AdminInputError("A variant SKU already exists in the catalog.");
+  return new SlugTakenError();
+}
+
+// No variants in the input means the single standard variant every product used to get.
+function variantRows(input: ProductInput): VariantWrite[] {
+  const prefix = input.slug.toUpperCase();
+  if (!input.variants?.length) {
+    return [{ sku: `${prefix}-STD`, attributes: { edition: "standard" }, price: null, stock: input.stock }];
+  }
+  return input.variants.map((variant, index) => ({
+    sku: variant.sku ?? `${prefix}-${index + 1}`,
+    attributes: variant.attributes ?? null,
+    price: variant.price ?? null,
+    stock: variant.stock,
+  }));
+}
+
 // Prefer the migration's single transaction. If it is not applied yet, insert
 // the product and remove it when the variant insert fails.
 async function insertProduct(row: ProductWrite): Promise<string> {
   const supabase = supabaseAdmin();
-  const { data, error } = await supabase.rpc("admin_create_product", { p: row });
+  const { data, error } = await supabase.rpc("admin_create_product_v2", { p: row });
   if (!error) return String(data);
-  if (error.code === "23505") throw new SlugTakenError();
+  if (error.code === "23505") throw uniqueViolation(error);
   if (!isMissingRpc(error.message)) throw new Error(error.message);
 
   const inserted = await supabase
@@ -359,6 +391,9 @@ async function insertProduct(row: ProductWrite): Promise<string> {
       is_collectible: row.is_collectible,
       edition_size: row.edition_size,
       series: row.series,
+      collection: row.collection,
+      weight_grams: row.weight_grams,
+      collectible_story: row.collectible_story,
       images: row.images,
       base_price: row.base_price,
       currency: row.currency,
@@ -371,15 +406,12 @@ async function insertProduct(row: ProductWrite): Promise<string> {
     throw new Error(inserted.error.message);
   }
 
-  const variant = await supabase.from("product_variants").insert({
-    product_id: inserted.data.id,
-    sku: `${row.slug.toUpperCase()}-STD`,
-    attributes: { edition: "standard" },
-    stock: row.stock,
-  });
+  const variant = await supabase
+    .from("product_variants")
+    .insert(row.variants.map((item) => ({ ...item, product_id: inserted.data.id })));
   if (variant.error) {
     await supabase.from("products").delete().eq("id", inserted.data.id);
-    if (variant.error.code === "23505") throw new SlugTakenError();
+    if (variant.error.code === "23505") throw uniqueViolation(variant.error);
     throw new Error(variant.error.message);
   }
   return inserted.data.id;
@@ -403,11 +435,14 @@ export async function createProduct(input: ProductInput): Promise<{ id: string; 
       is_collectible: input.isCollectible,
       edition_size: input.editionSize ?? null,
       series: input.series ?? null,
+      collection: input.collection ?? null,
+      weight_grams: input.weightGrams ?? null,
+      collectible_story: input.story ?? null,
       images,
       base_price: input.price,
       currency: "USD",
       status: input.status,
-      stock: input.stock,
+      variants: variantRows(input),
     });
     created = { id, slug: input.slug, warnings };
   } catch (err) {
@@ -496,6 +531,15 @@ function searchTerm(q: string | undefined): string | null {
   return safe.length > 0 ? safe : null;
 }
 
+// Shared by the dashboard list and the export, so "Export filtered" matches what is on screen.
+function listFilters(query: Pick<ProductListQuery, "category" | "status" | "q">) {
+  return {
+    category: query.category && (CATEGORIES as readonly string[]).includes(query.category) ? query.category : undefined,
+    status: query.status === "active" || query.status === "draft" || query.status === "archived" ? query.status : undefined,
+    q: searchTerm(query.q),
+  };
+}
+
 async function headCount(column: "status" | "category", value: string): Promise<number> {
   const { count, error } = await supabaseAdmin()
     .from("products")
@@ -513,10 +557,7 @@ export async function listProducts(query: ProductListQuery): Promise<{
 }> {
   await gate();
   const page = Number.isFinite(query.page) && (query.page ?? 0) > 0 ? Math.floor(query.page as number) : 1;
-  const category = query.category && (CATEGORIES as readonly string[]).includes(query.category) ? query.category : undefined;
-  const status =
-    query.status === "active" || query.status === "draft" || query.status === "archived" ? query.status : undefined;
-  const q = searchTerm(query.q);
+  const { category, status, q } = listFilters(query);
 
   let list = supabaseAdmin()
     .from("products")
@@ -563,4 +604,62 @@ export async function listProducts(query: ProductListQuery): Promise<{
       byCategory: Object.fromEntries(categoryCounts),
     },
   };
+}
+
+const EXPORT_COLUMNS =
+  "slug, title, description, category, product_type, collection, character, is_collectible, edition_size, series, images, base_price, weight_grams, collectible_story, status, product_variants(sku, attributes, price, stock)";
+const IN_CHUNK = 100;
+const EXPORT_PAGE = 1000;
+
+function chunks<T>(items: T[], size: number): T[][] {
+  return Array.from({ length: Math.ceil(items.length / size) }, (_, index) => items.slice(index * size, (index + 1) * size));
+}
+
+async function readExportRows(query: ExportRequest): Promise<CatalogDbRow[]> {
+  const rows: CatalogDbRow[] = [];
+
+  // Selected products: chunked so a long id list stays under the URL limit.
+  if (query.ids) {
+    for (const ids of chunks(query.ids, IN_CHUNK)) {
+      const { data, error } = await supabaseAdmin().from("products").select(EXPORT_COLUMNS).in("id", ids);
+      if (error) throw new Error(error.message);
+      rows.push(...((data ?? []) as unknown as CatalogDbRow[]));
+    }
+    return rows;
+  }
+
+  // Everything matching the filters. PostgREST caps a response without saying so,
+  // so page until an empty result and advance by what actually arrived.
+  const { category, status, q } = listFilters(query);
+  for (;;) {
+    let list = supabaseAdmin().from("products").select(EXPORT_COLUMNS);
+    if (category) list = list.eq("category", category);
+    if (status) list = list.eq("status", status);
+    if (q) list = list.or(`title.ilike.%${q}%,slug.ilike.%${q}%`);
+    const { data, error } = await list.order("slug").range(rows.length, rows.length + EXPORT_PAGE - 1);
+    if (error) throw new Error(error.message);
+    if (!data?.length) return rows;
+    rows.push(...(data as unknown as CatalogDbRow[]));
+  }
+}
+
+export async function exportProducts(
+  query: ExportRequest
+): Promise<{ version: number; exportedAt: string; products: CatalogProduct[] }> {
+  await gate();
+  const rows = await readExportRows(query);
+  rows.sort((a, b) => a.slug.localeCompare(b.slug));
+  return { version: CATALOG_VERSION, exportedAt: new Date().toISOString(), products: rows.map(productToJson) };
+}
+
+// Which of these slugs are already in the catalog. Lets the import preview flag repeats.
+export async function existingSlugs(slugs: string[]): Promise<string[]> {
+  await gate();
+  const existing: string[] = [];
+  for (const part of chunks(slugs, IN_CHUNK)) {
+    const { data, error } = await supabaseAdmin().from("products").select("slug").in("slug", part);
+    if (error) throw new Error(error.message);
+    existing.push(...(data ?? []).map((row) => row.slug as string));
+  }
+  return existing;
 }
