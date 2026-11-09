@@ -1,8 +1,8 @@
 "use client";
 
 import { useI18n } from "@/lib/i18n/LanguageProvider";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link } from "@repo/i18n/client";
+import { useLocalizedRouter } from "@repo/i18n/client";
 import { useState, type FormEvent } from "react";
 import { updatePassword } from "../api";
 import { useUser } from "../hooks";
@@ -17,7 +17,7 @@ type Field = "password" | "confirm";
 export function ResetPasswordForm() {
   const { t } = useI18n();
   const a = t.auth;
-  const router = useRouter();
+  const router = useLocalizedRouter();
   const { user, ready } = useUser();
 
   const [values, setValues] = useState({ password: "", confirm: "" });

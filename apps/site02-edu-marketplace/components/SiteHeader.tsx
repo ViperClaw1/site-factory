@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { LanguageLink, Link } from "@repo/i18n/client";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 import { LOCALES } from "@/lib/i18n/locales";
@@ -13,7 +13,7 @@ import { Logo } from "./Logo";
 import { ThemeSwitch } from "./ThemeSwitch";
 
 export function SiteHeader() {
-  const { t, lang, setLang } = useI18n();
+  const { t, lang } = useI18n();
   const { user, ready } = useUser();
   const cartCount = useCartIds().length;
   const [scrolled, setScrolled] = useState(false);
@@ -141,11 +141,9 @@ export function SiteHeader() {
             {LOCALES.map((locale) => {
               const selected = locale.code === lang;
               return (
-                <button
+                <LanguageLink
                   key={locale.code}
-                  type="button"
-                  onClick={() => setLang(locale.code)}
-                  aria-pressed={selected}
+                  lang={locale.code}
                   aria-label={locale.native}
                   title={locale.native}
                   className={`grid h-9 place-items-center rounded-lg transition ${
@@ -153,7 +151,7 @@ export function SiteHeader() {
                   }`}
                 >
                   <Flag code={locale.code} className="h-4 w-6" />
-                </button>
+                </LanguageLink>
               );
             })}
           </div>

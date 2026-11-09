@@ -15,3 +15,4 @@ temp_assets
 # Supabase CLI local state
 supabase/.branches
 supabase/.temp
+test-results/

@@ -1,55 +1,19 @@
 "use client";
 
+import { useLocale } from "@repo/i18n/client";
 import { useCallback } from "react";
-import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
 import { dictionaries, type MessageKey } from "./dictionaries";
-import { DEFAULT_LANG, isLang, localeTag, type Lang } from "./locales";
+import { localeTag } from "./locales";
 
 export type { Dict, MessageKey } from "./dictionaries";
 export { DEFAULT_LANG, LOCALES, isLang, localeTag, type Lang, type Locale } from "./locales";
 
-interface LocaleState {
-  locale: Lang;
-  setLocale: (locale: Lang) => void;
-}
-
-// Client-only locale, persisted to localStorage. Same skipHydration pattern as
-// the cart store (lib/cart.ts): server and first client render are always
-// English so SSR output matches, then <NavBar> rehydrates once on mount and
-// every subscribed component re-renders in the saved language.
-export const useLocaleStore = create<LocaleState>()(
-  persist(
-    (set) => ({
-      locale: DEFAULT_LANG,
-      setLocale: (locale) => set({ locale }),
-    }),
-    {
-      name: "path-kids-locale",
-      skipHydration: true,
-      storage: createJSONStorage(() => ({
-        getItem: (key) => localStorage.getItem(key) ?? localStorage.getItem("toyverse-locale"),
-        setItem: (key, value) => {
-          localStorage.setItem(key, value);
-          localStorage.removeItem("toyverse-locale");
-        },
-        removeItem: (key) => localStorage.removeItem(key),
-      })),
-      // Ignore a saved locale that's no longer offered instead of
-      // indexing dictionaries with it.
-      merge: (persisted, current) => {
-        const locale = (persisted as Partial<LocaleState> | undefined)?.locale;
-        return isLang(locale) ? { ...current, locale } : current;
-      },
-    }
-  )
-);
-
-// Translator hook: `t(key, { name: value })` fills `{name}` placeholders,
-// `price(amount, currency)` formats money for the active locale. (The shared
-// @repo/lib formatPrice is pinned to ru-RU, which reads oddly on this site.)
+// Translator hook, using the language from the address: `t(key, { name: value })`
+// fills `{name}` placeholders, `price(amount, currency)` formats money for that
+// language. (The shared @repo/lib formatPrice is pinned to ru-RU, which reads
+// oddly on this site.)
 export function useT() {
-  const locale = useLocaleStore((state) => state.locale);
+  const locale = useLocale();
 
   const t = useCallback(
     (key: MessageKey, vars?: Record<string, string | number>) => {

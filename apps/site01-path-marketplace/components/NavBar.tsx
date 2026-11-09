@@ -3,13 +3,13 @@
 import { initAuth, useAuthStore } from "@/lib/auth";
 import { ADMIN_PUBLIC } from "@/lib/rbac";
 import { useCartStore } from "@/lib/cart";
-import { LOCALES, localeTag, useLocaleStore, useT, type MessageKey } from "@/lib/i18n";
+import { LOCALES, useT, type MessageKey } from "@/lib/i18n";
 import { FlagIcon } from "./FlagIcon";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import Link from "next/link";
+import { LanguageLink, LanguageMenu, Link } from "@repo/i18n/client";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 const NAV_LINKS: { key: MessageKey; href: string }[] = [
   { key: "nav.new", href: "/shop?sort=newest" },
@@ -46,12 +46,9 @@ export function Logo() {
 // search/wishlist/cart icons, and a hamburger panel below `lg`.
 export function NavBar() {
   const { t, locale } = useT();
-  const setLocale = useLocaleStore((state) => state.setLocale);
   const pathname = usePathname();
   const [hydrated, setHydrated] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [langOpen, setLangOpen] = useState(false);
-  const langRef = useRef<HTMLDivElement>(null);
   const itemCount = useCartStore((state) => state.items.reduce((sum, item) => sum + item.qty, 0));
 
   const signedIn = useAuthStore((state) => state.role !== "guest");
@@ -59,41 +56,16 @@ export function NavBar() {
   const authReady = useAuthStore((state) => state.ready);
   const showAdmin = ADMIN_PUBLIC || (authReady && role === "admin");
 
-  // Both persisted stores skip SSR hydration; the nav is on every page, so it
-  // owns the one-time rehydrate for the cart and the saved locale, plus the
-  // Supabase auth subscription.
+  // The cart store skips SSR hydration; the nav is on every page, so it owns
+  // the one-time rehydrate, plus the Supabase auth subscription.
   useEffect(() => {
     useCartStore.persist.rehydrate();
-    useLocaleStore.persist.rehydrate();
     setHydrated(true);
     return initAuth();
   }, []);
 
-  // Keep <html lang> in sync so screen readers/fonts pick the right language.
-  useEffect(() => {
-    document.documentElement.lang = localeTag(locale);
-    document.documentElement.dir = locale === "ar" ? "rtl" : "ltr";
-  }, [locale]);
-
   // Close the mobile panel on navigation.
   useEffect(() => setMenuOpen(false), [pathname]);
-
-  // Language dropdown: dismiss on outside click or Escape.
-  useEffect(() => {
-    if (!langOpen) return;
-    function onPointerDown(event: MouseEvent) {
-      if (!langRef.current?.contains(event.target as Node)) setLangOpen(false);
-    }
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setLangOpen(false);
-    }
-    document.addEventListener("mousedown", onPointerDown);
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [langOpen]);
 
   const iconClass =
     "flex h-9 w-9 items-center justify-center text-ink transition-colors hover:text-pink";
@@ -119,60 +91,28 @@ export function NavBar() {
 
         <div className="flex items-center gap-1">
           {/* Language dropdown */}
-          <div ref={langRef} className="relative hidden sm:block">
-            <button
-              type="button"
-              onClick={() => setLangOpen((open) => !open)}
-              aria-haspopup="listbox"
-              aria-expanded={langOpen}
-              aria-label={t("nav.language")}
-              className="flex h-9 items-center gap-1.5 rounded-full px-2.5 text-xs font-semibold text-ink hover:bg-black/5"
-            >
-              <FlagIcon locale={locale} />
-              {LOCALES.find((item) => item.code === locale)?.label}
+          <LanguageMenu
+            ariaLabel={t("nav.language")}
+            renderFlag={(code) => <FlagIcon locale={code} />}
+            renderChevron={(open) => (
               <i
-                className={`fa-solid fa-chevron-down text-[9px] text-black/40 transition-transform ${langOpen ? "rotate-180" : ""}`}
+                className={`fa-solid fa-chevron-down text-[9px] text-black/40 transition-transform ${open ? "rotate-180" : ""}`}
                 aria-hidden="true"
               />
-            </button>
-            <AnimatePresence>
-              {langOpen && (
-                <motion.ul
-                  role="listbox"
-                  initial={{ opacity: 0, y: -6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }}
-                  transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-full z-50 mt-2 max-h-[min(28rem,70vh)] w-64 overflow-y-auto rounded-2xl border border-black/10 bg-white p-1.5 shadow-lg"
-                >
-                  {LOCALES.map((item) => {
-                    const selected = item.code === locale;
-                    return (
-                      <li key={item.code}>
-                        <button
-                          type="button"
-                          role="option"
-                          aria-selected={selected}
-                          onClick={() => {
-                            setLocale(item.code);
-                            setLangOpen(false);
-                          }}
-                          className={`flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-sm ${
-                            selected ? "bg-pink text-white" : "text-ink hover:bg-black/[0.04]"
-                          }`}
-                        >
-                          <FlagIcon locale={item.code} />
-                          <span className="flex-1 font-medium leading-none">{item.native}</span>
-                          <span className={`text-xs ${selected ? "text-white/80" : "text-black/40"}`}>{item.label}</span>
-                          {selected && <i className="fa-solid fa-check text-[11px]" aria-hidden="true" />}
-                        </button>
-                      </li>
-                    );
-                  })}
-                </motion.ul>
-              )}
-            </AnimatePresence>
-          </div>
+            )}
+            check={<i className="fa-solid fa-check text-[11px]" aria-hidden="true" />}
+            classes={{
+              root: "relative hidden sm:block",
+              trigger: "flex h-9 items-center gap-1.5 rounded-full px-2.5 text-xs font-semibold text-ink hover:bg-black/5",
+              list: "absolute right-0 top-full z-50 mt-2 max-h-[min(28rem,70vh)] w-64 overflow-y-auto rounded-2xl border border-black/10 bg-white p-1.5 shadow-lg",
+              item: "flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-sm font-medium leading-none",
+              itemActive: "bg-pink text-white",
+              itemIdle: "text-ink hover:bg-black/[0.04]",
+              code: "text-xs font-normal",
+              codeActive: "text-white/80",
+              codeIdle: "text-black/40",
+            }}
+          />
 
           {/* Utility icons: search goes to the shop. Favorites, account and
               cart are for signed-in users; guests get a single sign-in icon.
@@ -256,17 +196,15 @@ export function NavBar() {
                 {LOCALES.map((item) => {
                   const selected = item.code === locale;
                   return (
-                    <button
+                    <LanguageLink
                       key={item.code}
-                      type="button"
-                      onClick={() => setLocale(item.code)}
-                      aria-pressed={selected}
+                      lang={item.code}
                       aria-label={item.native}
                       title={item.native}
                       className={`px-3 py-1.5 ${selected ? "bg-ink" : "bg-black/5"}`}
                     >
                       <FlagIcon locale={item.code} className="h-4 w-6 rounded-[3px]" />
-                    </button>
+                    </LanguageLink>
                   );
                 })}
               </div>

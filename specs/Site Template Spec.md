@@ -16,10 +16,11 @@ Conventions every site in `apps/` must follow. Based on the shared Next.js 14 Ap
 ```
 apps/siteNN-name/
   app/
-    layout.tsx                # Root layout: theme CSS vars, PlausibleProvider, fonts
-    template.tsx              # Page transitions (Framer Motion) — NOT layout.tsx
+    [locale]/
+      layout.tsx            # Root layout: <html lang dir>, fonts, PlausibleProvider
+      template.tsx          # Page transitions (Framer Motion) — NOT layout.tsx
+      page.tsx              # Homepage — thin: imports FSD-style page component
     globals.css               # CSS variables for this site's theme
-    page.tsx                  # Homepage — thin: imports FSD-style page component
     api/
       revalidate/route.ts     # POST /api/revalidate — ISR cache invalidation
   components/                 # Site-specific components (domain logic)
@@ -85,6 +86,22 @@ export async function generateMetadata({ params }): Promise<Metadata> {
   });
 }
 ```
+
+## Language Routes
+
+Every page lives under `app/[locale]/`, which is a root layout: `/en/...`, `/de/...`.
+The registry, routing helpers, middleware, links and menu come from `packages/i18n`;
+details are in `docs/conventions.md`.
+
+- `/` redirects (307) by the `lang` cookie, then `Accept-Language`, then `en`. Old
+  addresses without a prefix redirect (308) by the cookie, then `en`.
+- Outside the prefix: `/api`, `/auth/callback`, `/admin` (its own root layout), `/stats`,
+  `robots.txt`, `sitemap.xml` and static files.
+- Links use `Link` and `useLocalizedRouter` from `@repo/i18n/client`.
+- Each page sets `alternates(path, lang)` or `localeMetadata(path)` for canonical and
+  hreflang.
+- Detail pages export an empty `generateStaticParams` so ISR caches them on first request.
+- Root layouts never read `cookies()` or `headers()`; that would turn ISR off site-wide.
 
 ## Plausible Proxy (required in every `next.config.js`)
 

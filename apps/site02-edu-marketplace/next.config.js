@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
-  transpilePackages: ["@repo/ui", "@repo/lib", "@repo/types"],
+  transpilePackages: ["@repo/ui", "@repo/i18n", "@repo/lib", "@repo/types"],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },

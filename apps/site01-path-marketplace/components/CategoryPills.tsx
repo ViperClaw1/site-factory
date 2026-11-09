@@ -1,7 +1,7 @@
 "use client";
 
 import { useT, type MessageKey } from "@/lib/i18n";
-import Link from "next/link";
+import { Link } from "@repo/i18n/client";
 
 export interface PillOption {
   label: string;

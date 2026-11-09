@@ -5,7 +5,7 @@ import { Shape } from "@/components/Shape";
 import { unsplash } from "@/lib/catalog";
 import { useT, type MessageKey } from "@/lib/i18n";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@repo/i18n/client";
 
 interface Tile {
   key: MessageKey;

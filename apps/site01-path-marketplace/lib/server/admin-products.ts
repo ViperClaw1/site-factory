@@ -25,6 +25,7 @@ import { supabaseAdmin } from "@/lib/server/supabase-admin";
 import type { ProductImage, ProductImageVariant, ProductStatus } from "@repo/types";
 import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
+import { localizedPaths } from "@repo/i18n";
 
 const VARIANT_ORDER = ["thumb", "gallery", "hero"] as const;
 const IMAGE_FORMATS = new Set(["jpeg", "png", "webp", "avif", "heif"]);
@@ -280,10 +281,9 @@ async function processMedia(
 
 function revalidateCatalog(category: string, slug: string): void {
   revalidatePath("/admin");
-  revalidatePath("/");
-  revalidatePath("/shop");
-  revalidatePath(`/shop/${category}`);
-  revalidatePath(`/p/${slug}`);
+  for (const path of ["/", "/shop", `/shop/${category}`, `/p/${slug}`]) {
+    for (const localized of localizedPaths(path)) revalidatePath(localized);
+  }
 }
 
 export async function signUploads(input: SignRequest): Promise<{

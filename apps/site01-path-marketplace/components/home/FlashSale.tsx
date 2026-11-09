@@ -7,7 +7,7 @@ import { Shape } from "@/components/Shape";
 import { useT } from "@/lib/i18n";
 import { productHeading } from "@/lib/catalog";
 import { circularCountdown, freshSaleIndex, type FreshSaleDeal } from "@/lib/placeholders";
-import Link from "next/link";
+import { Link } from "@repo/i18n/client";
 import { useEffect, useState } from "react";
 
 function pad(value: number): string {

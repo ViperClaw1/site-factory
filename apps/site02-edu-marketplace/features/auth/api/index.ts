@@ -2,6 +2,7 @@
 
 import { createSupabaseBrowserClient } from "@repo/lib";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { DEFAULT_LANG, localeOf, withLocale } from "@repo/i18n";
 
 // Temporary: Supabase email+password / Google. This becomes custom email + OTP
 // later, so everything auth-provider-specific lives in this file.
@@ -15,7 +16,8 @@ export function supabaseBrowser(): SupabaseClient {
 
 // Where Supabase sends the user back after OAuth / email confirmation.
 function callbackUrl(next: string) {
-  return `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
+  const lang = localeOf(window.location.pathname) ?? DEFAULT_LANG;
+  return `${window.location.origin}/auth/callback?next=${encodeURIComponent(withLocale(next, lang))}`;
 }
 
 export function signIn(email: string, password: string) {

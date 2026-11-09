@@ -54,7 +54,7 @@ async function loadFavorites(userId: string) {
 }
 
 // Subscribes the store to Supabase auth events. Called once by <NavBar>
-// (it's on every page, same as the cart/locale rehydrate); returns the unsubscribe.
+// (it's on every page, same as the cart rehydrate); returns the unsubscribe.
 export function initAuth(): () => void {
   const {
     data: { subscription },

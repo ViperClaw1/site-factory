@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@repo/i18n/client";
 import { Container } from "@repo/ui";
 import { ArrowRightIcon, PlayIcon, StarIcon } from "@/components/icons";
 import { useI18n } from "@/lib/i18n/LanguageProvider";

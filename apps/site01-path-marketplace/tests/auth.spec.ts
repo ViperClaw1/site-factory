@@ -6,7 +6,7 @@ import { expect, test } from "@playwright/test";
 test("guest is redirected from protected routes to login", async ({ page }) => {
   for (const path of ["/account", "/favorites"]) {
     await page.goto(path);
-    await expect(page).toHaveURL(new RegExp(`/login\\?next=${encodeURIComponent(path)}$`));
+    await expect(page).toHaveURL(new RegExp(`/en/login\\?next=${encodeURIComponent(`/en${path}`)}$`));
   }
 });
 
@@ -27,6 +27,6 @@ test("login ignores off-site ?next redirects", async ({ page }) => {
   await page.goto("/login?next=//evil.example");
   await expect(page.getByRole("link", { name: "New here? Create an account" })).toHaveAttribute(
     "href",
-    "/signup?next=%2Faccount"
+    "/en/signup?next=%2Fen"
   );
 });
