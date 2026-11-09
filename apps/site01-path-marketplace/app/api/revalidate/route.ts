@@ -1,6 +1,7 @@
 import { timingSafeEqual, createHmac } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
+import { localizedPaths } from "@repo/i18n";
 
 // Directus webhook target: fires on publish/update so ISR pages (revalidate =
 // 60) get fresh content immediately instead of waiting out the 60s timer.
@@ -35,7 +36,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: "Invalid signature" }, { status: 401 });
   }
 
-  revalidatePath(path);
+  // The webhook sends a path without a language; each language has its own cache entry.
+  for (const localized of localizedPaths(path)) revalidatePath(localized);
 
   return NextResponse.json({ revalidated: true, path, now: Date.now() });
 }

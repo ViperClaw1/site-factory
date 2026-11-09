@@ -9,6 +9,7 @@ import type { CourseStatus } from "@repo/types";
 import { encode } from "blurhash";
 import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
+import { localizedPaths } from "@repo/i18n";
 
 const VARIANTS = {
   thumb: { width: 400, quality: 70 },
@@ -168,9 +169,9 @@ function baseCopy(translations: CourseInput["translations"]): { language: string
 
 function revalidateCourse(slug: string): void {
   revalidatePath("/admin");
-  revalidatePath("/");
-  revalidatePath("/courses");
-  revalidatePath(`/course/${slug}`);
+  for (const path of ["/", "/courses", `/course/${slug}`]) {
+    for (const localized of localizedPaths(path)) revalidatePath(localized);
+  }
 }
 
 export async function createCourse(input: CourseInput): Promise<{ id: string; slug: string }> {

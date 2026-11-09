@@ -5,12 +5,15 @@ import { useT, type MessageKey } from "@/lib/i18n";
 import { safeNext } from "@/lib/rbac";
 import { validateEmail, validateName, validatePassword } from "@/lib/validation";
 import { Container } from "@repo/ui";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { Link } from "@repo/i18n/client";
+import { useLocalizedRouter } from "@repo/i18n/client";
+import { useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { buttonClass } from "./buttons";
 import { FormField, INPUT_CLASS } from "./FormField";
 import { PasswordInput } from "./PasswordInput";
+import { useLocale } from "@repo/i18n/client";
+import { withLocale } from "@repo/i18n";
 
 type Field = "name" | "email" | "password";
 
@@ -29,12 +32,13 @@ export interface AuthFormProps {
 // only depends on the Supabase session (lib/auth.ts), not on how it was made.
 export function AuthForm({ mode }: AuthFormProps) {
   const { t } = useT();
-  const router = useRouter();
+  const router = useLocalizedRouter();
   const isSignup = mode === "signup";
   // An explicit ?next (e.g. middleware bouncing a guest off /account) wins;
   // otherwise login → home, signup → profile page.
   const requestedNext = useSearchParams().get("next");
-  const next = safeNext(requestedNext, isSignup ? "/account" : "/");
+  const locale = useLocale();
+  const next = withLocale(safeNext(requestedNext, isSignup ? "/account" : "/"), locale);
 
   const [values, setValues] = useState({ name: "", email: "", password: "" });
   const [errors, setErrors] = useState<Partial<Record<Field, MessageKey>>>({});

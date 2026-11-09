@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@repo/i18n/client";
 import { Container } from "@repo/ui";
 import { CheckIcon } from "@/components/icons";
 import { useI18n } from "@/lib/i18n/LanguageProvider";

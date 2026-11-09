@@ -1,7 +1,7 @@
 import { ImageWithFallback } from "@repo/ui";
 import * as Progress from "@radix-ui/react-progress";
 import type { Collection } from "@repo/types";
-import Link from "next/link";
+import { Link } from "@repo/i18n/client";
 
 export interface CollectionCardProps {
   collection: Collection;

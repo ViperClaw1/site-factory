@@ -4,8 +4,9 @@ import { useAuthStore } from "@/lib/auth";
 import { productHeading, type BadgeKind, type CardItem } from "@/lib/catalog";
 import { useCartStore } from "@/lib/cart";
 import { useT, type MessageKey } from "@/lib/i18n";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { Link } from "@repo/i18n/client";
+import { useLocalizedRouter } from "@repo/i18n/client";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { buttonClass } from "./buttons";
 import { CatalogImage } from "./CatalogImage";
@@ -33,7 +34,7 @@ export function ItemBadge({ kind, className = "" }: { kind: BadgeKind; className
 // Guests on gated surfaces (the home page) go to login instead of mutating the cart.
 function useGuestLoginRedirect(enabled: boolean) {
   const role = useAuthStore((state) => state.role);
-  const router = useRouter();
+  const router = useLocalizedRouter();
   const pathname = usePathname();
 
   return function redirectIfGuest(): boolean {
@@ -84,7 +85,7 @@ export interface ProductCardProps {
 // title / subtitle / price and a "Buy Now" button (adds, then opens the cart).
 export function ProductCard({ item, compact = false, authGate = false }: ProductCardProps) {
   const { t, price } = useT();
-  const router = useRouter();
+  const router = useLocalizedRouter();
   const { add, added } = useAddToCart(item, authGate);
   const href = `/p/${item.slug}`;
   const heading = productHeading(item.title, item.character);

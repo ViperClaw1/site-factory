@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { LanguageLink, Link } from "@repo/i18n/client";
 import { Container } from "@repo/ui";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 import { LOCALES } from "@/lib/i18n/locales";
@@ -23,7 +23,7 @@ const socials = [
 ];
 
 export function SiteFooter() {
-  const { t, lang, setLang } = useI18n();
+  const { t, lang } = useI18n();
 
   return (
     <footer className="border-t border-white/10 bg-canvas pb-10 pt-16 text-sm">
@@ -35,6 +35,7 @@ export function SiteFooter() {
             <p className="mt-5 leading-relaxed text-muted">{t.footer.tagline}</p>
             <div className="mt-6 flex gap-2">
               {socials.map(({ label, Icon }) => (
+                // eslint-disable-next-line jsx-a11y/anchor-is-valid -- placeholder until the social accounts exist.
                 <a
                   key={label}
                   href="#"
@@ -73,19 +74,17 @@ export function SiteFooter() {
           </p>
           <div className="flex flex-wrap items-center gap-1.5" aria-label={t.footer.languages}>
             {LOCALES.map((locale) => (
-              <button
+              <LanguageLink
                 key={locale.code}
-                type="button"
+                lang={locale.code}
                 title={locale.native}
                 aria-label={locale.native}
-                aria-pressed={locale.code === lang}
-                onClick={() => setLang(locale.code)}
                 className={`rounded-md p-1.5 transition ${
                   locale.code === lang ? "bg-white/10 ring-1 ring-brand/60" : "opacity-60 hover:opacity-100"
                 }`}
               >
                 <Flag code={locale.code} />
-              </button>
+              </LanguageLink>
             ))}
           </div>
         </div>

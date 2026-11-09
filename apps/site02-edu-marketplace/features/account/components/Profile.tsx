@@ -3,7 +3,7 @@
 import { signOut } from "@/features/auth/api";
 import { useUser } from "@/features/auth/hooks";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
-import { useRouter } from "next/navigation";
+import { useLocale, useLocalizedRouter } from "@repo/i18n/client";
 import { useEffect } from "react";
 
 // Signed-in user's profile. Guests are bounced to /login?next=/account.
@@ -11,10 +11,11 @@ import { useEffect } from "react";
 export function Profile() {
   const { t } = useI18n();
   const { user, ready } = useUser();
-  const router = useRouter();
+  const router = useLocalizedRouter();
+  const locale = useLocale();
 
   useEffect(() => {
-    if (ready && !user) router.replace("/login?next=/account");
+    if (ready && !user) router.replace(`/login?next=/${locale}/account`);
   }, [ready, user, router]);
 
   if (!user) return null;

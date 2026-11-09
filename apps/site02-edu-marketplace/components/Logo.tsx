@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@repo/i18n/client";
 
 export function Logo() {
   return (

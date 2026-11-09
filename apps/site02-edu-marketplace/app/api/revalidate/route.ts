@@ -1,6 +1,7 @@
 import { timingSafeEqual, createHmac } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
+import { localizedPaths } from "@repo/i18n";
 
 function isValidSignature(path: string, signature: string | null): boolean {
   if (!signature) return false;
@@ -24,7 +25,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: "Invalid signature" }, { status: 401 });
   }
 
-  revalidatePath(path);
+  // The webhook sends a path without a language; each language has its own cache entry.
+  for (const localized of localizedPaths(path)) revalidatePath(localized);
 
   return NextResponse.json({ revalidated: true, path, now: Date.now() });
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@repo/i18n/client";
 import { useState } from "react";
 import { useUser } from "@/features/auth/hooks";
 import { unsplash } from "@/features/landing/data";
