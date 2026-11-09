@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getCourses } from "@/features/catalog/api/courses";
+import { sitemapEntries } from "@repo/i18n";
 
 // Otherwise built once at build time and frozen until the next deploy.
 export const revalidate = 3600;
@@ -12,16 +13,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const courses = await getCourses();
 
-  const staticRoutes: MetadataRoute.Sitemap = [
-    { url: base, changeFrequency: "daily", priority: 1 },
-    { url: `${base}/courses`, changeFrequency: "daily", priority: 0.9 },
+  return [
+    ...sitemapEntries(base, "/", { changeFrequency: "daily", priority: 1 }),
+    ...sitemapEntries(base, "/courses", { changeFrequency: "daily", priority: 0.9 }),
+    ...courses.flatMap((course) =>
+      sitemapEntries(base, `/courses/${course.slug}`, { changeFrequency: "weekly", priority: 0.8 }),
+    ),
   ];
-
-  const courseRoutes: MetadataRoute.Sitemap = courses.map((course) => ({
-    url: `${base}/courses/${course.slug}`,
-    changeFrequency: "weekly",
-    priority: 0.8,
-  }));
-
-  return [...staticRoutes, ...courseRoutes];
 }

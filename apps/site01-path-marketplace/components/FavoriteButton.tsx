@@ -3,7 +3,9 @@
 import { useAuthStore } from "@/lib/auth";
 import { useT } from "@/lib/i18n";
 import { can } from "@/lib/rbac";
-import { usePathname, useRouter } from "next/navigation";
+import { useLocalizedRouter } from "@repo/i18n/client";
+import { usePathname } from "next/navigation";
+import { stripLocale } from "@repo/i18n";
 
 export interface FavoriteButtonProps {
   productId: string;
@@ -14,7 +16,7 @@ export interface FavoriteButtonProps {
 // and come back here afterwards.
 export function FavoriteButton({ productId, className = "" }: FavoriteButtonProps) {
   const { t } = useT();
-  const router = useRouter();
+  const router = useLocalizedRouter();
   const pathname = usePathname();
   const role = useAuthStore((state) => state.role);
   const active = useAuthStore((state) => state.favorites.has(productId));
@@ -31,7 +33,7 @@ export function FavoriteButton({ productId, className = "" }: FavoriteButtonProp
     }
     await toggleFavorite(productId);
     // The favorites page is server rendered — re-fetch so the card disappears.
-    if (pathname === "/favorites") router.refresh();
+    if (stripLocale(pathname) === "/favorites") router.refresh();
   }
 
   return (

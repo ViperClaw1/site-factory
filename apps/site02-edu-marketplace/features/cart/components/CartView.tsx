@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@repo/i18n/client";
 import { removeFromCart, useCartIds } from "@/features/cart/store";
 import { STATIC_COURSES } from "@/features/course/static-catalog";
 

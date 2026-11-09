@@ -1,8 +1,8 @@
 "use client";
 
-import { LOCALES, useLocaleStore, useT, type MessageKey } from "@/lib/i18n";
+import { LOCALES, useT, type MessageKey } from "@/lib/i18n";
 import { placeholderCharacters } from "@/lib/placeholders";
-import Link from "next/link";
+import { LanguageLink, Link } from "@repo/i18n/client";
 import { useState, type FormEvent } from "react";
 import { FlagIcon } from "./FlagIcon";
 import { Logo } from "./NavBar";
@@ -42,10 +42,9 @@ const SOCIALS = [
 const CHARACTERS = placeholderCharacters();
 
 // 5-column footer (brand, shop, characters, support, newsletter) topped by a
-// Memphis color stripe, with a language bar that shares the nav's locale store.
+// Memphis color stripe, with a bar of links to this page in each language.
 export function Footer() {
   const { t, locale } = useT();
-  const setLocale = useLocaleStore((state) => state.setLocale);
   const [subscribed, setSubscribed] = useState(false);
 
   // No newsletter provider is wired up — acknowledge locally, send nothing.
@@ -168,11 +167,9 @@ export function Footer() {
             {LOCALES.map((item) => {
               const selected = item.code === locale;
               return (
-                <button
+                <LanguageLink
                   key={item.code}
-                  type="button"
-                  onClick={() => setLocale(item.code)}
-                  aria-pressed={selected}
+                  lang={item.code}
                   aria-label={item.native}
                   title={item.native}
                   className={`rounded-[4px] p-0.5 transition-shadow ${
@@ -180,7 +177,7 @@ export function Footer() {
                   }`}
                 >
                   <FlagIcon locale={item.code} className="h-4 w-6 rounded-[3px]" />
-                </button>
+                </LanguageLink>
               );
             })}
           </div>

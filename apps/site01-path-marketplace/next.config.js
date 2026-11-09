@@ -9,7 +9,7 @@ const nextConfig = {
   // `next dev` without overwriting its .next output.
   distDir: process.env.NEXT_DIST_DIR || ".next",
   output: "standalone",
-  transpilePackages: ["@repo/ui", "@repo/lib", "@repo/types"],
+  transpilePackages: ["@repo/ui", "@repo/i18n", "@repo/lib", "@repo/types"],
   // Product images: Supabase Storage public buckets (real catalog) and
   // Unsplash (showcase fallback in lib/placeholders.ts).
   images: {

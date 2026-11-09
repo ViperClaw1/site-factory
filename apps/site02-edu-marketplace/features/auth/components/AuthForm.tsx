@@ -2,8 +2,9 @@
 
 import { GoogleIcon } from "@/components/icons";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { Link } from "@repo/i18n/client";
+import { useLocalizedRouter } from "@repo/i18n/client";
+import { useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { signIn, signInWithGoogle, signUp } from "../api";
 import { safeNext, validateEmail, validatePassword, type AuthErrorKey } from "../validation";
@@ -16,19 +17,22 @@ import {
   PasswordField,
   PRIMARY_BUTTON_CLASS,
 } from "./fields";
+import { useLocale } from "@repo/i18n/client";
+import { withLocale } from "@repo/i18n";
 
 type Field = "email" | "password";
 
 export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const { t } = useI18n();
   const a = t.auth;
-  const router = useRouter();
+  const router = useLocalizedRouter();
   const params = useSearchParams();
   const isSignup = mode === "signup";
   const requestedNext = params.get("next");
   // An explicit ?next wins; otherwise signup → profile, login → home.
   // Also applies to Google, keyed on which page the button was pressed on.
-  const next = safeNext(requestedNext, isSignup ? "/account" : "/");
+  const locale = useLocale();
+  const next = withLocale(safeNext(requestedNext, isSignup ? "/account" : "/"), locale);
 
   const [values, setValues] = useState({ email: "", password: "" });
   // Fields the user has left (or all, after a submit attempt). Errors only

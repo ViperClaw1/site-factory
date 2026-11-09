@@ -8,6 +8,10 @@
     "tailwind.preset.js"
   ],
   "dependencies": {
+    "@next/eslint-plugin-next": "14.2.35",
+    "@typescript-eslint/parser": "^8",
+    "eslint": "^9.39.5",
+    "eslint-import-resolver-typescript": "^3",
     "eslint-plugin-boundaries": "^4.2.2",
     "eslint-plugin-jsx-a11y": "^6.10.0"
   }

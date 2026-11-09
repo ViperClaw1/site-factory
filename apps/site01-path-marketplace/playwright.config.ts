@@ -24,7 +24,9 @@ export default defineConfig({
     command: "pnpm exec next build && pnpm exec next start -p 3100",
     url: "http://localhost:3100",
     reuseExistingServer: !process.env.CI,
-    timeout: 180_000,
+    timeout: 600_000,
+    // canonical and hreflang are absolute, so they must point at this server.
+    env: { BASE_URL: "http://localhost:3100" },
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
 });

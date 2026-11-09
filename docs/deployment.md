@@ -24,7 +24,7 @@ Coolify сам клонирует репозиторий, собирает об�
 - `Auto Deploy` для боевых веток выключен намеренно: выкатка идёт по вебхуку
   после апрува PR, а не по факту push. Для черновых веток — включён.
 - CI (`.github/workflows/ci.yml`) использует
-  `turbo run <task> --filter='...[origin/main]'` — turbo сам ограничивает
+  `turbo run <task> --filter='...[HEAD^1]'` — turbo сам ограничивает
   работу пакетами, затронутыми диффом, включая зависимость от `packages/*`.
   Отдельный `dorny/paths-filter` не заводили — см. `docs/conventions.md` про
   почему.

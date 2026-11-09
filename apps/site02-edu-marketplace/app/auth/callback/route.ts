@@ -1,6 +1,7 @@
 import { safeNext } from "@/features/auth/validation";
 import { createSupabaseServerClient } from "@repo/lib/supabase-server";
 import { NextResponse, type NextRequest } from "next/server";
+import { localeOf, stripLocale, withLocale } from "@repo/i18n";
 
 // Landing URL for Google OAuth and signup-confirmation links: trades the
 // one-time ?code for a session cookie, then continues to ?next.
@@ -10,7 +11,9 @@ export async function GET(request: NextRequest) {
   const next = safeNext(searchParams.get("next"));
   // Failed recovery links go to /reset-password, which shows "link expired"
   // (it has no session); everything else is an OAuth/confirmation failure.
-  const failure = new URL(next === "/reset-password" ? next : "/login?error=oauth", origin);
+  const lang = localeOf(next);
+  const login = lang ? withLocale("/login?error=oauth", lang) : "/login?error=oauth";
+  const failure = new URL(stripLocale(next) === "/reset-password" ? next : login, origin);
 
   // Supabase reports provider failures as ?error=… instead of a code.
   if (searchParams.get("error")) {

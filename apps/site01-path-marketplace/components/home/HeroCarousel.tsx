@@ -6,7 +6,7 @@ import { unsplash } from "@/lib/catalog";
 import { useT, type MessageKey } from "@/lib/i18n";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@repo/i18n/client";
 import { useCallback, useEffect, useState } from "react";
 
 interface Slide {

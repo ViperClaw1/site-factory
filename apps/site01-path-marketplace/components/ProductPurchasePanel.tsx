@@ -5,7 +5,7 @@ import { useT } from "@/lib/i18n";
 import { productHeading } from "@/lib/catalog";
 import { coverImage } from "@/lib/media";
 import type { Product } from "@repo/types";
-import Link from "next/link";
+import { Link } from "@repo/i18n/client";
 import { useState } from "react";
 import { buttonClass } from "./buttons";
 import { FavoriteButton } from "./FavoriteButton";
