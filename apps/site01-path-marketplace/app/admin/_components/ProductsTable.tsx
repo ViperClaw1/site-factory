@@ -9,14 +9,17 @@ interface ProductsTableProps {
   total: number;
   page: number;
   filteredEmpty: boolean;
+  selected: ReadonlySet<string>;
+  onSelect: (ids: string[], checked: boolean) => void;
   onPage: (page: number) => void;
   onAdd: () => void;
   onBulk: () => void;
   onDelete: (row: AdminProductRow) => void;
 }
 
-export function ProductsTable({ rows, total, page, filteredEmpty, onPage, onAdd, onBulk, onDelete }: ProductsTableProps) {
+export function ProductsTable({ rows, total, page, filteredEmpty, selected, onSelect, onPage, onAdd, onBulk, onDelete }: ProductsTableProps) {
   const pages = Math.max(1, Math.ceil(total / ADMIN_PAGE_SIZE));
+  const selectedOnPage = rows.filter((row) => selected.has(row.id)).length;
 
   if (rows.length === 0) {
     return (
@@ -42,6 +45,17 @@ export function ProductsTable({ rows, total, page, filteredEmpty, onPage, onAdd,
         <table className="w-full border-collapse text-left text-sm">
           <thead>
             <tr className="text-xs uppercase tracking-wide text-black/40">
+              <th className="p-2">
+                <input
+                  type="checkbox"
+                  aria-label="Select all on this page"
+                  checked={selectedOnPage === rows.length}
+                  ref={(node) => {
+                    if (node) node.indeterminate = selectedOnPage > 0 && selectedOnPage < rows.length;
+                  }}
+                  onChange={(event) => onSelect(rows.map((row) => row.id), event.target.checked)}
+                />
+              </th>
               <th className="p-2"> </th>
               <th className="p-2">Title</th>
               <th className="p-2">Slug</th>
@@ -59,6 +73,14 @@ export function ProductsTable({ rows, total, page, filteredEmpty, onPage, onAdd,
           <tbody>
             {rows.map((row) => (
               <tr key={row.id} className="border-t border-black/10">
+                <td className="p-2">
+                  <input
+                    type="checkbox"
+                    aria-label={`Select ${row.title}`}
+                    checked={selected.has(row.id)}
+                    onChange={(event) => onSelect([row.id], event.target.checked)}
+                  />
+                </td>
                 <td className="p-2">
                   {row.thumbUrl ? (
                     // Admin thumb from Storage; sizing is fixed, so a plain img avoids the optimizer.

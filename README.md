@@ -35,7 +35,7 @@ Copy `.env.example` to `.env.local` in the target app and fill in credentials.
 
 ## Catalog admin (site 01)
 
-`/admin` is the catalog console (single product and CSV bulk upload). It is visible only to users whose `app_metadata.role` is `admin`. The service role key must be set in the app runtime. See `specs/site01-admin-content-upload.md` and `specs/Environment Setup.md`.
+`/admin` is the catalog console (single product, JSON bulk upload, and JSON export). It is visible only to users whose `app_metadata.role` is `admin`. The service role key must be set in the app runtime. See `specs/site01-admin-content-upload.md` and `specs/Environment Setup.md`.
 
 ```bash
 cd apps/site01-path-marketplace

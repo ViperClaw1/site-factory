@@ -15,10 +15,15 @@ interface AdminToolbarProps {
   onChange: (filters: AdminFilters) => void;
   onAdd: () => void;
   onBulk: () => void;
+  selectedCount: number;
+  exporting: boolean;
+  onExportSelected: () => void;
+  onExportAll: () => void;
 }
 
-export function AdminToolbar({ filters, onChange, onAdd, onBulk }: AdminToolbarProps) {
+export function AdminToolbar({ filters, onChange, onAdd, onBulk, selectedCount, exporting, onExportSelected, onExportAll }: AdminToolbarProps) {
   const [query, setQuery] = useState(filters.q);
+  const filtered = Boolean(filters.category || filters.status || filters.q);
 
   return (
     <div className="flex flex-wrap items-end gap-3">
@@ -70,7 +75,15 @@ export function AdminToolbar({ filters, onChange, onAdd, onBulk }: AdminToolbarP
           Search
         </Button>
       </form>
-      <div className="ml-auto flex gap-2">
+      <div className="ml-auto flex flex-wrap gap-2">
+        {selectedCount > 0 && (
+          <Button type="button" variant="secondary" disabled={exporting} onClick={onExportSelected}>
+            Export selected ({selectedCount})
+          </Button>
+        )}
+        <Button type="button" variant="secondary" disabled={exporting} onClick={onExportAll}>
+          {filtered ? "Export filtered" : "Export all"}
+        </Button>
         <Button type="button" variant="secondary" onClick={onBulk}>
           Bulk upload
         </Button>

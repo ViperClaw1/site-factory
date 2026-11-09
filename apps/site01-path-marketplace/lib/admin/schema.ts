@@ -42,6 +42,31 @@ const optionalText = (max: number) =>
     .optional()
     .transform((value) => (value ? value : undefined));
 
+// http(s) or a same-origin path like `/seed/bear.jpg`. Seeded rows store paths,
+// and exports of those rows must load back. Anything else (javascript:, //host) is refused.
+export function isMediaUrl(value: string): boolean {
+  return /^https?:\/\/\S+$/i.test(value) || /^\/(?!\/)\S*$/.test(value);
+}
+
+// Mirrors CollectibleChapter in @repo/types. The image is stored as given, not uploaded.
+export const storyChapterSchema = z
+  .object({
+    title: z.string().trim().min(1, "Chapter title is required.").max(200),
+    body: z.string().trim().min(1, "Chapter body is required.").max(5000),
+    image: z.string().trim().max(2000).refine(isMediaUrl, "Use an http(s) URL or a path starting with /."),
+  })
+  .strict();
+
+// One row of product_variants. A missing SKU is generated on the server from the slug.
+export const variantInputSchema = z
+  .object({
+    sku: z.string().trim().min(1, "SKU cannot be empty.").max(100).optional(),
+    attributes: z.record(z.string(), z.string()).optional(),
+    price: priceSchema.optional(),
+    stock: z.number().int("Stock must be a whole number.").min(0, "Stock must be 0 or more."),
+  })
+  .strict();
+
 export const productFieldsSchema = z.object({
   title: z.string().trim().min(2, "Title must be 2–120 characters.").max(120, "Title must be 2–120 characters."),
   category: categorySchema,
@@ -53,10 +78,15 @@ export const productFieldsSchema = z.object({
     .transform((value) => value?.trim() || undefined),
   price: priceSchema,
   productType: z.enum(["physical", "digital"]).default("physical"),
-  status: z.enum(["active", "draft"]).default("active"),
+  status: z.enum(["active", "draft", "archived"]).default("active"),
   stock: z.number().int("Stock must be a whole number.").min(0, "Stock must be 0 or more."),
   character: optionalText(120),
   series: optionalText(120),
+  collection: optionalText(120),
+  weightGrams: z.number().int("Weight must be a whole number.").positive("Weight must be greater than 0.").optional(),
+  story: z.array(storyChapterSchema).max(50).optional(),
+  // When set, these replace the default single variant built from `stock`.
+  variants: z.array(variantInputSchema).min(1).max(100).optional(),
   editionSize: z
     .number()
     .int("Edition size must be a whole number.")
@@ -92,9 +122,24 @@ export const signRequestSchema = z.object({
   files: z.array(signFileSchema).min(1).max(MAX_SIGN_FILES),
 });
 
+// Export takes either explicit ids or the dashboard filters; neither means the whole catalog.
+export const exportRequestSchema = z.object({
+  ids: z.array(z.guid()).min(1).max(5000).optional(),
+  category: z.string().max(100).optional(),
+  status: z.string().max(100).optional(),
+  q: z.string().max(200).optional(),
+});
+
+export const slugCheckSchema = z.object({
+  slugs: z.array(z.string().min(1).max(160)).min(1).max(5000),
+});
+
 export type ProductFields = z.infer<typeof productFieldsSchema>;
 export type ProductInput = z.infer<typeof productInputSchema>;
 export type SignRequest = z.infer<typeof signRequestSchema>;
+export type ExportRequest = z.infer<typeof exportRequestSchema>;
+export type StoryChapter = z.infer<typeof storyChapterSchema>;
+export type VariantInput = z.infer<typeof variantInputSchema>;
 
 export function fieldErrorsOf(error: z.ZodError): Record<string, string> {
   const fields: Record<string, string> = {};
