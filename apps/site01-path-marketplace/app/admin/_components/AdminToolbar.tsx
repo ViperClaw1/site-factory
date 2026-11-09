@@ -2,7 +2,9 @@
 
 import { CATEGORIES } from "@/lib/catalog-taxonomy.mjs";
 import { Button } from "@repo/ui";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+const SEARCH_DEBOUNCE_MS = 200;
 
 export interface AdminFilters {
   category: string;
@@ -25,6 +27,18 @@ interface AdminToolbarProps {
 export function AdminToolbar({ filters, onChange, onAdd, onBulk, selectedCount, exporting, onExportSelected, onExportAll, onDeleteSelected }: AdminToolbarProps) {
   const [query, setQuery] = useState(filters.q);
   const filtered = Boolean(filters.category || filters.status || filters.q);
+
+  // Live search: apply the query once typing pauses, skipping no-op navigations.
+  // ponytail: refs keep the effect keyed on `query` only; the latest filters/onChange are read at fire time.
+  const latest = useRef({ filters, onChange });
+  latest.current = { filters, onChange };
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const { filters: current, onChange: apply } = latest.current;
+      if (query.trim() !== current.q.trim()) apply({ ...current, q: query.trim() });
+    }, SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
+  }, [query]);
 
   return (
     <div className="flex flex-wrap items-end gap-3">
@@ -56,25 +70,16 @@ export function AdminToolbar({ filters, onChange, onAdd, onBulk, selectedCount, 
           <option value="archived">archived</option>
         </select>
       </label>
-      {/* No button: Enter submits the search. */}
-      <form
-        className="flex items-end gap-2"
-        onSubmit={(event) => {
-          event.preventDefault();
-          onChange({ ...filters, q: query });
-        }}
-      >
-        <label className="text-xs font-semibold uppercase tracking-wide text-black/45">
-          Search
-          <input
-            type="search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Title or slug, then Enter"
-            className="mt-1 block border-2 border-black/15 px-3 py-2 text-sm font-normal normal-case tracking-normal text-ink"
-          />
-        </label>
-      </form>
+      <label className="text-xs font-semibold uppercase tracking-wide text-black/45">
+        Search
+        <input
+          type="search"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Title or slug"
+          className="mt-1 block border-2 border-black/15 px-3 py-2 text-sm font-normal normal-case tracking-normal text-ink"
+        />
+      </label>
       <div className="ml-auto flex flex-wrap gap-2">
         {selectedCount > 0 && (
           <Button type="button" variant="secondary" onClick={onDeleteSelected}>

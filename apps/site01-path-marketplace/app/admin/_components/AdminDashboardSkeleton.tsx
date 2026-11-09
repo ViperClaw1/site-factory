@@ -68,7 +68,7 @@ export function AdminDashboardSkeleton() {
         </ControlSkeleton>
         <div className="flex items-end gap-2">
           <ControlSkeleton label="Search">
-            <input className={CONTROL_CLASS} defaultValue="" placeholder="Title or slug, then Enter" tabIndex={-1} readOnly />
+            <input className={CONTROL_CLASS} defaultValue="" placeholder="Title or slug" tabIndex={-1} readOnly />
             <Shimmer className="absolute inset-0" />
           </ControlSkeleton>
         </div>

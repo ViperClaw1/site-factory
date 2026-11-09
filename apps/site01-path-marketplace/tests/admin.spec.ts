@@ -300,3 +300,21 @@ test("selected rows are deleted together after one confirmation", async ({ page 
   // Selection clears. Rows themselves come back on refresh, since the mock deleted nothing.
   await expect(page.getByRole("button", { name: /^Delete rows/ })).toHaveCount(0);
 });
+
+// Typing filters on its own after a short pause; no Enter, no button.
+test("search filters the list live while typing", async ({ page }) => {
+  await page.goto("/admin");
+  const search = page.getByPlaceholder("Title or slug");
+  // Results replace the list in place; the page must not jump back to the top.
+  await page.setViewportSize({ width: 1280, height: 600 });
+  await page.evaluate(() => window.scrollTo(0, 300));
+  await expect(async () => {
+    await search.fill("zz-no-such-product");
+    await expect(page).toHaveURL(/[?&]q=zz-no-such-product/, { timeout: 3000 });
+  }).toPass({ timeout: 30_000 });
+  await expect(page.getByText("No products match")).toBeVisible();
+  expect(await page.evaluate(() => window.scrollY)).toBe(300);
+
+  await search.fill("");
+  await expect(page).toHaveURL(/\/admin$/);
+});

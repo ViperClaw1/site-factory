@@ -95,7 +95,8 @@ export function AdminDashboard({ rows, total, page, stats, filters }: AdminDashb
     if (next.q) params.set("q", next.q);
     if (nextPage > 1) params.set("page", String(nextPage));
     const query = params.toString();
-    router.push(query ? `/admin?${query}` : "/admin");
+    // Filtering keeps the scroll position (search re-runs while typing); a new page starts at the top.
+    router.push(query ? `/admin?${query}` : "/admin", { scroll: nextPage !== 1 });
   }
 
   return (
