@@ -6,6 +6,9 @@ import type { PillGroup } from "@/components/CategoryPills";
 import { SHOWCASE_ITEMS } from "@/lib/placeholders";
 import { SHOP_CATEGORY_OPTIONS } from "@/lib/shop-categories";
 import { Container } from "@repo/ui";
+import { localeMetadata } from "@repo/i18n";
+
+export const generateMetadata = localeMetadata("/shop");
 
 export const revalidate = 60;
 

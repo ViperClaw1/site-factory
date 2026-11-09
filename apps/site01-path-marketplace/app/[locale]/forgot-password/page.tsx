@@ -6,12 +6,14 @@ import { supabaseBrowser } from "@/lib/auth";
 import { useT, type MessageKey } from "@/lib/i18n";
 import { validateEmail } from "@/lib/validation";
 import { Container } from "@repo/ui";
-import Link from "next/link";
+import { Link } from "@repo/i18n/client";
 import { useState, type FormEvent } from "react";
+import { useLocale } from "@repo/i18n/client";
 
 // Step 1 of the reset flow: email → Supabase sends a recovery link that
 // returns via /auth/callback (code → session) to /reset-password.
 export default function ForgotPasswordPage() {
+  const locale = useLocale();
   const { t } = useT();
   const [email, setEmail] = useState("");
   const [error, setError] = useState<MessageKey | null>(null);
@@ -29,7 +31,7 @@ export default function ForgotPasswordPage() {
     setFormError(null);
     const address = email.trim();
     const { error: sendError } = await supabaseBrowser().auth.resetPasswordForEmail(address, {
-      redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
+      redirectTo: `${window.location.origin}/auth/callback?next=/${locale}/reset-password`,
     });
     setSending(false);
     // Same confirmation whether or not the account exists (no email enumeration);

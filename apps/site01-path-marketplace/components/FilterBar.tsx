@@ -1,7 +1,8 @@
 "use client";
 
 import { useT, type MessageKey } from "@/lib/i18n";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useLocalizedRouter } from "@repo/i18n/client";
+import { usePathname, useSearchParams } from "next/navigation";
 import type { ChangeEvent } from "react";
 import { CategoryPills, type PillGroup } from "./CategoryPills";
 
@@ -20,7 +21,7 @@ const SORT_OPTIONS: { value: string; key: MessageKey }[] = [
 // rendered.
 export function FilterBar({ groups }: FilterBarProps) {
   const { t } = useT();
-  const router = useRouter();
+  const router = useLocalizedRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const activeParams = Object.fromEntries(searchParams.entries());

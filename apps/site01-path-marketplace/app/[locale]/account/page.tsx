@@ -2,16 +2,20 @@ import { ProfileForm, type AvatarMeta } from "@/components/ProfileForm";
 import { blurhashToDataUrl } from "@/lib/blurhash";
 import { createSupabaseServerClient } from "@repo/lib/supabase-server";
 import { Container } from "@repo/ui";
+// eslint-disable-next-line no-restricted-imports -- the target is localized by hand below.
 import { redirect } from "next/navigation";
+import { localeMetadata, withLocale, type Lang } from "@repo/i18n";
+
+export const generateMetadata = localeMetadata("/account");
 
 // Gated by middleware.ts ("profile" permission); the redirect below is only a
 // fallback if the matcher and PROTECTED_ROUTES ever drift apart.
-export default async function AccountPage() {
+export default async function AccountPage({ params }: { params: { locale: Lang } }) {
   const supabase = createSupabaseServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login?next=/account");
+  if (!user) redirect(withLocale(`/login?next=/${params.locale}/account`, params.locale));
 
   // select("*") rather than naming avatar_meta: keeps working if that column
   // hasn't been migrated yet (it's then simply absent).

@@ -8,16 +8,19 @@ import { categoryLabelKey } from "@/lib/shop-categories";
 import { generateMetadata as seo } from "@repo/lib";
 import { Container } from "@repo/ui";
 import type { Metadata } from "next";
+import { alternates, withLocale, type Lang } from "@repo/i18n";
 
 export const revalidate = 60;
 
-export function generateMetadata({ params }: { params: { category: string } }): Metadata {
+export function generateMetadata({ params }: { params: { locale: Lang; category: string } }): Metadata {
+  const path = `/shop/${params.category}`;
+  const links = alternates(path, params.locale);
   // Unknown slugs still render (empty grid + showcase) — don't index them.
-  if (!categoryLabelKey(params.category)) return { robots: { index: false } };
+  if (!categoryLabelKey(params.category)) return { robots: { index: false }, alternates: links };
   const name = params.category.replace(/_/g, " ");
   const title = name.charAt(0).toUpperCase() + name.slice(1);
   // Canonical drops ?collection/character/sort so filtered views don't compete with the category page.
-  return seo(title, `Shop ${name} — designer toys, figures, art books and digital collectibles.`, undefined, `/shop/${params.category}`);
+  return { ...seo(title, `Shop ${name} — designer toys, figures, art books and digital collectibles.`, undefined, withLocale(path, params.locale)), alternates: links };
 }
 
 interface ShopCategoryPageProps {

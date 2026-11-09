@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@repo/i18n/client";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 
 // Placeholder for paid plans (Pricing → Pro / Team). Subscriptions are phase E6;

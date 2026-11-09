@@ -4,6 +4,9 @@ import { PageHeader } from "@/components/PageHeader";
 import { RevealGrid } from "@/components/RevealGrid";
 import { placeholderCharacters } from "@/lib/placeholders";
 import { Container } from "@repo/ui";
+import { localeMetadata } from "@repo/i18n";
+
+export const generateMetadata = localeMetadata("/characters");
 
 export const revalidate = 60;
 

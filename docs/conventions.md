@@ -55,25 +55,35 @@ export async function getX(): Promise<X[]> {
 
 ## Локализация
 
-Общий каркас — каталог `lib/i18n/` в каждом приложении (так сделано в
-`site02-edu-marketplace` и `site01-path-marketplace`):
+Язык определяется адресом: `/en/…`, `/de/…`. Маршруты, реестр языков и меню
+живут в общем пакете `packages/i18n`, словари — в `lib/i18n/` каждого приложения:
 
 ```
-lib/i18n/locales.ts                 список локалей: { code, label, native } + BCP 47
+packages/i18n/src/locales.ts        реестр: порядок, код в адресе, тег hreflang
+packages/i18n/src/routing.ts        withLocale, stripLocale, localeOf, pickLocale
+packages/i18n/src/metadata.ts       alternates, localeMetadata, sitemapEntries, localizedPaths
+packages/i18n/src/middleware.ts     редиректы адресов без языка
+packages/i18n/src/client.tsx        Link, useLocalizedRouter, useLocale, LanguageLink, LanguageMenu, Flag
 lib/i18n/dictionaries/en.ts         английский — источник ключей (`export type Dict`)
 lib/i18n/dictionaries/<code>.ts     остальные языки: `const xx: Dict = { ... }`
 lib/i18n/dictionaries/index.ts      `dictionaries: Record<Lang, Dict>`
 ```
 
-- Английский (`en`, тег `en-US`) — язык по умолчанию и единственный источник
-  ключей. Остальные словари типизированы как `Dict`, поэтому пропущенный
-  перевод — ошибка компиляции.
-- Набор из 16 локалей и их теги живут в `locales.ts`. Японский — `ja-JP`
-  (`ja-SP` невалидный регион). Арабский включает `dir="rtl"` на `<html>`.
-- Как приложение хранит выбор языка (cookie + `LanguageProvider` в site02,
-  zustand в site01) и форму ключей (вложенные объекты или плоские строки с
-  `{placeholder}`) остаётся за приложением. Новые локали добавляются файлом
-  в `dictionaries/` и строкой в `LOCALES`, а не свалкой в один `messages.ts`.
+- Страницы лежат в `app/[locale]/`. Вне префикса остаются `/api`, `/auth/callback`,
+  `/admin` (свой корневой layout), `/stats` (прокси Plausible) и файлы. Добавляя
+  такой адрес, обновите `LOCALE_FREE` в `routing.ts` и `matcher` в `middleware.ts`.
+- Ссылки — только `Link` из `@repo/i18n/client`, переходы — `useLocalizedRouter`,
+  серверный редирект — `redirect(withLocale(path, lang))`. Прямой импорт из `next/link`
+  вне `app/admin` запрещён правилом ESLint. Параметр `next` передаётся с языком.
+- У каждой страницы есть `generateMetadata` с `alternates(path, lang)` или
+  `localeMetadata(path)`. У клиентской страницы он лежит в соседнем `layout.tsx`.
+- Не читайте `cookies()` и `headers()` в корневых layout: это отключает ISR на всём
+  сайте. Cookie `lang` нужна только для выбора языка на адресах без префикса.
+- Сброс кэша страницы: `localizedPaths(path)` и `revalidatePath` на каждый адрес.
+- Английский (`en`) — язык по умолчанию и единственный источник ключей. Остальные
+  словари типизированы как `Dict`, поэтому пропущенный перевод — ошибка компиляции.
+- 19 языков и их теги живут в `locales.ts`. Арабский включает `dir="rtl"` на `<html>`.
+  Новые локали добавляются строкой в `LOCALES` и файлом в `dictionaries/` каждого сайта.
 - Переводы контента из БД (курсы, товары) — отдельно от UI-словаря: колонка
   `i18n` jsonb и `localize()` (site02). Не смешивать их со словарём интерфейса.
 
@@ -86,6 +96,12 @@ lib/i18n/dictionaries/index.ts      `dictionaries: Record<Lang, Dict>`
 `undefined/js/script.js`).
 
 ## CI
+
+ESLint запускается в каждом пакете (`eslint .`) с общим конфигом
+`packages/config/eslint.config.js`. Новому приложению или пакету нужны скрипт `lint`,
+зависимость `eslint` и файл `eslint.config.js` из одной строки: `require` общего конфига.
+Границы между пакетами проверяет `boundaries/element-types`: новый пакет добавьте в его
+`elements` и `rules`, иначе его импорты не проверяются.
 
 `pnpm exec turbo run <task> --filter='...[origin/main]'` — turbo сам по графу
 зависимостей определяет, какие пакеты и приложения задел diff, включая

@@ -10,7 +10,7 @@ test("placeholder product card navigates to a real PDP with placeholder copy", a
   await page.goto("/");
 
   // Index 2 — not one of the hero carousel's slide links (1, 4, 6).
-  await page.locator('a[href="/p/placeholder-2"]').first().click();
+  await page.locator('a[href="/en/p/placeholder-2"]').first().click();
 
   await expect(page).toHaveURL(/\/p\/placeholder-2$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Dark Side Constructor");
@@ -22,7 +22,7 @@ test("placeholder character card navigates to a real character page with placeho
   await page.goto("/");
 
   // Footer character links are always rendered (the home page uses filter tabs instead).
-  await page.locator('a[href="/characters/placeholder-0"]').first().click();
+  await page.locator('a[href="/en/characters/placeholder-0"]').first().click();
 
   await expect(page).toHaveURL(/\/characters\/placeholder-0$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Molly");
@@ -33,7 +33,7 @@ test("full flow: home -> PDP -> add to cart -> cart -> checkout -> mock confirma
   await page.goto("/");
 
   // 1. Browse from the home page to a product.
-  await page.locator('a[href="/p/placeholder-1"]').first().click();
+  await page.locator('a[href="/en/p/placeholder-1"]').first().click();
   await expect(page).toHaveURL(/\/p\/placeholder-1$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("The Monsters S3");
 

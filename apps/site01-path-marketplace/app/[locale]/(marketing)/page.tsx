@@ -8,6 +8,9 @@ import { HeroCarousel } from "@/components/home/HeroCarousel";
 import { ProductCard } from "@/components/ProductCard";
 import { RevealGrid } from "@/components/RevealGrid";
 import { SectionHeading } from "@/components/SectionHeading";
+import { localeMetadata } from "@repo/i18n";
+
+export const generateMetadata = localeMetadata("/");
 
 export const revalidate = 60;
 

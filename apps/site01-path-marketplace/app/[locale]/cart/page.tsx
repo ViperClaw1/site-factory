@@ -5,7 +5,7 @@ import { cartTotal, useCartStore } from "@/lib/cart";
 import { useT } from "@/lib/i18n";
 import { Container } from "@repo/ui";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@repo/i18n/client";
 import { useEffect, useState } from "react";
 
 export default function CartPage() {

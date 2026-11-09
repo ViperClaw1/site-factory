@@ -10,19 +10,31 @@ import { generateMetadata as seo } from "@repo/lib";
 import { Container, ImageWithFallback } from "@repo/ui";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { alternates, withLocale, type Lang } from "@repo/i18n";
 
 export const revalidate = 60;
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+// Empty on purpose: nothing is built ahead of time, and each page in each language
+// is cached by ISR on its first request. Without this export Next renders it every time.
+export function generateStaticParams() {
+  return [];
+}
+
+export async function generateMetadata({ params }: { params: { locale: Lang; slug: string } }): Promise<Metadata> {
+  const path = `/characters/${params.slug}`;
+  const links = alternates(path, params.locale);
   const character = await getCharacter(params.slug);
   // Placeholder characters are demo content — keep them out of the index.
-  if (!character) return { robots: { index: false } };
-  return seo(
-    character.name,
-    (character.description ?? `Collectibles featuring ${character.name}.`).slice(0, 160),
-    character.image ?? undefined,
-    `/characters/${character.slug}`
-  );
+  if (!character) return { robots: { index: false }, alternates: links };
+  return {
+    ...seo(
+      character.name,
+      (character.description ?? `Collectibles featuring ${character.name}.`).slice(0, 160),
+      character.image ?? undefined,
+      withLocale(path, params.locale)
+    ),
+    alternates: links,
+  };
 }
 
 export default async function CharacterDetailPage({ params }: { params: { slug: string } }) {

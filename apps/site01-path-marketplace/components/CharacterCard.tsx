@@ -1,6 +1,6 @@
 import { ImageWithFallback } from "@repo/ui";
 import type { Character } from "@repo/types";
-import Link from "next/link";
+import { Link } from "@repo/i18n/client";
 
 export interface CharacterCardProps {
   character: Character;

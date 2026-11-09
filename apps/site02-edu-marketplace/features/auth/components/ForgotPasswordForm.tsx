@@ -1,7 +1,7 @@
 "use client";
 
 import { useI18n } from "@/lib/i18n/LanguageProvider";
-import Link from "next/link";
+import { Link } from "@repo/i18n/client";
 import { useState, type FormEvent } from "react";
 import { requestPasswordReset } from "../api";
 import { validateEmail } from "../validation";

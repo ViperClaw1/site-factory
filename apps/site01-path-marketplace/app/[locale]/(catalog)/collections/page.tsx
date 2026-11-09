@@ -5,6 +5,9 @@ import { PageHeader } from "@/components/PageHeader";
 import { PlaceholderCard } from "@/components/PlaceholderCard";
 import { RevealGrid } from "@/components/RevealGrid";
 import { Container } from "@repo/ui";
+import { localeMetadata } from "@repo/i18n";
+
+export const generateMetadata = localeMetadata("/collections");
 
 // ISR: cached, regenerated at most every 60s (ADR-004 fallback TTL);
 // Directus's webhook hits /api/revalidate on publish to refresh it sooner.

@@ -5,7 +5,7 @@ import { Shape } from "@/components/Shape";
 import type { CartItem } from "@/lib/cart";
 import { useT } from "@/lib/i18n";
 import { Container } from "@repo/ui";
-import Link from "next/link";
+import { Link } from "@repo/i18n/client";
 import { useEffect, useState } from "react";
 
 interface MockOrder {

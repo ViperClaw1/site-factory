@@ -4,12 +4,12 @@ import { buttonClass } from "@/components/buttons";
 import { cartTotal, useCartStore } from "@/lib/cart";
 import { useT } from "@/lib/i18n";
 import { Container } from "@repo/ui";
-import { useRouter } from "next/navigation";
+import { useLocalizedRouter } from "@repo/i18n/client";
 import { useEffect, useState, type FormEvent } from "react";
 
 export default function CheckoutPage() {
   const { t, price } = useT();
-  const router = useRouter();
+  const router = useLocalizedRouter();
   const [hydrated, setHydrated] = useState(false);
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);

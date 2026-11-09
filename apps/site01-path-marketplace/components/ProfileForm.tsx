@@ -6,12 +6,13 @@ import type { ProductImageVariant } from "@repo/types";
 import { useT, type MessageKey } from "@/lib/i18n";
 import { AVATAR_TYPES, validateEmail, validateName, validatePhone, validatePhoto } from "@/lib/validation";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useLocalizedRouter } from "@repo/i18n/client";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { buttonClass } from "./buttons";
 import { FormField, INPUT_CLASS } from "./FormField";
+import { useLocale } from "@repo/i18n/client";
 
 type Field = "photo" | "name" | "email" | "phone";
 
@@ -34,7 +35,8 @@ export interface ProfileFormProps {
 // email (Supabase Auth — a change only applies after the confirmation link).
 export function ProfileForm({ userId, email: currentEmail, initial, avatarBlurDataUrl }: ProfileFormProps) {
   const { t } = useT();
-  const router = useRouter();
+  const locale = useLocale();
+  const router = useLocalizedRouter();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState(initial.fullName);
@@ -112,7 +114,7 @@ export function ProfileForm({ userId, email: currentEmail, initial, avatarBlurDa
       if (nextEmail !== currentEmail) {
         const { error: emailError } = await supabase.auth.updateUser(
           { email: nextEmail },
-          { emailRedirectTo: `${window.location.origin}/auth/callback?next=/account` }
+          { emailRedirectTo: `${window.location.origin}/auth/callback?next=/${locale}/account` }
         );
         if (emailError) throw emailError;
         setStatus({ kind: "ok", text: t("profile.emailPending", { email: nextEmail }) });

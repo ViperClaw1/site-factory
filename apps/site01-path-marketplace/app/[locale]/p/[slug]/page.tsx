@@ -16,10 +16,17 @@ import { generateProductJsonLd, generateMetadata as seo } from "@repo/lib";
 import { Container } from "@repo/ui";
 import type { Product } from "@repo/types";
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "@repo/i18n/client";
 import { notFound } from "next/navigation";
+import { alternates, withLocale, type Lang } from "@repo/i18n";
 
 export const revalidate = 60;
+
+// Empty on purpose: nothing is built ahead of time, and each page in each language
+// is cached by ISR on its first request. Without this export Next renders it every time.
+export function generateStaticParams() {
+  return [];
+}
 
 // "placeholder-N" slugs never hit Supabase — they resolve to the matching
 // showcase item so placeholder cards link somewhere real to exercise the
@@ -54,14 +61,19 @@ function buildPlaceholderProduct(slug: string): { product: Product; character: s
   };
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { locale: Lang; slug: string } }): Promise<Metadata> {
+  const path = `/p/${params.slug}`;
+  const links = alternates(path, params.locale);
   const real = await getProduct(params.slug);
   if (!real) {
     // Placeholder/showcase products are demo content — keep them out of the index.
-    return { robots: { index: false } };
+    return { robots: { index: false }, alternates: links };
   }
   const cover = coverImage(real);
-  return seo(productHeading(real.title, real.character), (real.description ?? "").slice(0, 160), cover?.url, `/p/${real.slug}`);
+  return {
+    ...seo(productHeading(real.title, real.character), (real.description ?? "").slice(0, 160), cover?.url, withLocale(path, params.locale)),
+    alternates: links,
+  };
 }
 
 export default async function ProductDetailPage({ params }: { params: { slug: string } }) {

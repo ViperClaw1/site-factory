@@ -9,7 +9,10 @@ import { toCardItem } from "@/lib/to-card-item";
 import { createSupabaseServerClient } from "@repo/lib/supabase-server";
 import type { Product } from "@repo/types";
 import { Container } from "@repo/ui";
-import Link from "next/link";
+import { Link } from "@repo/i18n/client";
+import { localeMetadata } from "@repo/i18n";
+
+export const generateMetadata = localeMetadata("/favorites");
 
 // Gated by middleware.ts ("favorites" permission). RLS limits `wishlists` to
 // the visitor's own rows; products that went inactive come back null.

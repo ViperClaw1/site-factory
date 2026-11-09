@@ -7,6 +7,9 @@ import { Pricing } from "@/features/landing/components/Pricing";
 import { StatsCounter } from "@/features/landing/components/StatsCounter";
 import { Testimonials } from "@/features/landing/components/Testimonials";
 import { TrustMarquee } from "@/features/landing/components/TrustMarquee";
+import { localeMetadata } from "@repo/i18n";
+
+export const generateMetadata = localeMetadata("/");
 
 export const revalidate = 60;
 

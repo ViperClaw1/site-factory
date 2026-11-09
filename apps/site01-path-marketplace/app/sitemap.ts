@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getCharacters, getCollections } from "@/lib/api-client";
+import { sitemapEntries } from "@repo/i18n";
 
 // Otherwise built once at build time and frozen until the next deploy.
 export const revalidate = 3600;
@@ -22,30 +23,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const [collections, characters] = await Promise.all([getCollections(), getCharacters()]);
 
-  const staticRoutes: MetadataRoute.Sitemap = [
-    { url: base, changeFrequency: "daily", priority: 1 },
-    { url: `${base}/shop`, changeFrequency: "daily", priority: 0.9 },
-    { url: `${base}/collections`, changeFrequency: "weekly", priority: 0.7 },
-    { url: `${base}/characters`, changeFrequency: "weekly", priority: 0.7 },
+  const entries: [path: string, options: { changeFrequency: "daily" | "weekly"; priority: number }][] = [
+    ["/", { changeFrequency: "daily", priority: 1 }],
+    ["/shop", { changeFrequency: "daily", priority: 0.9 }],
+    ["/collections", { changeFrequency: "weekly", priority: 0.7 }],
+    ["/characters", { changeFrequency: "weekly", priority: 0.7 }],
+    ...CATEGORIES.map((category) => [`/shop/${category}`, { changeFrequency: "daily", priority: 0.8 }] as [string, { changeFrequency: "daily"; priority: number }]),
+    ...collections.map((collection) => [`/collections/${collection.slug}`, { changeFrequency: "weekly", priority: 0.6 }] as [string, { changeFrequency: "weekly"; priority: number }]),
+    ...characters.map((character) => [`/characters/${character.slug}`, { changeFrequency: "weekly", priority: 0.6 }] as [string, { changeFrequency: "weekly"; priority: number }]),
   ];
 
-  const categoryRoutes: MetadataRoute.Sitemap = CATEGORIES.map((category) => ({
-    url: `${base}/shop/${category}`,
-    changeFrequency: "daily",
-    priority: 0.8,
-  }));
-
-  const collectionRoutes: MetadataRoute.Sitemap = collections.map((collection) => ({
-    url: `${base}/collections/${collection.slug}`,
-    changeFrequency: "weekly",
-    priority: 0.6,
-  }));
-
-  const characterRoutes: MetadataRoute.Sitemap = characters.map((character) => ({
-    url: `${base}/characters/${character.slug}`,
-    changeFrequency: "weekly",
-    priority: 0.6,
-  }));
-
-  return [...staticRoutes, ...categoryRoutes, ...collectionRoutes, ...characterRoutes];
+  return entries.flatMap(([path, options]) => sitemapEntries(base, path, options));
 }

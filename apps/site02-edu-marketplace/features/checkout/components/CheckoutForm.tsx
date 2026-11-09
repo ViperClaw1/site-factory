@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@repo/i18n/client";
 import { FormEvent, useState } from "react";
 import { clearCart, useCartIds } from "@/features/cart/store";
 import { STATIC_COURSES } from "@/features/course/static-catalog";

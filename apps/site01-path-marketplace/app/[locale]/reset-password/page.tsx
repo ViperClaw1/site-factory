@@ -7,7 +7,7 @@ import { supabaseBrowser, useAuthStore } from "@/lib/auth";
 import { useT, type MessageKey } from "@/lib/i18n";
 import { validatePassword } from "@/lib/validation";
 import { Container } from "@repo/ui";
-import Link from "next/link";
+import { Link } from "@repo/i18n/client";
 import { useState, type FormEvent } from "react";
 
 type Field = "password" | "confirm";
