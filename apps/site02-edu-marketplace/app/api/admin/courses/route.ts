@@ -19,6 +19,7 @@ export async function GET(request: Request) {
   try {
     const data = await listCourses({
       category: url.searchParams.get("category") ?? undefined,
+      section: url.searchParams.get("section") ?? undefined,
       status: url.searchParams.get("status") ?? undefined,
       q: url.searchParams.get("q") ?? undefined,
       page: Number(url.searchParams.get("page") ?? "1"),

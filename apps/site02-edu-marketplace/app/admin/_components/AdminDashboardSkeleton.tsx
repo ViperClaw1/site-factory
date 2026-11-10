@@ -1,6 +1,6 @@
-import { CATEGORIES } from "@/lib/admin/catalog";
+import { CATEGORIES, SECTIONS } from "@/lib/admin/catalog";
 
-const STAT_LABELS = ["Total", "Active", "Draft", "Archived", ...CATEGORIES];
+const STAT_LABELS = ["Total", "Active", "Draft", "Archived", ...CATEGORIES, ...SECTIONS];
 
 function Shimmer({ className = "" }: { className?: string }) {
   return <span aria-hidden className={`admin-shimmer relative block ${className}`} />;
@@ -26,7 +26,7 @@ export function AdminDashboardSkeleton() {
         ))}
       </div>
       <div className="pointer-events-none flex flex-wrap items-end gap-3" aria-hidden>
-        {["Category", "Status", "Search"].map((label) => (
+        {["Category", "Section", "Status", "Search"].map((label) => (
           <label key={label} className="text-xs font-semibold uppercase tracking-wide text-black/45">
             {label}
             <Shimmer className="mt-1 h-10 w-36 rounded-xl" />

@@ -6,10 +6,11 @@ export const dynamic = "force-dynamic";
 export default async function AdminCoursesPage({
   searchParams,
 }: {
-  searchParams: { category?: string; status?: string; q?: string; page?: string };
+  searchParams: { category?: string; section?: string; status?: string; q?: string; page?: string };
 }) {
   const data = await listCourses({
     category: searchParams.category,
+    section: searchParams.section,
     status: searchParams.status,
     q: searchParams.q,
     page: Number(searchParams.page ?? "1"),
@@ -23,6 +24,7 @@ export default async function AdminCoursesPage({
       stats={data.stats}
       filters={{
         category: searchParams.category ?? "",
+        section: searchParams.section ?? "",
         status: searchParams.status ?? "",
         q: searchParams.q ?? "",
       }}

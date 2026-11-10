@@ -1,7 +1,7 @@
 "use client";
 
 import { CoverDropzone } from "@/app/admin/_components/CoverDropzone";
-import { BADGES, CATEGORIES, CURRENCIES, INSTRUCTORS, LEVELS, LOCALES, type Lang } from "@/lib/admin/catalog";
+import { BADGES, CATEGORIES, CURRENCIES, INSTRUCTORS, LEVELS, LOCALES, SECTIONS, type Lang } from "@/lib/admin/catalog";
 import { courseInputSchema, fieldErrorsOf, mimeForExtension } from "@/lib/admin/schema";
 import type { LocaleCopy } from "@/lib/admin/types";
 import { createSupabaseBrowserClient } from "@repo/lib";
@@ -34,6 +34,7 @@ export function CourseFormModal({ open, onOpenChange, onCreated }: CourseFormMod
   const [locale, setLocale] = useState<Lang>("en");
   const [copies, setCopies] = useState<Record<string, LocaleCopy>>({ en: emptyCopy() });
   const [category, setCategory] = useState("");
+  const [section, setSection] = useState("");
   const [level, setLevel] = useState("");
   const [tags, setTags] = useState("");
   const [cover, setCover] = useState<File | null>(null);
@@ -57,6 +58,7 @@ export function CourseFormModal({ open, onOpenChange, onCreated }: CourseFormMod
     setLocale("en");
     setCopies({ en: emptyCopy() });
     setCategory("");
+    setSection("");
     setLevel("");
     setTags("");
     setCover(null);
@@ -81,6 +83,7 @@ export function CourseFormModal({ open, onOpenChange, onCreated }: CourseFormMod
       slug: "pending",
       translations,
       category,
+      section,
       level,
       tags: tags.split(",").map((tag) => tag.trim()).filter(Boolean),
       coverPath: "pending/cover.webp",
@@ -166,6 +169,19 @@ export function CourseFormModal({ open, onOpenChange, onCreated }: CourseFormMod
             ))}
           </select>
           {errors.category && <span className="mt-1 block text-xs font-normal normal-case text-red-600">{errors.category}</span>}
+        </label>
+        {/* ---- Section: education level (pre school … additional) ---- */}
+        <label className={LABEL}>
+          Section
+          <select value={section} onChange={(event) => setSection(event.target.value)} className={FIELD}>
+            <option value="">Choose</option>
+            {SECTIONS.map((value) => (
+              <option key={value} value={value}>
+                {value}
+              </option>
+            ))}
+          </select>
+          {errors.section && <span className="mt-1 block text-xs font-normal normal-case text-red-600">{errors.section}</span>}
         </label>
         <label className={LABEL}>
           Level / grade

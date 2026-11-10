@@ -1,11 +1,12 @@
-import { BADGES, CATEGORIES, CURRENCIES, INSTRUCTORS, LEVELS, LOCALES } from "@/lib/admin/catalog";
+import { BADGES, CATEGORIES, CURRENCIES, INSTRUCTORS, LEVELS, LOCALES, SECTIONS } from "@/lib/admin/catalog";
 import { z } from "zod";
 
 export const IMAGE_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif"] as const;
 export const IMAGE_MAX_BYTES = 15 * 1024 * 1024;
 
 const CATEGORY_VALUES = CATEGORIES as unknown as [(typeof CATEGORIES)[number], ...(typeof CATEGORIES)[number][]];
-const LEVEL_VALUES = LEVELS as unknown as [(typeof LEVELS)[number], ...(typeof LEVELS)[number][]];
+const SECTION_VALUES = SECTIONS as unknown as [(typeof SECTIONS)[number], ...(typeof SECTIONS)[number][]];
+const LEVEL_VALUES =LEVELS as unknown as [(typeof LEVELS)[number], ...(typeof LEVELS)[number][]];
 const CURRENCY_VALUES = CURRENCIES as unknown as [(typeof CURRENCIES)[number], ...(typeof CURRENCIES)[number][]];
 const BADGE_VALUES = BADGES as unknown as [(typeof BADGES)[number], ...(typeof BADGES)[number][]];
 const LOCALE_VALUES = LOCALES.map((locale) => locale.code) as [string, ...string[]];
@@ -35,6 +36,7 @@ export const courseInputSchema = z
       .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase letters, numbers, and hyphens."),
     translations: z.partialRecord(z.enum(LOCALE_VALUES), copySchema),
     category: z.enum(CATEGORY_VALUES, { error: "Choose a category." }),
+    section: z.enum(SECTION_VALUES, { error: "Choose a section." }),
     level: z.enum(LEVEL_VALUES, { error: "Choose a level." }),
     tags: z.array(z.string().trim().min(1).max(40)).max(12, "At most 12 tags."),
     coverPath: z.string().min(1, "Add a cover image."),

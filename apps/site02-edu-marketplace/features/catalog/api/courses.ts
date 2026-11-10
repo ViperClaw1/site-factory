@@ -14,6 +14,7 @@ function withCoverBlur<T extends Course>(course: T): T {
 
 export interface CourseFilters {
   category?: string;
+  section?: string;
   level?: string;
   sort?: "newest" | "price_asc" | "price_desc";
 }
@@ -24,6 +25,7 @@ export async function getCourses(filters: CourseFilters = {}): Promise<Course[]>
     let query = supabase.from("courses").select("*").eq("status", "active");
 
     if (filters.category) query = query.eq("category", filters.category);
+    if (filters.section) query = query.eq("section", filters.section);
     if (filters.level) query = query.eq("level", filters.level);
 
     switch (filters.sort) {

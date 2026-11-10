@@ -11,6 +11,17 @@ export type CourseOrderStatus = "pending" | "paid" | "cancelled" | "refunded";
 /** Per-language overrides of text fields, e.g. { en: { title: "…" } }. Base columns hold the default (ru) text. */
 export type ContentI18n = Partial<Record<string, Partial<Record<string, string>>>>;
 
+/** Education-level section of a course; values match the DB check constraint. */
+export type CourseSection =
+  | "preschool"
+  | "school"
+  | "exam-prep"
+  | "bachelor-master"
+  | "phd"
+  | "mba-dba"
+  | "special-education"
+  | "additional";
+
 export interface Course {
   id: string;
   slug: string;
@@ -20,6 +31,8 @@ export interface Course {
   level: CourseLevel | null;
   language: string;
   category: string | null;
+  /** Education level (see migration 20261111000000_course_sections.sql). */
+  section?: CourseSection | null;
   tags: string[];
   cover_image: string | null;
   promo_video_url: string | null;

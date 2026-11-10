@@ -1,7 +1,7 @@
-import { CATEGORIES, LEVELS } from "@/features/landing/data";
+import { CATEGORIES, LEVELS, SECTIONS } from "@/features/landing/data";
 import { LOCALES, type Lang } from "@/lib/i18n/locales";
 
-export { CATEGORIES, LEVELS, LOCALES };
+export { CATEGORIES, LEVELS, LOCALES, SECTIONS };
 export type { Lang };
 
 export const BADGES = ["bestseller", "new", "popular"] as const;

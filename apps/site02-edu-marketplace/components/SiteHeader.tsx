@@ -1,16 +1,87 @@
 "use client";
 
 import { LanguageLink, Link } from "@repo/i18n/client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 import { LOCALES } from "@/lib/i18n/locales";
 import { useUser } from "@/features/auth/hooks";
 import { useCartIds } from "@/features/cart/store";
-import { CartIcon, CloseIcon, HeartIcon, MenuIcon, UserIcon } from "./icons";
+import { SECTIONS } from "@/features/landing/data";
+import { SECTION_ICONS } from "@/features/landing/sectionIcons";
+import { CartIcon, ChevronDownIcon, CloseIcon, HeartIcon, MenuIcon, UserIcon } from "./icons";
 import { Flag } from "./Flag";
 import { LanguageMenu } from "./LanguageMenu";
 import { Logo } from "./Logo";
 import { ThemeSwitch } from "./ThemeSwitch";
+
+/* ---- Desktop "Courses" dropdown: course sections + link to the full catalog ----
+   Opens on hover, and on click / keyboard (Escape or focus leaving the menu closes it). */
+function CoursesMenu({ label }: { label: string }) {
+  const { t } = useI18n();
+  const [open, setOpen] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+
+  return (
+    <div
+      ref={root}
+      // Hover/blur wrapper only; the <button> below is the interactive control.
+      role="presentation"
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      onKeyDown={(event) => event.key === "Escape" && setOpen(false)}
+      onBlur={(event) => {
+        if (!root.current?.contains(event.relatedTarget as Node | null)) setOpen(false);
+      }}
+    >
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-haspopup="true"
+        onClick={() => setOpen((value) => !value)}
+        className={`flex items-center gap-1 transition hover:text-white ${open ? "text-white" : ""}`}
+      >
+        {label}
+        <ChevronDownIcon className={`h-4 w-4 transition ${open ? "rotate-180" : ""}`} />
+      </button>
+
+      {open && (
+        // pt-3 bridges the gap so the hover doesn't drop between button and panel.
+        <div className="absolute start-1/2 top-full z-50 -translate-x-1/2 pt-3 rtl:translate-x-1/2">
+          <div className="anim-fade-up w-[34rem] rounded-3xl border border-white/10 bg-canvas/90 p-3 shadow-2xl backdrop-blur-xl">
+            <p className="px-3 pb-2 pt-1 text-[11px] font-bold uppercase tracking-[0.18em] text-brand">{t.nav.sections}</p>
+            <div className="grid grid-cols-2 gap-1">
+              {SECTIONS.map((section) => {
+                const Icon = SECTION_ICONS[section];
+                return (
+                  <Link
+                    key={section}
+                    href={`/courses/s/${section}`}
+                    onClick={() => setOpen(false)}
+                    className="flex items-start gap-3 whitespace-normal rounded-2xl p-3 transition hover:bg-white/[0.06]"
+                  >
+                    <Icon className="mt-0.5 h-5 w-5 shrink-0 text-brand" />
+                    <span>
+                      <span className="block font-semibold text-white">{t.courses.sections[section]}</span>
+                      <span className="mt-0.5 block text-xs leading-snug text-muted">{t.courses.sectionBlurbs[section]}</span>
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+            <Link
+              href="/courses"
+              onClick={() => setOpen(false)}
+              className="mt-2 block rounded-2xl bg-white/[0.05] px-4 py-3 text-center text-sm font-bold text-white transition hover:bg-brand hover:text-ink"
+            >
+              {t.nav.allCourses}
+            </Link>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function SiteHeader() {
   const { t, lang } = useI18n();
@@ -51,11 +122,15 @@ export function SiteHeader() {
         <Logo />
 
         <nav className="hidden items-center gap-5 whitespace-nowrap text-sm font-medium text-white/65 xl:flex 2xl:gap-7">
-          {nav.map((item) => (
-            <Link key={item.href} href={item.href} className="transition hover:text-white">
-              {item.label}
-            </Link>
-          ))}
+          {nav.map((item) =>
+            item.href === "/#courses" ? (
+              <CoursesMenu key={item.href} label={item.label} />
+            ) : (
+              <Link key={item.href} href={item.href} className="transition hover:text-white">
+                {item.label}
+              </Link>
+            ),
+          )}
         </nav>
 
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
@@ -128,14 +203,30 @@ export function SiteHeader() {
             Admin
           </Link>
           {nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setMobileOpen(false)}
-              className="block border-b border-white/5 py-3.5 text-base font-medium text-white/80"
-            >
-              {item.label}
-            </Link>
+            <div key={item.href}>
+              <Link
+                href={item.href}
+                onClick={() => setMobileOpen(false)}
+                className="block border-b border-white/5 py-3.5 text-base font-medium text-white/80"
+              >
+                {item.label}
+              </Link>
+              {/* ---- Course sections, indented under "Courses" ---- */}
+              {item.href === "/#courses" && (
+                <div className="grid grid-cols-2 gap-x-3 border-b border-white/5 py-2 ps-3">
+                  {SECTIONS.map((section) => (
+                    <Link
+                      key={section}
+                      href={`/courses/s/${section}`}
+                      onClick={() => setMobileOpen(false)}
+                      className="py-2 text-sm text-white/65 transition hover:text-brand"
+                    >
+                      {t.courses.sections[section]}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
           <div className="mt-4 grid grid-cols-8 gap-1.5" role="group" aria-label={t.nav.language}>
             {LOCALES.map((locale) => {

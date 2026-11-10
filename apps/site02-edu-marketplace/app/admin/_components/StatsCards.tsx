@@ -1,4 +1,4 @@
-import { CATEGORIES } from "@/lib/admin/catalog";
+import { CATEGORIES, SECTIONS } from "@/lib/admin/catalog";
 import type { AdminStats } from "@/lib/admin/types";
 import type { CourseStatus } from "@repo/types";
 
@@ -9,6 +9,7 @@ export function StatsCards({ stats }: { stats: AdminStats }) {
     ["Draft", stats.byStatus.draft],
     ["Archived", stats.byStatus.archived],
     ...CATEGORIES.map((category) => [category, stats.byCategory[category] ?? 0] as const),
+    ...SECTIONS.map((section) => [section, stats.bySection[section] ?? 0] as const),
   ] as const;
 
   return (

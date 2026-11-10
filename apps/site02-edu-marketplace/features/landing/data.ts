@@ -12,6 +12,25 @@ export const unsplash = (id: string, width: number) =>
 
 export const CATEGORIES: CategoryId[] = ["programming", "data", "design", "devops", "mobile", "ai", "security"];
 
+/* ---- Course sections (education level), separate from the tech category ----
+   Order here is the display order everywhere: filters, header menu, home grid.
+   Ids are DB values (see migration 20261111000000_course_sections.sql) and URL segments. */
+export type SectionId = Exclude<keyof Dict["courses"]["sections"], "all">;
+
+export const SECTIONS: SectionId[] = [
+  "preschool",
+  "school",
+  "exam-prep",
+  "bachelor-master",
+  "phd",
+  "mba-dba",
+  "special-education",
+  "additional",
+];
+
+export const isSectionId = (value: unknown): value is SectionId =>
+  typeof value === "string" && (SECTIONS as string[]).includes(value);
+
 export const LEVELS: LevelId[] = ["beginner", "intermediate", "advanced"];
 
 export const COURSES: {

@@ -2,15 +2,25 @@
 
 import Image from "next/image";
 import { Link } from "@repo/i18n/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Course } from "@repo/types";
 import { Container } from "@repo/ui";
 import { ArrowRightIcon, ClockIcon, UsersIcon } from "@/components/icons";
 import { coverImageProps } from "@/lib/image-variants";
 import { useI18n } from "@/lib/i18n/LanguageProvider";
 import { localize } from "@/lib/i18n/localize";
-import { CATEGORIES, LEVELS, type BadgeId, type CategoryId } from "../data";
+import { CATEGORIES, LEVELS, SECTIONS, isSectionId, type BadgeId, type CategoryId, type SectionId } from "../data";
 import { SectionHeading } from "./SectionHeading";
+
+const pillClass = (active: boolean) =>
+  `whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-semibold transition ${
+    active
+      ? "bg-brand text-ink"
+      : "border border-white/10 bg-white/[0.03] text-white/70 hover:border-white/30 hover:text-white"
+  }`;
+
+// Rows created before the sections migration have no value; they count as "additional".
+const sectionOf = (course: Course): SectionId => (isSectionId(course.section) ? course.section : "additional");
 
 const badgeStyle: Record<BadgeId, string> = {
   bestseller: "bg-brand text-ink",
@@ -19,47 +29,86 @@ const badgeStyle: Record<BadgeId, string> = {
 };
 
 // Courses come from Supabase (getCourses), already sorted by the caller.
-export function CoursesShowcase({ courses }: { courses: Course[] }) {
+// `fixedSection` is set on /courses/s/[section]: the section row is hidden and the heading shows that section.
+export function CoursesShowcase({ courses, fixedSection }: { courses: Course[]; fixedSection?: SectionId }) {
   const { t, lang } = useI18n();
   const [filter, setFilter] = useState<CategoryId | "all">("all");
-  const visible = filter === "all" ? courses : courses.filter((course) => course.category === filter);
+  const [section, setSection] = useState<SectionId | "all">(fixedSection ?? "all");
+
+  /* ---- Deep link: /courses?section=phd preselects a section (read on mount; the page is ISR) ---- */
+  useEffect(() => {
+    if (fixedSection) return;
+    const fromUrl = new URLSearchParams(window.location.search).get("section");
+    if (isSectionId(fromUrl)) setSection(fromUrl);
+  }, [fixedSection]);
+
+  const pickSection = (next: SectionId | "all") => {
+    setSection(next);
+    const url = new URL(window.location.href);
+    if (next === "all") url.searchParams.delete("section");
+    else url.searchParams.set("section", next);
+    window.history.replaceState(window.history.state, "", url);
+  };
+
+  /* ---- Combined filter: section AND category ---- */
+  const visible = courses.filter(
+    (course) => (section === "all" || sectionOf(course) === section) && (filter === "all" || course.category === filter),
+  );
   const numberFormat = new Intl.NumberFormat(lang);
+
+  const heading = fixedSection
+    ? { eyebrow: t.courses.sectionsBlock.eyebrow, title: t.courses.sections[fixedSection], subtitle: t.courses.sectionBlurbs[fixedSection] }
+    : { eyebrow: t.courses.eyebrow, title: t.courses.title, subtitle: t.courses.subtitle };
 
   return (
     <section id="courses" className="py-24 lg:py-32">
       <Container>
-        <SectionHeading eyebrow={t.courses.eyebrow} title={t.courses.title} subtitle={t.courses.subtitle} />
+        <SectionHeading {...heading} />
 
-        {/* ---- Category filter pills ---- */}
-        <div className="-mx-4 mt-10 overflow-x-auto px-4 sm:mx-0 sm:px-0" role="tablist">
-          <div className="flex w-max gap-2 sm:w-auto sm:flex-wrap">
-            {(["all", ...CATEGORIES] as const).map((cat) => {
-              const active = filter === cat;
-              return (
+        {/* ---- Section (education level) filter pills ---- */}
+        {!fixedSection && (
+          <div className="-mx-4 mt-10 overflow-x-auto px-4 sm:mx-0 sm:px-0" role="tablist" aria-label={t.nav.sections}>
+            <div className="flex w-max gap-2 sm:w-auto sm:flex-wrap">
+              {(["all", ...SECTIONS] as const).map((value) => (
                 <button
-                  key={cat}
+                  key={value}
                   type="button"
                   role="tab"
-                  aria-selected={active}
-                  onClick={() => setFilter(cat)}
-                  className={`whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-semibold transition ${
-                    active
-                      ? "bg-brand text-ink"
-                      : "border border-white/10 bg-white/[0.03] text-white/70 hover:border-white/30 hover:text-white"
-                  }`}
+                  aria-selected={section === value}
+                  onClick={() => pickSection(value)}
+                  className={pillClass(section === value)}
                 >
-                  {t.courses.cats[cat]}
+                  {t.courses.sections[value]}
                 </button>
-              );
-            })}
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ---- Category filter pills ---- */}
+        <div className={`-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0 ${fixedSection ? "mt-10" : "mt-3"}`} role="tablist">
+          <div className="flex w-max gap-2 sm:w-auto sm:flex-wrap">
+            {(["all", ...CATEGORIES] as const).map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                role="tab"
+                aria-selected={filter === cat}
+                onClick={() => setFilter(cat)}
+                className={pillClass(filter === cat)}
+              >
+                {t.courses.cats[cat]}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* ---- Course cards (keyed by filter so they re-animate on change) ---- */}
-        <div key={filter} className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {/* ---- Course cards (keyed by filters so they re-animate on change) ---- */}
+        <div key={`${section}:${filter}`} className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {visible.map((course, index) => {
             const title = localize(course, "title", lang);
             const categoryLabel = t.courses.cats[course.category as CategoryId] ?? course.category;
+            const sectionLabel = fixedSection ? null : t.courses.sections[sectionOf(course)];
             const levelIndex = course.level ? LEVELS.indexOf(course.level) : -1;
             return (
               <article
@@ -88,6 +137,11 @@ export function CoursesShowcase({ courses }: { courses: Course[] }) {
                     {categoryLabel && (
                       <span className="rounded-full bg-ink/70 px-2.5 py-1 text-[11px] font-semibold !text-white backdrop-blur">
                         {categoryLabel}
+                      </span>
+                    )}
+                    {sectionLabel && (
+                      <span className="rounded-full bg-ink/70 px-2.5 py-1 text-[11px] font-semibold !text-brand backdrop-blur">
+                        {sectionLabel}
                       </span>
                     )}
                   </div>

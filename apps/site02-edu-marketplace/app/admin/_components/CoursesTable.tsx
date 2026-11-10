@@ -47,6 +47,7 @@ export function CoursesTable({ rows, total, page, filteredEmpty, onPage, onAdd, 
               <th className="p-2">Title</th>
               <th className="p-2">Slug</th>
               <th className="p-2">Category</th>
+              <th className="p-2">Section</th>
               <th className="p-2">Price</th>
               <th className="p-2">Status</th>
               <th className="p-2">Language</th>
@@ -70,6 +71,7 @@ export function CoursesTable({ rows, total, page, filteredEmpty, onPage, onAdd, 
                 <td className="p-2 font-medium text-[#16161a]">{row.title}</td>
                 <td className="p-2 text-black/60">{row.slug}</td>
                 <td className="p-2">{row.category}</td>
+                <td className="p-2">{row.section}</td>
                 <td className="p-2">{money(row.price, row.currency)}</td>
                 <td className="p-2">{statusBadge(row.status)}</td>
                 <td className="p-2 uppercase">{row.language}</td>

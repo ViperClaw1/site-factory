@@ -3,6 +3,7 @@ import { CoursesShowcase } from "@/features/landing/components/CoursesShowcase";
 import { HowItWorks } from "@/features/landing/components/HowItWorks";
 import { Instructors } from "@/features/landing/components/Instructors";
 import { LandingHero } from "@/features/landing/components/LandingHero";
+import { SectionsGrid } from "@/features/landing/components/SectionsGrid";
 import { Pricing } from "@/features/landing/components/Pricing";
 import { StatsCounter } from "@/features/landing/components/StatsCounter";
 import { Testimonials } from "@/features/landing/components/Testimonials";
@@ -19,6 +20,7 @@ export default async function HomePage() {
     <>
       <LandingHero />
       <TrustMarquee />
+      <SectionsGrid courses={courses} />
       <CoursesShowcase courses={courses} />
       <StatsCounter />
       <HowItWorks />

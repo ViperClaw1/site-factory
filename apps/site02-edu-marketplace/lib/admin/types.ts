@@ -5,6 +5,7 @@ export interface AdminCourseRow {
   slug: string;
   title: string;
   category: string;
+  section: string;
   price: number;
   currency: string;
   status: CourseStatus;
@@ -17,6 +18,7 @@ export interface AdminStats {
   total: number;
   byStatus: Record<CourseStatus, number>;
   byCategory: Record<string, number>;
+  bySection: Record<string, number>;
 }
 
 export const ADMIN_PAGE_SIZE = 50;

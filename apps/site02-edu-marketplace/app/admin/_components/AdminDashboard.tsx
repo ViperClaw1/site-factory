@@ -38,11 +38,18 @@ export function AdminDashboard({ rows, total, page, stats, filters }: AdminDashb
         Math.max(0, count - removed.filter((row) => row.category === category).length),
       ]),
     ),
+    bySection: Object.fromEntries(
+      Object.entries(stats.bySection).map(([section, count]) => [
+        section,
+        Math.max(0, count - removed.filter((row) => row.section === section).length),
+      ]),
+    ),
   };
 
   function push(next: AdminFilters, nextPage = 1) {
     const params = new URLSearchParams();
     if (next.category) params.set("category", next.category);
+    if (next.section) params.set("section", next.section);
     if (next.status) params.set("status", next.status);
     if (next.q) params.set("q", next.q);
     if (nextPage > 1) params.set("page", String(nextPage));
@@ -61,7 +68,7 @@ export function AdminDashboard({ rows, total, page, stats, filters }: AdminDashb
         rows={visibleRows}
         total={Math.max(0, total - removed.length)}
         page={page}
-        filteredEmpty={Boolean(filters.category || filters.status || filters.q)}
+        filteredEmpty={Boolean(filters.category || filters.section || filters.status || filters.q)}
         onPage={(nextPage) => push(filters, nextPage)}
         onAdd={() => setAddOpen(true)}
         onDelete={setPendingDelete}

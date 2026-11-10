@@ -1,6 +1,6 @@
 import "server-only";
 
-import { COVER_BUCKET, CATEGORIES } from "@/lib/admin/catalog";
+import { COVER_BUCKET, CATEGORIES, SECTIONS } from "@/lib/admin/catalog";
 import { extensionForMime, IMAGE_MAX_BYTES, type CourseInput, type SignRequest } from "@/lib/admin/schema";
 import { courseSlug, slugify } from "@/lib/admin/slug";
 import { ADMIN_PAGE_SIZE, type AdminCourseRow, type AdminStats } from "@/lib/admin/types";
@@ -198,6 +198,7 @@ export async function createCourse(input: CourseInput): Promise<{ id: string; sl
       language: text.language,
       i18n: text.i18n,
       category: input.category,
+      section: input.section,
       level: input.level,
       tags: input.tags,
       cover_image: cover.url,
@@ -260,6 +261,7 @@ export async function deleteCourse(id: string): Promise<{ slug: string }> {
 
 export interface CourseListQuery {
   category?: string;
+  section?: string;
   status?: string;
   q?: string;
   page?: number;
@@ -270,7 +272,7 @@ function searchTerm(q: string | undefined): string | null {
   return safe.length > 0 ? safe : null;
 }
 
-async function headCount(column: "status" | "category", value: string): Promise<number> {
+async function headCount(column: "status" | "category" | "section", value: string): Promise<number> {
   const { count, error } = await supabaseAdmin().from("courses").select("id", { count: "exact", head: true }).eq(column, value);
   if (error) throw error;
   return count ?? 0;
@@ -284,22 +286,25 @@ export async function listCourses(query: CourseListQuery): Promise<{
 }> {
   const page = Number.isFinite(query.page) && (query.page ?? 0) > 0 ? Math.floor(query.page as number) : 1;
   const category = query.category && (CATEGORIES as readonly string[]).includes(query.category) ? query.category : undefined;
+  const section = query.section && (SECTIONS as readonly string[]).includes(query.section) ? query.section : undefined;
   const status = query.status === "active" || query.status === "draft" || query.status === "archived" ? query.status : undefined;
   const q = searchTerm(query.q);
 
   let list = supabaseAdmin()
     .from("courses")
-    .select("id, slug, title, category, price, currency, status, language, cover_image, updated_at", { count: "exact" });
+    .select("id, slug, title, category, section, price, currency, status, language, cover_image, updated_at", { count: "exact" });
   if (category) list = list.eq("category", category);
+  if (section) list = list.eq("section", section);
   if (status) list = list.eq("status", status);
   if (q) list = list.or(`title.ilike.%${q}%,slug.ilike.%${q}%`);
 
   const from = (page - 1) * ADMIN_PAGE_SIZE;
-  const [rows, totalCount, statusCounts, categoryCounts] = await Promise.all([
+  const [rows, totalCount, statusCounts, categoryCounts, sectionCounts] = await Promise.all([
     list.order("updated_at", { ascending: false }).range(from, from + ADMIN_PAGE_SIZE - 1),
     supabaseAdmin().from("courses").select("id", { count: "exact", head: true }),
     Promise.all((["active", "draft", "archived"] as const).map(async (value) => [value, await headCount("status", value)] as const)),
     Promise.all(CATEGORIES.map(async (value) => [value, await headCount("category", value)] as const)),
+    Promise.all(SECTIONS.map(async (value) => [value, await headCount("section", value)] as const)),
   ]);
 
   if (rows.error) throw rows.error;
@@ -310,6 +315,7 @@ export async function listCourses(query: CourseListQuery): Promise<{
     slug: row.slug,
     title: row.title,
     category: row.category ?? "",
+    section: row.section ?? "additional",
     price: Number(row.price),
     currency: row.currency,
     status: row.status as CourseStatus,
@@ -326,6 +332,7 @@ export async function listCourses(query: CourseListQuery): Promise<{
       total: totalCount.count ?? 0,
       byStatus: Object.fromEntries(statusCounts) as AdminStats["byStatus"],
       byCategory: Object.fromEntries(categoryCounts),
+      bySection: Object.fromEntries(sectionCounts),
     },
   };
 }

@@ -1,10 +1,11 @@
 "use client";
 
-import { CATEGORIES } from "@/lib/admin/catalog";
+import { CATEGORIES, SECTIONS } from "@/lib/admin/catalog";
 import { useState } from "react";
 
 export interface AdminFilters {
   category: string;
+  section: string;
   status: string;
   q: string;
 }
@@ -29,6 +30,17 @@ export function AdminToolbar({ filters, onChange, onAdd }: AdminToolbarProps) {
         <select value={filters.category} onChange={(event) => onChange({ ...filters, category: event.target.value })} className={CONTROL}>
           <option value="">All</option>
           {CATEGORIES.map((value) => (
+            <option key={value} value={value}>
+              {value}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className={LABEL}>
+        Section
+        <select value={filters.section} onChange={(event) => onChange({ ...filters, section: event.target.value })} className={CONTROL}>
+          <option value="">All</option>
+          {SECTIONS.map((value) => (
             <option key={value} value={value}>
               {value}
             </option>
