@@ -1,20 +1,22 @@
 ---
-tags: [project/task-4-site-factory, type/adr, status/approved]
+tags: [project/task-4-site-factory, type/adr, status/superseded]
 project: "Task 4 - Site Factory"
-status: approved
+status: superseded
 created: 2026-07-17
-updated: 2026-07-17
+updated: 2026-11-10
 aliases: []
 adr-id: "003"
 supersedes: []
-superseded-by: []
+superseded-by: ["009"]
 ---
 
 # ADR-003: Deployment Strategy
 
 ## Status
 
-Approved — Coolify (self-hosted PaaS) on existing VPS.
+Superseded by [[adr-009-release-and-deployment|ADR-009]]: GitHub Actions pipeline with a source archive, an approval gate and SSH deployment to our VPS; no auto-deploy on push.
+
+Originally: Approved — Coolify (self-hosted PaaS) on existing VPS.
 
 ## Context
 
