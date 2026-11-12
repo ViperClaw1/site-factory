@@ -1,7 +1,7 @@
 ---
 tags: [project/task-4-site-factory, type/adr, status/proposed]
 project: "Task 4 - Site Factory"
-status: proposed
+status: accepted
 created: 2026-11-10
 updated: 2026-11-12
 aliases: [Release and deployment, Site acceptance]
@@ -14,7 +14,7 @@ superseded-by: []
 
 ## Status
 
-Proposed. Based on the site acceptance checklist of 09.11, the acceptance additions by Eduard (acceptance and deployment) of 10.11, and the customer's requirement of 10.11: "файлы в зипе сдавать полностью перед заливкой на GitHub Actions".
+Accepted on 12.11.2026 by the infrastructure owner and the site-factory team. Based on the site acceptance checklist of 09.11, the acceptance additions by Eduard (acceptance and deployment) of 10.11, and the customer's requirement of 10.11: "файлы в зипе сдавать полностью перед заливкой на GitHub Actions".
 
 Decided by the customer: a full source ZIP of every site is handed over before deployment. Decided on 11.11: deployment goes over SSH with docker compose, not Coolify. Decided on 12.11: GitHub Actions only; no GHCR — the image is built on our server from a snapshot of the repository, the same way `parser` is deployed (`ci-parser` + `pathctl update`). Decided: one tag per site, `<app>/vX.Y.Z` (acceptance additions, section 9).
 
@@ -76,7 +76,7 @@ A tag starts checks, then a source archive is built and published, the customer 
 - Workflow `deploy.yml`, next to `ci.yml`. Pipeline:
   1. checks on the tag;
   2. `package` and Release;
-  3. approval: GitHub environment `production` with required reviewers. The customer confirms receipt of the archive. On the current free plan required reviewers are unavailable for private repositories; until the plan is upgraded the confirmation is recorded manually in `report.md`;
+  3. approval: the deploy job runs only by `workflow_dispatch` from an allowlisted actor (`github.actor` checked against the customer and the infrastructure owner); the customer confirms receipt of the archive and the confirmation is recorded in `report.md`. GitHub environment `production` with required reviewers is unavailable on the free plan for private repositories; it replaces the allowlist if the organization moves to GitHub Team;
   4. over SSH as user `ci-<project>`, CI streams the source snapshot of the tag to the server (`pathctl update <project>`, as for `parser`); the key lives in the repository secrets and its forced command allows only this action, so the server holds no access to GitHub. The image is built locally on the server, tagged by full SHA;
   5. database backup, then migrations as a separate step (forward-only, expand–contract, pending = 0);
   6. `docker compose up --wait` with the new image tag;
@@ -84,7 +84,7 @@ A tag starts checks, then a source archive is built and published, the customer 
   8. on failure, automatic rollback to the previous SHA.
 - Stage goes first and is closed to indexing (`X-Robots-Tag: noindex`) and to outsiders.
 - Rollback is a `workflow_dispatch` with `action: rollback, tag: <previous-sha>`. `current` and `previous` SHAs are recorded on the server, and the images of the last N releases (at least 3) are kept locally, so a rollback needs no rebuild. A rollback is rehearsed at least once before the first production release.
-- Building on the production server takes CPU and memory from the running sites. Builds run with a CPU and memory limit, outside peak hours where possible; if that is not enough, the image is built on the stage server and copied with `docker save | ssh … docker load`, still without a registry.
+- Building on the production server takes CPU and memory from the running sites. Builds run with a CPU and memory limit, outside peak hours where possible. There is no fallback path with `docker save | ssh … docker load`: the deploy key is limited by a forced command to `pathctl update <project>`, so it cannot stream an image. If server-side builds stop being enough, a separate `pathctl load-image` action is designed and recorded in a new decision before it is used.
 
 **What every site must provide**
 - Startup fails with a clear list of missing required environment variables (`lib/env.ts`) instead of rendering empty pages. CI builds with placeholder values; production starts with real ones.
