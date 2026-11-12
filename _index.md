@@ -43,11 +43,11 @@ In progress — architecture approved. Infrastructure setup in Phase 1.
 - [[adr-006-ecommerce-stack|ADR-006]] — E-commerce stack for marketplace sites (Supabase + Stripe) — superseded by ADR-008
 - [[adr-007-styling-approach|ADR-007]] — Styling: Tailwind CSS with per-site design tokens
 - [[adr-008-unified-commerce-and-auth|ADR-008]] — One self-hosted Supabase stack in Germany (netcup), one user pool and Directus for all sites; no cloud for data (amended 2026-11-10, 2026-11-12)
-- [[adr-009-release-and-deployment|ADR-009]] — Release by tag, full source ZIP before deploy, approval gate, GitHub Actions only, image built on our server from a repository snapshot, no GHCR (proposed)
+- [[adr-009-release-and-deployment|ADR-009]] — Release by tag, full source ZIP before deploy, approval gate, GitHub Actions only, one tag per site, image built on our server from a repository snapshot, no GHCR (accepted 2026-11-12)
 - [[adr-010-locale-routing|ADR-010]] — A separate address for every language (`/en/`, `/de/`), hreflang, shared `packages/i18n`
 - [[adr-011-catalog-upload-format|ADR-011]] — One catalog upload format: the ecosystem catalog standard (proposed)
 - [[adr-012-reference-data|ADR-012]] — Reference data in the commerce DB, data ownership, fields of the reference tables (proposed)
-- [[adr-013-launch-markets|ADR-013]] — Launch markets: US, GB, CA, AU, NZ; Ireland open (proposed)
+- [[adr-013-launch-markets|ADR-013]] — Launch markets: US, GB, CA, AU, NZ; Ireland not at launch, Quebec excluded from delivery (accepted 2026-11-12)
 
 ## Open Questions
 

@@ -123,7 +123,7 @@ Rejected: the shared account and customer history would require a second shared 
 - A streaming hot standby on our second server, in a different data centre from the primary. Promotion is manual by runbook; target RTO ≤ 1 hour. Automatic failover (Patroni) is deferred until load requires it.
 - RPO and RTO values are a proposal; the customer confirms them.
 - Isolation between sites: a Supavisor pool size per site; a database role per site with its own `statement_timeout`; each site in its own container.
-- Degradation when the database is down: catalog pages are served from the ISR cache (and from a CDN, if one is approved: see Consequences); checkout and sign-in are switched off with a clear message.
+- Degradation when the database is down: catalog pages are served from the ISR cache and the caching layer in front of the application; checkout and sign-in are switched off with a clear message.
 - A restore from backup is test-deployed every month; a backup that was never restored does not count.
 
 ## Consequences
@@ -140,13 +140,18 @@ Rejected: the shared account and customer history would require a second shared 
 - `anon` reads only the catalog and `available`. `product_variants` internals and `lesson_content` are closed by RLS.
 - Admin roles live in `app_metadata` and are scoped to a site.
 - Countries that require local storage of citizens' data (Russia first) are not served by this database. Whether they are sales markets is open (rules, O-1); if they are, a separate regional contour is added.
-- Visitors are in the US and Commonwealth countries, servers are in Germany: every uncached request crosses the Atlantic or further (about 100 ms to the US East Coast, more to Australia and New Zealand). Pages must be served from the ISR cache; whether a CDN in front of the sites counts as "cloud" is open.
+- Visitors are in the US and Commonwealth countries, servers are in Germany: every uncached request crosses the Atlantic or further (about 100 ms to the US East Coast, more to Australia and New Zealand). Pages must be served from cache. A CDN counts as cloud (decided 12.11): we use our own cache (ISR plus a caching layer in front of the application on our server). Cloudflare or a similar service only with a written exception from the customer.
 - A data processing agreement (AVV/DPA) with netcup is needed for personal data on its servers.
 - External services that cannot be self-hosted stay external and are listed explicitly: the payment provider, the transactional email provider (deliverability), Google sign-in, DNS. They hold only the data needed for their function.
 - Payments at launch (customer, 11.11): leading payment providers first, our own financial platform later; PayMesh only after the legal entity exists and with a banking licence or bank agreement. The provider is chosen with the legal entity (O-3); until then `PAYMENTS_ENABLED` is off.
 - External blockers: a working Supabase stack on the netcup server, the standby server, PayMesh credentials and a named maintainer for PayMesh (it is not deployed and has no maintainer as of 15.09), domains and DNS, a transactional email provider, the analytics decision (ADR-005), the legal entity for payments (O-3).
 
 ## Amendments
+
+### 2026-11-12 (later the same day)
+
+- A CDN counts as cloud. Caching is our own: ISR plus a caching layer in front of the application. Cloudflare or similar only with the customer's written exception.
+- Launch markets accepted in ADR-013: Ireland not at launch, Quebec excluded from delivery.
 
 ### 2026-11-12
 

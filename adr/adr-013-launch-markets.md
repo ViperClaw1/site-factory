@@ -1,7 +1,7 @@
 ---
-tags: [project/task-4-site-factory, type/adr, status/proposed]
+tags: [project/task-4-site-factory, type/adr, status/accepted]
 project: "Task 4 - Site Factory"
-status: proposed
+status: accepted
 created: 2026-11-12
 updated: 2026-11-12
 aliases: [Launch markets, Countries at launch]
@@ -14,7 +14,7 @@ superseded-by: []
 
 ## Status
 
-Proposed. The decision package of 12.11 orients content and legal texts to the US and Commonwealth countries. The list was given as "US, GB, AU, CA, NZ, IE?"; Ireland is open.
+Accepted on 12.11.2026 by the site-factory team and the infrastructure owner. The decision package of 12.11 orients content and legal texts to the US and Commonwealth countries. The list was given as "US, GB, AU, CA, NZ, IE?"; Ireland and Quebec were decided on 12.11 (below).
 
 ## Context
 
@@ -27,7 +27,8 @@ Proposed. The decision package of 12.11 orients content and legal texts to the U
 ## Decision
 
 - **Launch markets:** `US`, `GB`, `CA`, `AU`, `NZ`. In `countries` (ADR-012) only these have `sales_enabled = true`; `sites.markets` is a subset of them.
-- **Ireland is not a launch market.** It is in the EU: GDPR, ePrivacy opt-in, EU consumer law, EU VAT on imports (IOSS). It joins together with an EU contour based on the existing `eu` profile.
+- **Ireland is not a launch market (decided 12.11).** It is in the EU: GDPR, ePrivacy opt-in, EU consumer law, EU VAT on imports (IOSS). It joins together with an EU contour based on the existing `eu` profile.
+- **Quebec is excluded from delivery at launch (decided 12.11).** Selling to Quebec consumers requires French content and French legal documents. Legal texts are written for a jurisdiction, not translated, so this needs a separate French set from a lawyer. Checkout rejects delivery addresses in Quebec (`CA`, province `QC`) until that set exists.
 - **Interface languages are unchanged:** 19 languages, English by default. Visitors from any country can browse; checkout accepts only delivery to a launch market (and never to a country in a product's `not_sold_to`).
 - **English variant:** one English text (US spelling) for all launch markets. `hreflang` stays `en`, no `en-GB` or `en-AU` copies. Legal documents differ by jurisdiction, not by spelling.
 - **Legal documents:** a base set for the seller's jurisdiction, plus a version for each launch market where its law requires different content. The legal entity (O-3) decides the base jurisdiction.
@@ -49,11 +50,12 @@ What each launch market adds. These are points for the lawyer and the tax advise
 
 - **Country profiles:** GB, CA, AU, NZ are needed in `Path-platform-standards/03-strany` before their legal documents are written and before the public launch.
 - **Tax and duties:** GST/VAT registration in GB, AU, NZ, CA depends on sales volume and the legal entity (O-3). The "duties and taxes" line at checkout (O-2) must come from a calculation per market, not one estimate.
-- **Quebec:** either French content and documents for Quebec buyers, or Quebec is excluded from delivery until they exist.
-- **Latency:** visitors in AU and NZ are far from the servers in Germany. Catalog pages must be served from cache (ADR-008).
+- **Quebec:** delivery to `CA`/`QC` is blocked at checkout. Lifting it needs the French legal set and French content for Quebec buyers. The `countries` table works at country level, so the province rule lives in the delivery check, not in `countries`.
+- **Latency:** visitors in AU and NZ are far from the servers in Germany. Catalog pages are served from our own cache; a CDN counts as cloud (ADR-008).
 - **Seed data:** `countries` seeds `sales_enabled`, `consent_model`, `marketing_consent_required` and `min_consent_age` for the five markets.
 - **Open questions:**
-  - Ireland and the EU contour;
+  - when Ireland and the EU contour are added;
+  - when the French set for Quebec is commissioned;
   - the seller's jurisdiction (O-3);
   - Russia (O-1, already open);
   - whether other Commonwealth countries (for example India, Singapore, South Africa) follow.
