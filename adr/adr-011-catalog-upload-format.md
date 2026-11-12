@@ -3,7 +3,7 @@ tags: [project/task-4-site-factory, type/adr, status/proposed]
 project: "Task 4 - Site Factory"
 status: proposed
 created: 2026-11-10
-updated: 2026-11-10
+updated: 2026-11-12
 aliases: [Catalog upload format, Bulk upload]
 adr-id: "011"
 supersedes: []
@@ -36,9 +36,9 @@ Proposed. Needs a decision before the card requirements are re-listed (open ques
 - Validation on upload uses the same schema (`katalog.schema.json` compiled with ajv, or an equivalent zod schema generated from it), so the admin and `katalog.py` accept and reject the same files.
 - Fields site01 needs and the standard lacks (`collectible_story`, `edition_size`, `series`, `character`, `collection`) go into the standard's `attributes`, or are proposed as additions to the standard. They are not kept as a parallel format.
 - The upload maps onto the unified schema of ADR-008:
-  - `catalog` → `site_id`;
+  - `catalog` is the ecosystem catalog code (one catalog for the ecosystem), not the site; the site comes from the item's category (`categories.site_id`, ADR-012);
   - stock through the import function that writes `stock_movements`;
-  - `mode` (`full` / `partial`) decides whether items absent from the file are archived.
+  - `mode` (`merge` / `replace`): `merge` changes only the items in the file, `replace` also archives items of the same catalog absent from the file.
 - Export produces the same format, so a file exported from one environment can be loaded into another.
 
 ## Consequences

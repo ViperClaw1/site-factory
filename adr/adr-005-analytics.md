@@ -1,71 +1,86 @@
 ---
-tags: [project/task-4-site-factory, type/adr, status/superseded]
+tags: [project/task-4-site-factory, type/adr, status/approved]
 project: "Task 4 - Site Factory"
-status: superseded
+status: approved
 created: 2026-07-17
-updated: 2026-11-06
-aliases: []
+updated: 2026-11-12
+aliases: [Analytics, Self-hosted analytics]
 adr-id: "005"
 supersedes: []
-superseded-by: ["008"]
+superseded-by: []
 ---
 
-# ADR-005: Analytics
+# ADR-005: Analytics — Self-hosted or None
 
 ## Status
 
-Superseded by [[adr-008-unified-commerce-and-auth|ADR-008]]: PostHog Cloud US with a consent banner; Plausible is retired. Code removal happens with the CMP/analytics step.
+Revised 2026-11-12.
 
-Originally: Approved — Plausible Analytics (self-hosted, single instance).
+- **Approved (decision package of 12.11):** no cloud analytics. Analytics runs on our own server or not at all. PostHog Cloud US, chosen by ADR-008 on 06.11, is withdrawn.
+- **Proposed, awaiting approval:** the tool, Option A (Umami).
+
+History:
+- 2026-07-17: approved Plausible, self-hosted through Coolify. Never deployed.
+- 2026-11-06: superseded by ADR-008 (PostHog Cloud US).
+- 2026-11-12: returned here.
 
 ## Context
 
-20 sites need analytics. Must be GDPR-compliant (no cookie consent banner required), lightweight (no impact on Lighthouse score), and cost-effective.
+- **Requirement (12.11):** no cloud services for our data.
+- **What the customer wants to see (06.11):** traffic by source, language and country; what visitors looked at; who bought and how much; follow-up of those who didn't buy (rules 05, 06.11).
+- **What is already decided elsewhere** (ADR-008):
+  - Money and LTV are computed in the commerce database (views), not in the analytics tool.
+  - Revenue events are sent server-side from `outbox`.
+- **Consent** (rule 05; O-10 open):
+  - Optional cookies and tracking start only after consent, in every country.
+  - Children's sites get no session recordings and no advertising pixels.
+- **Infrastructure** (12.11): servers in Germany (netcup), PostgreSQL 16 in `shared-infra-postgres`, backups to our second server. A tool that needs its own ClickHouse/Kafka cluster adds a stack to run and back up.
+- **Current code:**
+  - Both sites load `PlausibleProvider` unconditionally in `components/RootDocument.tsx`, before any consent.
+  - No Plausible server exists, so the script points nowhere.
 
 ## Options
 
-### Option A: Plausible (self-hosted)
+| | A. Umami | B. Plausible CE | C. Matomo | D. OpenPanel | E. PostHog self-hosted | F. None |
+|---|---|---|---|---|---|---|
+| Licence | MIT | AGPL-3.0 | GPL-3.0 | AGPL-3.0 | MIT | — |
+| Stack | Node + **PostgreSQL** | PostgreSQL + ClickHouse | PHP + MySQL/MariaDB | Postgres, ClickHouse, Redis | Postgres, ClickHouse, Kafka, Redis | — |
+| Resources | small | ≥ 2 GB RAM | ≥ 2 GB RAM | 4 vCPU / 8 GB | ≥ 4 vCPU / 16 GB; officially unsupported, ~300k events/month | — |
+| Without cookies | yes (default) | yes | configurable | yes | configurable | — |
+| Known user (`identify`) | optional distinct id | no | User ID | yes | yes | DB only |
+| Funnels, journeys, retention | listed by the vendor (verify on a PoC) | no | partly, some paid | yes | yes | DB views only |
+| Session replay | listed by the vendor (verify on a PoC) | no | paid plugin | no | yes | no |
+| Fits our backups | same Postgres, same dumps | separate ClickHouse | separate MySQL | separate ClickHouse | separate cluster | — |
 
-| Pros | Cons |
-|------|------|
-| GDPR-compliant by design — no cookies | Requires VPS resources |
-| ~1KB script (vs 45KB Google Analytics) | |
-| Single instance tracks all 20 domains | |
-| ClickHouse internally for fast queries | |
-| No cost (self-hosted on existing VPS) | |
-
-### Option B: Google Analytics 4
-
-| Pros | Cons |
-|------|------|
-| Free, feature-rich | Cookie consent required (GDPR) |
-| | Heavy script impacts Lighthouse |
-| | Data sent to Google |
-
-### Option C: Plausible Cloud (SaaS)
-
-| Pros | Cons |
-|------|------|
-| No ops | €9+/month, scales with pageviews |
+The vendor data and comparison sources disagree on Umami's funnels and replay. These must be checked on a test instance before approval.
 
 ## Decision
 
-Approved. Plausible self-hosted via Coolify One-Click App.
-
-**Rationale**:
-1. GDPR-compliant — no cookie banner needed on any of the 20 sites
-2. One Coolify deployment serves all 20 sites (separate site entries in Plausible UI)
-3. Proxy via Next.js rewrites (`/stats/js/script.js`) bypasses ad blockers
-4. Script weight negligible: ~1KB vs GA4's 45KB
+- **No cloud analytics.** The analytics tool runs on our server or isn't used.
+- **Proposed tool: A, Umami, self-hosted.**
+  - Its own database `umami` in `shared-infra-postgres`, or later in the commerce stack's Postgres. It is covered by the same backup routine.
+  - Served from a first-party subdomain of each site, as a proxy route of the site itself.
+- **Before consent:** cookieless counting only (pages, sources, languages, countries), no `identify`.
+- **After consent:**
+  - `identify` with `customers.id` (never an email);
+  - product events (`product_viewed`, `added_to_cart`, `checkout_started`, `order_created`), using the event taxonomy in `packages/analytics`;
+  - session replay only if confirmed on the PoC, and never on children's sites.
+- **Revenue:** `order_paid` and refunds are sent from `outbox` on the server; money and LTV stay in the commerce DB.
+- **When to escalate to E (PostHog self-hosted):** only if session replay, feature flags or A/B experiments at scale are required and Umami can't do them. E runs on a separate server: its ClickHouse must not compete with the commerce Postgres.
+- **Fallback F:**
+  - DB views (orders, LTV, channels) and server logs only, if no tool is approved.
+  - The customer's request "see who, how much, from where, what they looked at" is then answered only for orders, not for browsing.
 
 ## Consequences
 
-- `NEXT_PUBLIC_PLAUSIBLE_URL` env var set per site in Coolify (or Shared Variable)
-- `next-plausible` npm package used in `packages/lib/analytics.ts`
-- Custom events tracked via `usePlausible()` hook (form submissions, checkout steps)
-- Ad-blocker bypass: `next.config.js` rewrites for `/stats/js/script.js` and `/stats/api/event`
+- **Now, independent of the tool:** remove `PlausibleProvider` and the Plausible rewrites from both sites. Today they load before consent and point to no server.
+- **Before choosing:** a PoC of Umami on the stage server — check funnels, journeys and replay against the customer's list.
+- `packages/analytics`: a tool-agnostic layer (`track`, `identify`, event taxonomy). The tool can be swapped without touching the sites.
+- The consent banner (`packages/consent`) gates everything except cookieless counting.
+- ADR-008 refers here for the analytics tool.
 
 ## Related
 
-- [[adr-003-deployment-strategy]]
-- [[Site Factory Architecture]]
+- [[adr-008-unified-commerce-and-auth]]
+- `path-ecosystem-rules`: rule 05, O-10
+- [Umami vs PostHog (vendor page)](https://umami.is/compare/posthog) · [Self-hosted web analytics 2026 (comparison)](https://openpanel.dev/articles/self-hosted-web-analytics) · [PostHog self-hosting](https://posthog.com/docs/self-host)

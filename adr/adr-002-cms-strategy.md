@@ -3,7 +3,7 @@ tags: [project/task-4-site-factory, type/adr, status/approved]
 project: "Task 4 - Site Factory"
 status: approved
 created: 2026-07-17
-updated: 2026-11-06
+updated: 2026-11-12
 aliases: []
 adr-id: "002"
 supersedes: []
@@ -16,7 +16,7 @@ superseded-by: []
 
 Approved — Directus (self-hosted, single instance) chosen.
 
-Amended by [[adr-008-unified-commerce-and-auth|ADR-008]]: Directus runs on the shared commerce database and also manages the catalog and stock.
+Amended by [[adr-008-unified-commerce-and-auth|ADR-008]]: Directus moves to the shared commerce database and also manages the catalog and stock. Amended 2026-11-12: files and backups stay on our servers (no Cloudflare R2), deployment is not through Coolify (ADR-009). Current state below.
 
 ## Context
 
@@ -61,7 +61,16 @@ Amended by [[adr-008-unified-commerce-and-auth|ADR-008]]: Directus runs on the s
 
 ## Decision
 
-Approved. Directus self-hosted on VPS via Coolify.
+Approved. Directus self-hosted on our server.
+
+**State on 2026-11-12**:
+- Instance `cms.vcpath.us`, Directus 12.2.0.
+- Database `directus` in the shared instance `shared-infra-postgres` (image `pgvector/pgvector:pg16`, PostgreSQL 16.14). Runtime role `directus_app` has no DDL rights. It moves into the commerce DB when the Supabase stack works (ADR-008).
+- The structure is locked in the admin UI. It changes only by migration or script, together with `docs/directus-snapshot.yaml`.
+- Collections: `sites`, `pages`, `blocks`, `collections`, `characters`, `instructors`. File fields (`image`, `hero_image`, `seo_image`) are relations to `directus_files`; the frontend builds URLs with `getDirectusAssetUrl(...)`.
+- Files on a local volume (`STORAGE_LOCATIONS=local`). If an S3 API is needed, self-hosted MinIO; only the endpoint and keys change.
+- `CORS_ORIGIN` lists the sites' domains. A new domain is added to `DIRECTUS_CORS_ORIGIN` and the container is recreated.
+- Statuses: `draft` / `published` (`pages` also `archived`), default `draft`.
 
 **Rationale**:
 1. Zero SaaS cost — VPS already exists
@@ -73,7 +82,8 @@ Approved. Directus self-hosted on VPS via Coolify.
 ## Consequences
 
 - VPS must have sufficient resources for Directus + PostgreSQL alongside 20 Next.js containers
-- Backup strategy required: daily `pg_dump` + Cloudflare R2 upload (see [[Environment Setup]])
+- Backups (in place): daily at 03:40 (`/etc/cron.d/vibecod-backup-directus`, script `/usr/local/sbin/vibecod-backup-directus`): `pg_dump` of the database, an archive of uploads, the schema snapshot, cluster roles and the `.env`; locally in `/var/backups/directus` and offsite on a separate host, with sha256 checks. No cloud storage. Restores are test-deployed (ADR-008, Reliability).
+- Fixes from the 12.11 snapshot (ADR-012): a database foreign key `blocks.page → pages ON DELETE CASCADE` (today the relation exists only in Directus metadata); unique `(site, slug)` for `pages`; a `site` relation for `characters` and `collections`; `CHECK` constraints on `status`; translation tables for content.
 - Directus upgrade path must be tested on staging before production
 
 ## Related

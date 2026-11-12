@@ -18,7 +18,7 @@
 
 `https://cms.vcpath.us` и `https://assets.vcpath.us` сейчас указывают на один
 сервер — разница проявится, когда медиа (самая быстрорастущая часть бюджета
-инфраструктуры) переедет на Cloudflare R2 / CDN. Если URL картинок на всех
+инфраструктуры) переедет на отдельное хранилище (self-hosted MinIO, ADR-002). Если URL картинок на всех
 сайтах фабрики собраны из `NEXT_PUBLIC_DIRECTUS_URL + "/assets/..."`, переезд
 превращается в переписывание URL внутри контента базы данных на двадцати
 сайтах. Если через отдельную переменную — это смена одной DNS-записи и один
@@ -49,7 +49,7 @@ URL + anon key, поэтому смена инстанса — это смена
 | `NEXT_PUBLIC_SITE_DOMAIN` | да | Домен для Plausible (`PlausibleProvider domain=`) |
 | `NEXT_PUBLIC_PLAUSIBLE_URL` | да | Self-hosted Plausible; **опционально** — при отсутствии рewrite в `next.config.js` просто отключается, сборка не падает |
 | `REVALIDATE_TOKEN` | нет | Секрет для HMAC-подписи `/api/revalidate` — см. `docs/api-contracts.md`. Больше не передаётся как значение токена в запросе, только как ключ для проверки подписи |
-| `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME` | нет | Cloudflare R2, подписанные URL для цифровых товаров (`packages/lib/src/r2.ts`) |
+| `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME` | нет | S3-совместимое хранилище: по решению 12.11 — self-hosted MinIO, не Cloudflare R2; имена переименуются в `S3_*` вместе с кодом. подписанные URL для цифровых товаров (`packages/lib/src/r2.ts`) |
 
 ## Redis
 

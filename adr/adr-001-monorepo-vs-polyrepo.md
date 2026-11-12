@@ -71,7 +71,7 @@ Approved. Turborepo monorepo.
 
 - All developers have read access to all 20 sites — acceptable for this team structure
 - Turborepo `turbo.json` pipeline must be configured so changes in `apps/site01` don't rebuild `apps/site02` (path-based filtering)
-- Repository size will grow — use `.gitignore` carefully, keep media assets in Directus/Cloudflare R2 not in repo
+- Repository size will grow — use `.gitignore` carefully, keep media assets in Directus (local volume) or self-hosted MinIO, not in repo
 
 ## Related
 
