@@ -76,14 +76,14 @@ A tag starts checks, then a source archive is built and published, the customer 
 - Workflow `deploy.yml`, next to `ci.yml`. Pipeline:
   1. checks on the tag;
   2. `package` and Release;
-  3. approval: the deploy job runs only by `workflow_dispatch` from an allowlisted actor (`github.actor` checked against the customer and the infrastructure owner); the customer confirms receipt of the archive and the confirmation is recorded in `report.md`. GitHub environment `production` with required reviewers is unavailable on the free plan for private repositories; it replaces the allowlist if the organization moves to GitHub Team;
+  3. approval: the deploy job runs only for an existing release tag `<app>/vX.Y.Z`, and only by `workflow_dispatch` from an allowlisted actor (`github.actor` checked against the customer and the infrastructure owner); the customer confirms receipt of the archive and the confirmation is recorded in `report.md`. GitHub environment `production` with required reviewers is unavailable on the free plan for private repositories; it replaces the allowlist if the organization moves to GitHub Team. A `workflow_dispatch` without a release tag fails before any step runs, so the allowlist is a second barrier, not the only one;
   4. over SSH as user `ci-<project>`, CI streams the source snapshot of the tag to the server (`pathctl update <project>`, as for `parser`); the key lives in the repository secrets and its forced command allows only this action, so the server holds no access to GitHub. The image is built locally on the server, tagged by full SHA;
   5. database backup, then migrations as a separate step (forward-only, expand–contract, pending = 0);
   6. `docker compose up --wait` with the new image tag;
   7. health gate and smoke test;
   8. on failure, automatic rollback to the previous SHA.
 - Stage goes first and is closed to indexing (`X-Robots-Tag: noindex`) and to outsiders.
-- Rollback is a `workflow_dispatch` with `action: rollback, tag: <previous-sha>`. `current` and `previous` SHAs are recorded on the server, and the images of the last N releases (at least 3) are kept locally, so a rollback needs no rebuild. A rollback is rehearsed at least once before the first production release.
+- Rollback is a `workflow_dispatch` with `action: rollback, tag: <previous-sha>`, from the same allowlist. The server accepts only a SHA it has recorded as a previous release (`previous` or one of the kept images), not an arbitrary commit. `current` and `previous` SHAs are recorded on the server, and the images of the last N releases (at least 3) are kept locally, so a rollback needs no rebuild. A rollback is rehearsed at least once before the first production release.
 - Building on the production server takes CPU and memory from the running sites. Builds run with a CPU and memory limit, outside peak hours where possible. There is no fallback path with `docker save | ssh … docker load`: the deploy key is limited by a forced command to `pathctl update <project>`, so it cannot stream an image. If server-side builds stop being enough, a separate `pathctl load-image` action is designed and recorded in a new decision before it is used.
 
 **What every site must provide**
