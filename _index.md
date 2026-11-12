@@ -9,7 +9,7 @@ aliases: [Task 4, Site Factory, 20 Sites]
 
 # Task 4 — Site Factory (20 Sites)
 
-A monorepo-based factory for building and deploying 20 thematically different sites under a single infrastructure (Turborepo + Coolify + Directus). Each site shares a common Next.js template, UI primitives, and tooling while having its own content, theme, and domain.
+A monorepo-based factory for building and deploying 20 thematically different sites under a single infrastructure (Turborepo + Directus + one self-hosted Supabase stack on our servers in Germany). Each site shares a common Next.js template, UI primitives, and tooling while having its own content, theme, and domain.
 
 ## Status
 
@@ -39,13 +39,15 @@ In progress — architecture approved. Infrastructure setup in Phase 1.
 - [[adr-002-cms-strategy|ADR-002]] — Headless CMS: Directus (self-hosted, single instance)
 - [[adr-003-deployment-strategy|ADR-003]] — Deployment: Coolify on VPS vs Vercel — superseded by ADR-009
 - [[adr-004-rendering-strategy|ADR-004]] — Rendering: ISR for catalog, CSR for cart/checkout
-- [[adr-005-analytics|ADR-005]] — Analytics: Plausible (self-hosted) — superseded by ADR-008
+- [[adr-005-analytics|ADR-005]] — Analytics: self-hosted or none, no cloud (revised 2026-11-12; tool proposed: Umami)
 - [[adr-006-ecommerce-stack|ADR-006]] — E-commerce stack for marketplace sites (Supabase + Stripe) — superseded by ADR-008
 - [[adr-007-styling-approach|ADR-007]] — Styling: Tailwind CSS with per-site design tokens
-- [[adr-008-unified-commerce-and-auth|ADR-008]] — One self-hosted Supabase stack, one user pool and Directus for all sites; PostHog Cloud US (amended 2026-11-10)
-- [[adr-009-release-and-deployment|ADR-009]] — Release by tag, full source ZIP before deploy, approval gate, GitHub Actions → GHCR → SSH (proposed)
+- [[adr-008-unified-commerce-and-auth|ADR-008]] — One self-hosted Supabase stack in Germany (netcup), one user pool and Directus for all sites; no cloud for data (amended 2026-11-10, 2026-11-12)
+- [[adr-009-release-and-deployment|ADR-009]] — Release by tag, full source ZIP before deploy, approval gate, GitHub Actions only, image built on our server from a repository snapshot, no GHCR (proposed)
 - [[adr-010-locale-routing|ADR-010]] — A separate address for every language (`/en/`, `/de/`), hreflang, shared `packages/i18n`
 - [[adr-011-catalog-upload-format|ADR-011]] — One catalog upload format: the ecosystem catalog standard (proposed)
+- [[adr-012-reference-data|ADR-012]] — Reference data in the commerce DB, data ownership, fields of the reference tables (proposed)
+- [[adr-013-launch-markets|ADR-013]] — Launch markets: US, GB, CA, AU, NZ; Ireland open (proposed)
 
 ## Open Questions
 

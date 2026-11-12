@@ -3,7 +3,7 @@ tags: [project/task-4-site-factory, type/adr, status/proposed]
 project: "Task 4 - Site Factory"
 status: proposed
 created: 2026-11-10
-updated: 2026-11-11
+updated: 2026-11-12
 aliases: [Release and deployment, Site acceptance]
 adr-id: "009"
 supersedes: ["003"]
@@ -16,14 +16,15 @@ superseded-by: []
 
 Proposed. Based on the site acceptance checklist of 09.11, the acceptance additions by Eduard (acceptance and deployment) of 10.11, and the customer's requirement of 10.11: "файлы в зипе сдавать полностью перед заливкой на GitHub Actions".
 
-Decided by the customer: a full source ZIP of every site is handed over before deployment. Decided on 11.11: deployment goes over SSH with docker compose, not Coolify. Still open: the tag scheme.
+Decided by the customer: a full source ZIP of every site is handed over before deployment. Decided on 11.11: deployment goes over SSH with docker compose, not Coolify. Decided on 12.11: GitHub Actions only; no GHCR — the image is built on our server from a snapshot of the repository, the same way `parser` is deployed (`ci-parser` + `pathctl update`). Still open: the tag scheme.
 
 Supersedes [[adr-003-deployment-strategy|ADR-003]] (Coolify on a VPS, auto-deploy on push).
 
 ## Context
 
 - Today the demo runs on Vercel (commit `17af766`), and `ci.yml` runs gitleaks plus lint, type-check and build for the packages changed since `HEAD^1`. Nothing deploys to our own servers.
-- Four documents describe deployment differently: ADR-003 (Coolify), `docs/deployment.md` (Coolify webhook from Actions), `docs/deploy-supabase-vps.*` (GitHub Actions → GHCR → SSH → docker compose, two Supabase stacks) and ADR-008 (one stack on a US VPS).
+- Four documents describe deployment differently: ADR-003 (Coolify), `docs/deployment.md` (Coolify webhook from Actions), `docs/deploy-supabase-vps.*` (GitHub Actions → GHCR → SSH → docker compose, two Supabase stacks) and ADR-008 (one stack on our server in Germany).
+- `parser` is already deployed by GitHub Actions without a registry: the workflow `ci-parser` triggers `pathctl update` on the server, which takes a snapshot of the repository at the commit and builds the image there.
 - The customer wants every site's complete source as a ZIP before it goes live, kept on their side and editable.
 - A hand-made ZIP has already leaked secrets: an earlier site02 archive shared for review contained real `.env` and `.env.local` with R2 keys.
 - A green build is not proof that a site works: `lib/api-client.ts` in site01 catches a missing `DIRECTUS_URL` and renders an empty catalog (CI log of PR #1: "DIRECTUS_URL is not set" with a success result).
@@ -38,9 +39,13 @@ Fast and zero-ops, but the database and Directus live on our VPS (ADR-008), so e
 
 Simple, but a push deploys without the acceptance checklist, there is no approval step for the customer's archive, and the panel runs with access to the Docker socket on the host.
 
-### Option C: GitHub Actions pipeline to our VPS with an archive and an approval gate (chosen)
+### Option C: GitHub Actions pipeline with a registry (GHCR)
 
-A tag starts checks, then a source archive is built and published, the customer approves, and only then the image is built, pushed and deployed over SSH, with a health gate and automatic rollback.
+The image is built in CI and pulled by the server. Rejected on 12.11: the image would live in a third-party registry, which conflicts with "no cloud for our data", and the team already has a working registry-free pattern (`parser`).
+
+### Option D: GitHub Actions pipeline, image built on our server from a repository snapshot (chosen)
+
+A tag starts checks, then a source archive is built and published, the customer approves, and only then the server builds the image from a snapshot of the repository at the tag and deploys it, with a health gate and automatic rollback. Same pattern as `parser` (`ci-parser` + `pathctl update`).
 
 ## Decision
 
@@ -72,13 +77,14 @@ A tag starts checks, then a source archive is built and published, the customer 
   1. checks on the tag;
   2. `package` and Release;
   3. approval: GitHub environment `production` with required reviewers. The customer confirms receipt of the archive;
-  4. build the image and push it to GHCR, tagged by full SHA;
+  4. over SSH as user `deploy`, the server takes a snapshot of the repository at the tag (`pathctl update`, as for `parser`) and builds the image locally, tagged by full SHA;
   5. database backup, then migrations as a separate step (forward-only, expand–contract, pending = 0);
-  6. SSH deploy as user `deploy`: `docker compose pull && up --wait`;
+  6. `docker compose up --wait` with the new image tag;
   7. health gate and smoke test;
   8. on failure, automatic rollback to the previous SHA.
 - Stage goes first and is closed to indexing (`X-Robots-Tag: noindex`) and to outsiders.
-- Rollback is a `workflow_dispatch` with `action: rollback, tag: <previous-sha>`. `current` and `previous` SHAs are recorded on the server. A rollback is rehearsed at least once before the first production release.
+- Rollback is a `workflow_dispatch` with `action: rollback, tag: <previous-sha>`. `current` and `previous` SHAs are recorded on the server, and the images of the last N releases (at least 3) are kept locally, so a rollback needs no rebuild. A rollback is rehearsed at least once before the first production release.
+- Building on the production server takes CPU and memory from the running sites. Builds run with a CPU and memory limit, outside peak hours where possible; if that is not enough, the image is built on the stage server and copied with `docker save | ssh … docker load`, still without a registry.
 
 **What every site must provide**
 - Startup fails with a clear list of missing required environment variables (`lib/env.ts`) instead of rendering empty pages. CI builds with placeholder values; production starts with real ones.
@@ -104,7 +110,7 @@ A tag starts checks, then a source archive is built and published, the customer 
 
 **Roles**
 - Site teams: code, Dockerfile, health endpoint, `.env.example`, fail-fast env check, forward-only migrations, tests.
-- Deployment owner (Eduard): pipeline, GHCR, environments and CI secrets; stage, Traefik, DNS, TLS; backups, applying migrations; health gate, rollback, monitoring, runbook; sign-off.
+- Deployment owner (Eduard): pipeline, `pathctl` on the servers, environments and CI secrets; stage, Traefik, DNS, TLS; backups, applying migrations; health gate, rollback, monitoring, runbook; sign-off.
 - A named deputy for the deployment owner is required, with the same access and the runbook.
 
 **Acceptance**
@@ -117,7 +123,7 @@ A tag starts checks, then a source archive is built and published, the customer 
 
 ## Consequences
 
-- ADR-003 is superseded. `docs/deployment.md` and `docs/deploy-supabase-vps.*` are rewritten for this pipeline when the one-stack baseline (ADR-008, step 2.5) lands.
+- ADR-003 is superseded. Coolify is not part of the release path. `docs/deployment.md` and `docs/deploy-supabase-vps.*` are rewritten for this pipeline when the one-stack baseline (ADR-008, step 2.5) lands.
 - The CI filter `...[HEAD^1]` checks only the last commit of a multi-commit push to `main`. Replace it with `turbo --affected` against `github.event.before`.
 - Add the existing Playwright suites (`locale-suite`) to CI.
 - Site teams must add `lib/env.ts`, the `version` field in `/api/health`, a `HEALTHCHECK` and one Node version before the first release.

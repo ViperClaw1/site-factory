@@ -1,5 +1,10 @@
 # Деплой
 
+> **Устарело (ADR-009, 12.11).** Релизный путь — только GitHub Actions: тег →
+> проверки → ZIP исходников → подтверждение → образ собирается на нашем сервере
+> из снимка репозитория (`pathctl update`, как у `parser`), без GHCR и без
+> Coolify. Документ будет переписан под этот путь.
+
 > site01 и site02 деплоятся на self-hosted Supabase VPS через GitHub Actions —
 > см. [`deploy-supabase-vps.ru.md`](./deploy-supabase-vps.ru.md) /
 > [`.en.md`](./deploy-supabase-vps.en.md). Схема с Coolify ниже — для остальных сайтов.

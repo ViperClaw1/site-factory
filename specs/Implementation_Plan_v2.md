@@ -60,9 +60,9 @@ aliases: [Implementation Plan, Timeline, Roadmap, Фазы реализации,
 | App VPS готов, Coolify установлен, домены в Cloudflare | Алексей Rubitco1 | ⏳ ожидает |
 | DB VPS готов, PostgreSQL 16 + pgvector | Алексей Rubitco1 | ⏳ ожидает |
 | Directus задеплоен, API токен выдан | Никита (после VPS) | ⏳ ожидает |
-| VPS в США под стек коммерции (8 vCPU, 16–32 ГБ) + малый staging (ADR-008) | Алексей Rubitco1 | ⏳ ожидает |
+| ~~VPS в США~~ Рабочий стек Supabase на нашем сервере в Германии (netcup) + малый staging + standby (ADR-008, 12.11) | Инфраструктура | ⏳ стек поднят, не работает |
 | Транзакционный почтовый провайдер / SMTP (OTP, чеки) | TBD | ⏳ ожидает |
-| Аккаунт PostHog Cloud US + прокси-поддомен `e.<бренд>` | TBD | ⏳ ожидает |
+| ~~Аккаунт PostHog Cloud US~~ Решение по self-hosted аналитике, PoC Umami на stage (ADR-005, 12.11) | TBD | ⏳ ожидает |
 
 ### Только site01
 
@@ -75,7 +75,7 @@ aliases: [Implementation Plan, Timeline, Roadmap, Фазы реализации,
 | Что нужно | От кого | Статус |
 |---|---|---|
 | Домен site02 + DNS в Cloudflare | Алексей Rubitco1 | ⏳ TBD |
-| Приватный R2 bucket `path-edu-videos` + API-токен Read & Write только на этот bucket | Никита | ⏳ ожидает |
+| ~~Приватный R2 bucket~~ Приватный бакет `path-edu-videos` в self-hosted MinIO + ключ только на этот бакет (ADR-002, 12.11) | Инфраструктура | ⏳ ожидает |
 | Directus `CORS_ORIGIN`: добавить домен site02 | Инфра | ⏳ после домена |
 | `site_slug='edu-marketplace'` + `site_instance_id` в Dashboard | Алексей Ханипов | ⏳ ожидает |
 | Webhook URL курсов (`https://{site02-domain}/api/paymesh/webhook`) через `cmd/keys set-webhook` | Алексей Астафьев | ⏳ после деплоя |
