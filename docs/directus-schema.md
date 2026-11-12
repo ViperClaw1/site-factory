@@ -11,11 +11,11 @@ docker exec sitefactory-infra-directus npx directus schema snapshot \
 Цель — чтобы изменения коллекций были видны в diff PR, а не только в админке
 Directus задним числом.
 
-**Статус на 2026-07-31: снапшот ещё не выгружался** — в этой сессии нет
-доступа к работающему инстансу Directus, поэтому файл `directus-snapshot.yaml`
-в репозитории отсутствует. Это нужно сделать вручную после того, как Directus
-поднимется на `cms.vcpath.us` (см. письмо от инфраструктуры, п. 6), и повторять
-при каждом изменении структуры коллекций.
+**Статус на 2026-11-12:** снапшот выгружен с рабочего инстанса `cms.vcpath.us`
+(Directus 12.2.0) и лежит рядом — `docs/directus-snapshot.yaml`. В нём 6 коллекций
+(`sites`, `pages`, `blocks`, `collections`, `characters`, `instructors`), UUID
+первичные ключи, связи `pages.site → sites`, `blocks.page → pages` (каскадное
+удаление), файловые поля → `directus_files`.
 
 ## Известные коллекции (по `packages/types/src/cms.ts`)
 
@@ -36,18 +36,17 @@ Supabase (`products`); Directus здесь отвечает только за и
 
 ## Открытый вопрос: формат поля `image` / `hero_image`
 
-В `packages/types/src/cms.ts` эти поля типизированы как `string | null` и в
-`components/CharacterCard.tsx` / `CollectionCard.tsx` используются напрямую
-как `src`. Directus SDK по умолчанию возвращает для файловых полей UUID файла,
-а не готовый URL — если в реальной схеме `image` действительно file-relation,
-эти компоненты нужно обновить на `getDirectusAssetUrl(character.image)`
-(добавлен в `@repo/lib`, см. `docs/env-template.md`). Если поле в Directus —
-текстовое с уже готовым URL, менять ничего не нужно. Уточнить при первой
-выгрузке снапшота.
+**Решено 2026-11-12 (по снапшоту):** поля `image` / `hero_image` / `seo_image` —
+это file-relation на `directus_files` (тип `uuid`, special `file`), то есть
+Directus возвращает UUID файла, а не URL. Значит `components/CharacterCard.tsx`
+и `CollectionCard.tsx` нужно перевести на `getDirectusAssetUrl(character.image)`
+из `@repo/lib`. Если файл не задан — `null`, компонент должен показать плейсхолдер.
 
 ## CORS
 
-Пока список публичных доменов сайтов не передан инфраструктуре,
-`CORS_ORIGIN` у Directus сконфигурирован только на собственный домен — браузер
-не сможет забрать контент напрямую. Список нужно отправить (см. письмо от
-инфраструктуры, п. 5.1) до того, как второй сайт пойдёт в прод.
+С 12.11.2026 `CORS_ORIGIN` включает домены площадок: `https://cms.vcpath.us`,
+`https://vcpath.us`, `https://path.vcpath.us`, `https://anima.vcpath.us`,
+`https://news.vcpath.us`, `https://crm.vcpath.us`, `https://vibe.vcpath.us`.
+Новый домен добавляется в `.env` (`DIRECTUS_CORS_ORIGIN`) и пересозданием контейнера.
+Проверка: `curl -sI -H 'Origin: https://<домен>' https://cms.vcpath.us/server/ping`
+— в ответе должен быть `access-control-allow-origin`.
