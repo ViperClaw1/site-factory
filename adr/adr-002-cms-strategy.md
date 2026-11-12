@@ -82,7 +82,7 @@ Approved. Directus self-hosted on our server.
 ## Consequences
 
 - VPS must have sufficient resources for Directus + PostgreSQL alongside 20 Next.js containers
-- Backups (in place): daily at 03:40 (`/etc/cron.d/vibecod-backup-directus`, script `/usr/local/sbin/vibecod-backup-directus`): `pg_dump` of the database, an archive of uploads, the schema snapshot, cluster roles and the `.env`; locally in `/var/backups/directus` and offsite on a separate host, with sha256 checks. No cloud storage. Restores are test-deployed (ADR-008, Reliability).
+- Backups (in place): daily at **09:00 UTC** (systemd timer `vibecod-backup-directus.timer`, `OnCalendar=*-*-* 09:00:00 UTC`, DST-proof; the former cron entry is disabled), script `/usr/local/sbin/vibecod-backup-directus`: `pg_dump` of the database, an archive of uploads, the schema snapshot, cluster roles and the `.env`; locally in `/var/backups/directus` and offsite on a separate host, with sha256 checks. No cloud storage. A restore must be test-deployed monthly; the first restore test is required before the first production release (ADR-008, Reliability).
 - Fixes from the 12.11 snapshot (ADR-012): a database foreign key `blocks.page → pages ON DELETE CASCADE` (today the relation exists only in Directus metadata); unique `(site, slug)` for `pages`; a `site` relation for `characters` and `collections`; `CHECK` constraints on `status`; translation tables for content.
 - Directus upgrade path must be tested on staging before production
 

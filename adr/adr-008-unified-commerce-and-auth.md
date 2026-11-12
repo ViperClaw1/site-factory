@@ -119,7 +119,7 @@ Rejected: the shared account and customer history would require a second shared 
 - Every page has a language-prefixed address; see [[adr-010-locale-routing|ADR-010]].
 
 **Reliability**
-- Continuous WAL archiving with point-in-time recovery (`wal-g` or `pgBackRest`) to our second server, not to a cloud. Target RPO ≤ 5 minutes. Daily dumps with sha256 checks continue, as already done for the `directus` database (cron `/etc/cron.d/vibecod-backup-directus`, 03:40, offsite to a separate host).
+- Continuous WAL archiving with point-in-time recovery (`wal-g` or `pgBackRest`) to our second server, not to a cloud. Target RPO ≤ 5 minutes. Daily dumps with sha256 checks continue, as already done for the `directus` database (systemd timer `vibecod-backup-directus.timer`, daily at 09:00 UTC, offsite to a separate host).
 - A streaming hot standby on our second server, in a different data centre from the primary. Promotion is manual by runbook; target RTO ≤ 1 hour. Automatic failover (Patroni) is deferred until load requires it.
 - RPO and RTO values are a proposal; the customer confirms them.
 - Isolation between sites: a Supavisor pool size per site; a database role per site with its own `statement_timeout`; each site in its own container.

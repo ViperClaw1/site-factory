@@ -16,7 +16,7 @@ superseded-by: []
 
 Proposed. Based on the site acceptance checklist of 09.11, the acceptance additions by Eduard (acceptance and deployment) of 10.11, and the customer's requirement of 10.11: "файлы в зипе сдавать полностью перед заливкой на GitHub Actions".
 
-Decided by the customer: a full source ZIP of every site is handed over before deployment. Decided on 11.11: deployment goes over SSH with docker compose, not Coolify. Decided on 12.11: GitHub Actions only; no GHCR — the image is built on our server from a snapshot of the repository, the same way `parser` is deployed (`ci-parser` + `pathctl update`). Still open: the tag scheme.
+Decided by the customer: a full source ZIP of every site is handed over before deployment. Decided on 11.11: deployment goes over SSH with docker compose, not Coolify. Decided on 12.11: GitHub Actions only; no GHCR — the image is built on our server from a snapshot of the repository, the same way `parser` is deployed (`ci-parser` + `pathctl update`). Decided: one tag per site, `<app>/vX.Y.Z` (acceptance additions, section 9).
 
 Supersedes [[adr-003-deployment-strategy|ADR-003]] (Coolify on a VPS, auto-deploy on push).
 
@@ -76,8 +76,8 @@ A tag starts checks, then a source archive is built and published, the customer 
 - Workflow `deploy.yml`, next to `ci.yml`. Pipeline:
   1. checks on the tag;
   2. `package` and Release;
-  3. approval: GitHub environment `production` with required reviewers. The customer confirms receipt of the archive;
-  4. over SSH as user `deploy`, the server takes a snapshot of the repository at the tag (`pathctl update`, as for `parser`) and builds the image locally, tagged by full SHA;
+  3. approval: GitHub environment `production` with required reviewers. The customer confirms receipt of the archive. On the current free plan required reviewers are unavailable for private repositories; until the plan is upgraded the confirmation is recorded manually in `report.md`;
+  4. over SSH as user `ci-<project>`, CI streams the source snapshot of the tag to the server (`pathctl update <project>`, as for `parser`); the key lives in the repository secrets and its forced command allows only this action, so the server holds no access to GitHub. The image is built locally on the server, tagged by full SHA;
   5. database backup, then migrations as a separate step (forward-only, expand–contract, pending = 0);
   6. `docker compose up --wait` with the new image tag;
   7. health gate and smoke test;
