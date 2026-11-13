@@ -26,7 +26,22 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     timeout: 600_000,
     // canonical and hreflang are absolute, so they must point at this server.
-    env: { BASE_URL: "http://localhost:3100" },
+    // ADMIN_PUBLIC=1 lets admin UI tests run without a Supabase session.
+    // Locally the rest comes from .env.local; in CI (no .env.local) lib/env.ts
+    // gets placeholders — set here they would override .env.local.
+    env: {
+      ...(process.env.CI
+        ? {
+            NEXT_PUBLIC_SUPABASE_URL: "http://127.0.0.1:54321",
+            NEXT_PUBLIC_SUPABASE_ANON_KEY: "test-anon-key",
+            SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
+            DIRECTUS_URL: "http://127.0.0.1:8055",
+            NEXT_PUBLIC_SITE_DOMAIN: "localhost",
+          }
+        : {}),
+      BASE_URL: "http://localhost:3100",
+      ADMIN_PUBLIC: "1",
+    },
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
 });

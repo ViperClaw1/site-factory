@@ -9,10 +9,11 @@ import type { User } from "@supabase/supabase-js";
 export type Role = "guest" | "customer" | "admin";
 export type Permission = "cart" | "favorites" | "profile" | "admin";
 
-// TEMPORARY. Catalog admin is open to everyone, including logged-out visitors.
-// To restore the role gate: set this to false and add "/admin/:path*" back to
-// the matcher in middleware.ts.
-export const ADMIN_PUBLIC = true;
+// Catalog admin is gated by the admin role. ADMIN_PUBLIC=1 opens it to everyone
+// — only for the Playwright run (playwright.config.ts), which has no Supabase
+// session. Never set it on a server: /api/admin/* holds the service-role key.
+// Server-only: the browser bundle always sees false.
+export const ADMIN_PUBLIC = process.env.ADMIN_PUBLIC === "1";
 
 const GRANTS: Record<Role, readonly Permission[]> = {
   // Guests keep the local cart + mock checkout (tests/shopping-flow.spec.ts).

@@ -16,3 +16,4 @@ temp_assets
 supabase/.branches
 supabase/.temp
 test-results/
+*.stackdump
