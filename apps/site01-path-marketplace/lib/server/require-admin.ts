@@ -9,7 +9,7 @@ export type AdminGate = { ok: true; user: User } | { ok: false; status: 401 | 40
 // getUser() revalidates the JWT. A missing session is 401; a signed-in
 // non-admin is 404 so the route does not advertise itself.
 export async function requireAdmin(): Promise<AdminGate> {
-  // Same temporary switch as ADMIN_PUBLIC. Callers only check `ok`.
+  // Test-only switch, see ADMIN_PUBLIC in lib/rbac.ts. Callers only check `ok`.
   if (ADMIN_PUBLIC) return { ok: true, user: null as unknown as User };
 
   const supabase = createSupabaseServerClient();

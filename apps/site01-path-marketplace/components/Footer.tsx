@@ -157,6 +157,8 @@ export function Footer() {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-5 text-xs text-black/45 sm:flex-row sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
             <p>{t("footer.rights", { year: new Date().getFullYear() })}</p>
+            {/* Deployed commit, same as /api/health (ADR-009). */}
+            <p data-testid="app-version">v{(process.env.NEXT_PUBLIC_APP_VERSION ?? "dev").slice(0, 7)}</p>
             {LEGAL_LINKS.map((link) => (
               <Link key={link.href} href={link.href} className="underline-offset-2 hover:text-pink hover:underline">
                 {t(link.key)}

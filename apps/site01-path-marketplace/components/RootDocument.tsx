@@ -88,11 +88,14 @@ export function RootDocument({ lang, cyrillic = lang === "ru", children }: RootD
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         />
-        <PlausibleProvider
-          domain={process.env.NEXT_PUBLIC_SITE_DOMAIN!}
-          customDomain={process.env.NEXT_PUBLIC_PLAUSIBLE_URL}
-          selfHosted
-        />
+        {/* Only with our own instance: without customDomain next-plausible loads plausible.io. */}
+        {process.env.NEXT_PUBLIC_PLAUSIBLE_URL && (
+          <PlausibleProvider
+            domain={process.env.NEXT_PUBLIC_SITE_DOMAIN!}
+            customDomain={process.env.NEXT_PUBLIC_PLAUSIBLE_URL}
+            selfHosted
+          />
+        )}
       </head>
       <body className="flex min-h-screen flex-col">
         <NavBar />

@@ -8,7 +8,8 @@
 # next.config.js, the final image ships only the traced node_modules subset
 # instead of the full workspace (hundreds of MB saved per site, times twenty).
 
-FROM node:20-alpine AS base
+# Keep in sync with /.nvmrc (one Node version for CI and images, ADR-009).
+FROM node:24-alpine AS base
 RUN corepack enable
 
 FROM base AS pruner
@@ -23,6 +24,15 @@ RUN apk add --no-cache libc6-compat
 COPY --from=pruner /app/out/json/ .
 RUN pnpm install --frozen-lockfile
 COPY --from=pruner /app/out/full/ .
+# NEXT_PUBLIC_* are inlined into the bundle at build time, so the server build
+# (pathctl) passes them as --build-arg. APP_VERSION is the full commit SHA:
+# the source snapshot has no .git to read it from.
+ARG NEXT_PUBLIC_SUPABASE_URL
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
+ARG NEXT_PUBLIC_SITE_DOMAIN
+ARG NEXT_PUBLIC_PLAUSIBLE_URL
+ARG APP_VERSION=unknown
+ENV NEXT_PUBLIC_APP_VERSION=$APP_VERSION
 RUN pnpm turbo run build --filter=@repo/site01-path-marketplace
 
 FROM base AS runner
@@ -41,5 +51,9 @@ COPY --from=installer --chown=nextjs:nodejs \
 USER nextjs
 EXPOSE 3000
 ENV PORT=3000 HOSTNAME=0.0.0.0
+
+# busybox wget ships with alpine; /api/health is shallow (no Directus/Supabase).
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD wget -qO- http://127.0.0.1:3000/api/health || exit 1
 
 CMD ["node", "apps/site01-path-marketplace/server.js"]

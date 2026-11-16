@@ -28,8 +28,8 @@ async function openBulkModal(page: Page) {
   }).toPass({ timeout: 30_000 });
 }
 
-// TEMPORARY while ADMIN_PUBLIC is true. Restore the login redirect and 401
-// assertions when the admin role gate comes back.
+// The test server runs with ADMIN_PUBLIC=1 (playwright.config.ts). On a real
+// server the role gate sends guests to /login and /api/admin/* answers 401.
 test("catalog admin is reachable without a session", async ({ page, request }) => {
   await page.goto("/admin");
   await expect(page).toHaveURL(/\/admin$/);

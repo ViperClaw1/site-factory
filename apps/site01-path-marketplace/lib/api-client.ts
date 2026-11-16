@@ -4,8 +4,9 @@ import { createSupabasePublicClient } from "@repo/lib";
 import { createDirectusClient, readItems } from "@repo/lib/directus";
 import type { Character, Collection, Product } from "@repo/types";
 
-// Created per call, not at import: a missing DIRECTUS_URL then lands in the
-// try/catch below (empty catalog) instead of failing the whole build.
+// Created per call, not at import, so the build doesn't need a live Directus.
+// A missing DIRECTUS_URL stops the server at startup (lib/env.ts); the
+// try/catch below only covers a Directus/Supabase outage at runtime.
 const directus = () => createDirectusClient();
 
 // CMS/DB calls have no default timeout — an unreachable Directus or Supabase

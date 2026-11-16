@@ -7,7 +7,7 @@
 # writes them to apps/site02-edu-marketplace/.env.production before building
 # (see docs/deploy-supabase-vps.en.md).
 
-FROM node:20-alpine AS base
+FROM node:24-alpine AS base
 RUN corepack enable
 
 FROM base AS pruner

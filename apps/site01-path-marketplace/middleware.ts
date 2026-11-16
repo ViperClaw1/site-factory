@@ -64,7 +64,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
   // Everything except addresses that never carry a language (decision 4 of the
   // locale plan): API, Supabase callback, analytics proxy, assets and files.
-  // "admin" stays excluded while ADMIN_PUBLIC is true in lib/rbac.ts. Remove it
-  // here together with that flag; the handler above already skips its prefix.
-  matcher: ["/((?!api(?:/|$)|auth/callback|admin(?:/|$)|stats/|_next/|.*\\..*).*)"],
+  // /admin is matched so the role gate in lib/rbac.ts applies; the handler
+  // above skips the locale prefix for it.
+  matcher: ["/((?!api(?:/|$)|auth/callback|stats/|_next/|.*\\..*).*)"],
 };
