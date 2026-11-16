@@ -1,7 +1,6 @@
 "use client";
 
 import { initAuth, useAuthStore } from "@/lib/auth";
-import { ADMIN_PUBLIC } from "@/lib/rbac";
 import { useCartStore } from "@/lib/cart";
 import { LOCALES, useT, type MessageKey } from "@/lib/i18n";
 import { FlagIcon } from "./FlagIcon";
@@ -54,7 +53,7 @@ export function NavBar() {
   const signedIn = useAuthStore((state) => state.role !== "guest");
   const role = useAuthStore((state) => state.role);
   const authReady = useAuthStore((state) => state.ready);
-  const showAdmin = ADMIN_PUBLIC || (authReady && role === "admin");
+  const showAdmin = authReady && role === "admin";
 
   // The cart store skips SSR hydration; the nav is on every page, so it owns
   // the one-time rehydrate, plus the Supabase auth subscription.

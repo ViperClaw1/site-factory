@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 
-// Coolify health-check target. Kept dependency-free on purpose: this only
-// needs to prove the Next.js server itself is up, not that Directus/Supabase
-// are reachable — a downstream outage shouldn't make Coolify kill a
-// perfectly healthy container.
-export async function GET() {
-  return NextResponse.json({ status: "ok" });
+// Health gate for the deploy (ADR-009): status + deployed commit SHA.
+// Shallow on purpose — no Directus/Supabase check, so a CMS outage doesn't
+// make the orchestrator kill a healthy container.
+export const dynamic = "force-dynamic";
+
+export function GET() {
+  return NextResponse.json({ status: "ok", version: process.env.NEXT_PUBLIC_APP_VERSION ?? "unknown" });
 }
