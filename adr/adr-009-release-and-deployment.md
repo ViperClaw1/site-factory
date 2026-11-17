@@ -49,12 +49,16 @@ A tag starts checks, then a source archive is built and published, the customer 
 
 ## Decision
 
+**Scope**
+- This ADR covers the sites in `site-factory`: one tag per site, `<app>/vX.Y.Z`, a source archive per release, an approval gate, a health gate and rollback (see **Release** and **Deployment pipeline** below).
+- `news-platform` (the integrator and the `Path News` site) is **outside this ADR** and keeps its own pipeline: a push to `main` deploys only after a successful `CI` run for the same commit (GitHub Actions `workflow_run` gate, `checkout` by `head_sha` of the CI run), followed by a health gate, a container-health check (no container in `Restarting`/`unhealthy`) and an automatic rollback to the previous snapshot. That pipeline is already in production and is not tag-based. Moving it to tag-based releases is a separate decision, not a consequence of this ADR.
+
 **Where**
 - Production and stage run on our VPS (ADR-008). Vercel is not used for production; at most for pull-request previews of the closed demo.
 - Developers have no SSH or production access. Deployment happens only through GitHub Actions. The owner has a break-glass procedure for emergencies, documented in the runbook.
 
 **Release**
-- A release is a tag on `main` after green CI. Tag scheme (to confirm): one repository tag `vX.Y.Z` whose release notes list the affected sites. If per-site cadence becomes necessary, switch to `site01/vX.Y.Z`.
+- A release is a tag on `main` after green CI. Tag scheme: **one tag per site**, `<app>/vX.Y.Z` (decided 11.11, acceptance additions, section 9). A single repository-wide tag `vX.Y.Z` is rejected as the default: sites ship on different cadences and a repository tag would imply that every site was rebuilt and approved together.
 - On the tag, CI builds **every** site listed in the release explicitly (`--filter=@repo/<site>`), not only the packages changed since the previous commit.
 
 **Source archive (customer requirement of 10.11)**
@@ -129,7 +133,6 @@ A tag starts checks, then a source archive is built and published, the customer 
 - Site teams must add `lib/env.ts`, the `version` field in `/api/health`, a `HEALTHCHECK` and one Node version before the first release.
 - Fonts from `next/font/google` are downloaded at build time, so the build needs network access to Google Fonts. Font Awesome is loaded from `cdnjs` at runtime in site01; bundle it locally to meet the "no external required resources" condition of 20.10.
 - Open:
-  - the tag scheme (one repository tag or per site);
   - whether Vercel previews are kept for pull requests;
   - a machine-readable checklist (`checklist.yaml` with auto and manual items) proposed in the additions of 10.11.
 
