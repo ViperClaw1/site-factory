@@ -1,0 +1,212 @@
+name: Release
+
+# Тег-релиз по ADR-009: один тег на сайт, `<app>/vX.Y.Z`.
+#
+# Тег запускает: проверки на теге → сборку архивов (по сайту и всего репозитория)
+# с MANIFEST.txt и sha256sums.txt → публикацию GitHub Release с ассетами.
+# Деплой тегом не запускается: он идёт отдельным workflow `deploy.yml`, только
+# из allowlist и после подтверждения заказчика (ADR-009, шаг 3).
+
+on:
+  push:
+    tags:
+      - '*/v[0-9]*.[0-9]*.[0-9]*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Parse tag
+    runs-on: ubuntu-latest
+    outputs:
+      app: ${{ steps.parse.outputs.app }}
+      version: ${{ steps.parse.outputs.version }}
+      package: ${{ steps.parse.outputs.package }}
+      sha7: ${{ steps.parse.outputs.sha7 }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Parse <app>/vX.Y.Z
+        id: parse
+        run: |
+          set -euo pipefail
+          TAG="$GITHUB_REF_NAME"
+          if [[ ! "$TAG" =~ ^[a-z0-9][a-z0-9-]*/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::tag must look like <app>/vX.Y.Z (ADR-009), got: $TAG"
+            exit 1
+          fi
+          APP="${TAG%%/*}"
+          VERSION="${TAG#*/v}"
+          if [[ ! -d "apps/$APP" ]]; then
+            echo "::error::apps/$APP does not exist in this repository"
+            exit 1
+          fi
+          PKG=$(python3 -c "import json;print(json.load(open('apps/$APP/package.json'))['name'])")
+          SHA7="${GITHUB_SHA:0:7}"
+          {
+            echo "app=$APP"
+            echo "version=$VERSION"
+            echo "package=$PKG"
+            echo "sha7=$SHA7"
+          } >> "$GITHUB_OUTPUT"
+          echo "app=$APP version=$VERSION package=$PKG sha=$SHA7"
+
+  checks:
+    name: Checks on the tag
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: gitleaks
+        run: |
+          VER=8.21.2
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${VER}/gitleaks_${VER}_linux_x64.tar.gz" | tar -xz gitleaks
+          ./gitleaks detect --source . --redact -v
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm exec turbo run lint --filter='${{ needs.prepare.outputs.package }}'
+
+      - name: Type-check
+        run: pnpm exec turbo run type-check --filter='${{ needs.prepare.outputs.package }}'
+
+      - name: Build
+        run: pnpm exec turbo run build --filter='${{ needs.prepare.outputs.package }}'
+
+  package:
+    name: Archives and GitHub Release
+    needs: [prepare, checks]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # ADR-009: один ZIP на сайт из `turbo prune`, плюс ZIP всего репозитория на теге.
+      - name: Prune the workspace for the site
+        run: pnpm exec turbo prune '${{ needs.prepare.outputs.package }}' --docker
+
+      - name: Assemble the per-site archive
+        env:
+          APP: ${{ needs.prepare.outputs.app }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+          SHA7: ${{ needs.prepare.outputs.sha7 }}
+          PKG: ${{ needs.prepare.outputs.package }}
+        run: |
+          set -euo pipefail
+          STAGE="build/release/$APP"
+          rm -rf "$STAGE" && mkdir -p "$STAGE"
+          # turbo prune --docker кладёт результат в out/ (json + full)
+          cp -R out/full/. "$STAGE"/
+          # корневые файлы, которые требует ADR-009
+          for f in package.json turbo.json .nvmrc pnpm-lock.yaml; do
+            [ -f "$f" ] && cp "$f" "$STAGE"/
+          done
+          cp "apps/$APP/Dockerfile" "$STAGE/Dockerfile"
+          [ -f "apps/$APP/.env.example" ] && cp "apps/$APP/.env.example" "$STAGE/.env.example"
+          [ -d "apps/$APP/supabase" ] && cp -R "apps/$APP/supabase" "$STAGE/supabase"
+
+          # MANIFEST и контрольные суммы. Сначала пишем во временный файл вне
+          # staging-каталога, потом переносим: иначе find видит MANIFEST.txt,
+          # который в этот момент дописывается.
+          MANIFEST_TMP=$(mktemp)
+          {
+            echo "tag=$GITHUB_REF_NAME"
+            echo "sha=$GITHUB_SHA"
+            echo "sha7=$SHA7"
+            echo "app=$APP"
+            echo "package=$PKG"
+            echo "version=$VERSION"
+            echo "built_at=$(date -u +%FT%TZ)"
+            echo "node=$(node --version)"
+            echo "pnpm=$(pnpm --version)"
+            echo "files:"
+          } > "$MANIFEST_TMP"
+          ( cd "$STAGE" && find . -type f | sort | sed 's|^\./|  |' >> "$MANIFEST_TMP" )
+          mv "$MANIFEST_TMP" "$STAGE/MANIFEST.txt"
+          ( cd "$STAGE" && find . -type f -print0 | sort -z | xargs -0 sha256sum > ../sha256sums.txt )
+          mv build/release/sha256sums.txt "$STAGE/sha256sums.txt"
+
+          ZIP="${APP}-${VERSION}-${SHA7}.zip"
+          ( cd build/release && zip -qr "$ZIP" "$APP" )
+          echo "site archive: build/release/$ZIP"
+
+      - name: Whole repository archive
+        env:
+          APP: ${{ needs.prepare.outputs.app }}
+          SHA7: ${{ needs.prepare.outputs.sha7 }}
+        run: |
+          set -euo pipefail
+          git archive --format=zip --prefix="site-factory-${SHA7}/" \
+            -o "build/release/repo-${SHA7}.zip" "$GITHUB_SHA"
+          ls -lh build/release
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          APP: ${{ needs.prepare.outputs.app }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+          SHA7: ${{ needs.prepare.outputs.sha7 }}
+        run: |
+          set -euo pipefail
+          TAG="$GITHUB_REF_NAME"
+          NOTES="build/release/RELEASE-NOTES.md"
+          {
+            echo "Release $TAG"
+            echo
+            echo "- app: \`$APP\`"
+            echo "- version: \`$VERSION\`"
+            echo "- commit: \`$GITHUB_SHA\` (\`$SHA7\`)"
+            echo "- node: \`$(node --version)\`, pnpm: \`$(pnpm --version)\`"
+            echo
+            echo "Assets: per-site archive \`$APP-$VERSION-$SHA7.zip\`, whole repository"
+            echo "\`repo-$SHA7.zip\`, each with \`MANIFEST.txt\` and \`sha256sums.txt\`."
+            echo
+            echo "Deployment is a separate \`deploy.yml\` run from the allowlist after the"
+            echo "customer confirms receipt of the archive (ADR-009)."
+          } > "$NOTES"
+          gh release create "$TAG" \
+            --title "$TAG" \
+            --notes-file "$NOTES" \
+            "build/release/$APP-$VERSION-$SHA7.zip" \
+            "build/release/repo-$SHA7.zip"
+
+      - name: Upload archives as workflow artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ needs.prepare.outputs.sha7 }}
+          path: build/release/*.zip
+          retention-days: 14

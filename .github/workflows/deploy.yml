@@ -1,0 +1,183 @@
+name: Deploy site
+
+# Деплой тега по ADR-009.
+#
+# Запуск только вручную (workflow_dispatch) и только:
+#   - для существующего release-тега `<app>/vX.Y.Z` (тег должен иметь GitHub Release);
+#   - актором из allowlist (variable DEPLOY_ACTORS, через запятую).
+# Тег без релиза, чужой актор или кривой формат тега падают до выполнения шагов.
+#
+# `action: deploy`   — стримит снимок исходников тега на сервер под `ci-<project>`,
+#                      сервер собирает образ и перезапускается; health-гейт и откат
+#                      делает pathctl (на сервере).
+# `action: rollback` — возврат на предыдущий успешно выкаченный снимок
+#                      (`pathctl rollback <project>`); сервер принимает только то,
+#                      что сам записал как предыдущий релиз.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag, e.g. site01-path-marketplace/v0.1.0'
+        required: true
+        type: string
+      action:
+        description: 'deploy or rollback'
+        required: true
+        type: choice
+        options: [deploy, rollback]
+        default: deploy
+      reason:
+        description: 'Кто подтвердил выпуск (заказчик/владелец) и комментарий'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  guard:
+    name: Guards (allowlist + release tag)
+    runs-on: ubuntu-latest
+    outputs:
+      app: ${{ steps.parse.outputs.app }}
+      project: ${{ steps.parse.outputs.project }}
+      version: ${{ steps.parse.outputs.version }}
+      sha7: ${{ steps.parse.outputs.sha7 }}
+    steps:
+      - name: Actor must be in the allowlist
+        env:
+          ACTORS: ${{ vars.DEPLOY_ACTORS }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          set -euo pipefail
+          if [ -z "${ACTORS:-}" ]; then
+            echo "::error::DEPLOY_ACTORS (repository variable) is empty - deploy is closed"
+            exit 1
+          fi
+          IFS=',' read -ra LIST <<< "$ACTORS"
+          for a in "${LIST[@]}"; do
+            a_trim="$(echo "$a" | xargs)"
+            if [ "$a_trim" = "$ACTOR" ]; then
+              echo "actor $ACTOR is allowed"
+              exit 0
+            fi
+          done
+          echo "::error::$ACTOR is not in DEPLOY_ACTORS"
+          exit 1
+
+      - name: Tag format and app directory
+        id: parse
+        env:
+          TAG: ${{ inputs.tag }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [[ ! "$TAG" =~ ^[a-z0-9][a-z0-9-]*/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::tag must look like <app>/vX.Y.Z, got: $TAG"
+            exit 1
+          fi
+          APP="${TAG%%/*}"
+          VERSION="${TAG#*/v}"
+          PROJECT="${APP%%-*}"
+          if ! gh api "repos/$GITHUB_REPOSITORY/contents/apps/$APP?ref=$TAG" >/dev/null 2>&1; then
+            echo "::error::apps/$APP does not exist at tag $TAG"
+            exit 1
+          fi
+          {
+            echo "app=$APP"
+            echo "project=$PROJECT"
+            echo "version=$VERSION"
+          } >> "$GITHUB_OUTPUT"
+          echo "app=$APP project=$PROJECT version=$VERSION"
+
+      - name: Release must exist for this tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            echo "::error::no GitHub Release for tag $TAG - run the Release workflow first"
+            exit 1
+          fi
+          gh release view "$TAG" --json tagName,url --jq '"release: \(.tagName) \(.url)"'
+
+  deploy:
+    name: Deploy ${{ inputs.tag }} (${{ inputs.action }})
+    needs: guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout the tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+          fetch-depth: 1
+
+      - name: Pack the source snapshot
+        if: inputs.action == 'deploy'
+        run: tar -czf "$RUNNER_TEMP/site-src.tgz" --exclude=.git .
+
+      - name: Configure SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          install -m 700 -d "$HOME/.ssh"
+          printf '%s\n' "$DEPLOY_SSH_KEY" > "$HOME/.ssh/deploy_key"
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/deploy_key" "$HOME/.ssh/known_hosts"
+
+      - name: Deploy the tag snapshot
+        if: inputs.action == 'deploy'
+        env:
+          PROJECT: ${{ needs.guard.outputs.project }}
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
+        run: |
+          set -euo pipefail
+          ssh -i "$HOME/.ssh/deploy_key" -p "${DEPLOY_PORT:-57777}" \
+              -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=20 \
+              "ci-${PROJECT}@${DEPLOY_HOST}" deploy < "$RUNNER_TEMP/site-src.tgz"
+
+      - name: Rollback to the previous snapshot
+        if: inputs.action == 'rollback'
+        env:
+          PROJECT: ${{ needs.guard.outputs.project }}
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
+        run: |
+          set -euo pipefail
+          ssh -i "$HOME/.ssh/deploy_key" -p "${DEPLOY_PORT:-57777}" \
+              -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=20 \
+              "ci-${PROJECT}@${DEPLOY_HOST}" rollback
+
+  smoke:
+    name: Smoke test
+    needs: [guard, deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Public health endpoint
+        env:
+          DOMAIN: ${{ vars.STAGE_DOMAIN }}
+          BASIC_AUTH: ${{ secrets.STAGE_BASIC_AUTH }}
+        run: |
+          set -euo pipefail
+          if [ -z "${DOMAIN:-}" ]; then
+            echo "::error::STAGE_DOMAIN (repository variable) is not set"
+            exit 1
+          fi
+          BODY=$(curl -sS --max-time 25 -u "$BASIC_AUTH" "https://$DOMAIN/api/health")
+          echo "health: $BODY"
+          python3 - "$BODY" <<'PY'
+          import json, sys
+          data = json.loads(sys.argv[1])
+          assert data.get("status") == "ok", f"status is not ok: {data}"
+          print("version:", data.get("version"))
+          PY
