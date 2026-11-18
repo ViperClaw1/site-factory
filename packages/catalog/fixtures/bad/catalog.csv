@@ -1,0 +1,5 @@
+sku,status,prise_usd,quantity,radio_equipment,min_buyer_age_by_country,length_mm,width_mm,images_rights,attr.size,title.en
+OB-1,active,1,x,maybe,SE=a,10,20,own,M,Title
+,active,1,1,true,,,,,,
+OB-2,active,1,1,TRUE,SE=1 SE=2,#clear,,,#clear,"Quoted, title",extra
+OB-3,archived,,,,,,,,,

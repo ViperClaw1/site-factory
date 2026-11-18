@@ -52,3 +52,7 @@ jobs:
 
       - name: Build
         run: pnpm exec turbo run build --filter='...[HEAD^1]'
+
+      # Unit tests (`test` script). Site e2e suites are `test:e2e` and do not run here.
+      - name: Test
+        run: pnpm exec turbo run test --filter='...[HEAD^1]'

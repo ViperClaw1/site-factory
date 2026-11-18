@@ -1,0 +1,44 @@
+name: Catalog standard drift
+
+# packages/catalog/standard is a vendored copy of Path-platform-standards/05-templates/catalog.
+# This warns when the copy lags behind the standard's main branch. It never fails: updating the
+# copy is a reviewed change (pnpm --filter @repo/catalog sync-standard), not an automatic one.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    env:
+      # Read-only fine-grained token for the private standards repository (contents: read).
+      STANDARDS_READ_TOKEN: ${{ secrets.STANDARDS_READ_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check token
+        id: token
+        run: |
+          if [ -z "$STANDARDS_READ_TOKEN" ]; then
+            echo "::warning::STANDARDS_READ_TOKEN is not set; catalog standard drift check skipped"
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.token.outputs.present == 'true'
+        with:
+          repository: Path-animation/Path-platform-standards
+          token: ${{ secrets.STANDARDS_READ_TOKEN }}
+          path: _standards
+          sparse-checkout: 05-templates/catalog
+
+      - name: Compare vendored copy with the standard
+        if: steps.token.outputs.present == 'true'
+        run: node packages/catalog/scripts/sync-standard.mjs --check _standards

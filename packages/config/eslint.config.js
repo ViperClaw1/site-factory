@@ -33,6 +33,7 @@ module.exports = [
         { type: "lib", pattern: "packages/lib/*" },
         { type: "i18n", pattern: "packages/i18n/*" },
         { type: "types", pattern: "packages/types/*" },
+        { type: "catalog", pattern: "packages/catalog/*" },
         { type: "config", pattern: "packages/config/*" },
       ],
     },
@@ -45,11 +46,13 @@ module.exports = [
         {
           default: "disallow",
           rules: [
-            { from: "app", allow: ["app", "ui", "lib", "i18n", "types", "config"] },
+            { from: "app", allow: ["app", "ui", "lib", "i18n", "types", "catalog", "config"] },
             { from: "ui", allow: ["ui", "types"] },
             { from: "lib", allow: ["lib", "types"] },
             { from: "i18n", allow: ["i18n"] },
             { from: "types", allow: ["types"] },
+            // Catalog languages are the site languages; the test checks they stay equal.
+            { from: "catalog", allow: ["catalog", "i18n"] },
           ],
         },
       ],

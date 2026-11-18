@@ -1,0 +1,24 @@
+{
+  "format": "path-catalog-v2",
+  "version": "2.0",
+  "catalog": "Example",
+  "mode": "merge",
+  "extra": 1,
+  "items": [
+    { "sku": "ok-lower", "status": "sold", "price_usd": "1 299,00", "quantity": -1 },
+    { "sku": "OB-2", "not_sold_to": ["AU", "au-sa", 5], "min_buyer_age": 120, "weight_g": "heavy" },
+    {
+      "sku": "OB-3",
+      "texts": { "xx": { "title": "Hello" }, "en": { "title": "", "subtitle": "x" } },
+      "attributes": { "Bad-Key": "x", "ok_key": [1] }
+    },
+    {
+      "sku": "OB-4",
+      "compliance_marks": ["CE", "CE"],
+      "images": [{ "url": "http://cdn.example.com/a.webp" }],
+      "min_buyer_age_by_country": { "se": 18, "NO": 0 }
+    },
+    { "brand": "OWN-BRAND", "brand_owner": "someone" },
+    { "sku": "OB-6", "dimensions_mm": { "length": 1, "width": 2 }, "hs_code": "12-34", "radio_equipment": "yes" }
+  ]
+}

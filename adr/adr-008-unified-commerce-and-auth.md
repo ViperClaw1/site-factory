@@ -3,7 +3,7 @@ tags: [project/task-4-site-factory, type/adr, status/approved]
 project: "Task 4 - Site Factory"
 status: approved
 created: 2026-11-06
-updated: 2026-11-12
+updated: 2026-11-19
 aliases: [Unified commerce DB, Unified Auth]
 adr-id: "008"
 supersedes: ["006"]
@@ -14,7 +14,7 @@ superseded-by: []
 
 ## Status
 
-Approved by the site-factory team on 2026-11-06, amended 2026-11-10 and 2026-11-12 (see [Amendments](#amendments)). The customer has not confirmed the choice of one database over separate ones; the requirements it rests on (one account, purchase in any channel, one customer history, shared stock across channels) come from the customer's answers of 27.10, 05.11 and 06.11 recorded in `path-ecosystem-rules`.
+Approved by the site-factory team on 2026-11-06, amended 2026-11-10, 2026-11-12 and 2026-11-19 (see [Amendments](#amendments)). The customer has not confirmed the choice of one database over separate ones; the requirements it rests on (one account, purchase in any channel, one customer history, shared stock across channels) come from the customer's answers of 27.10, 05.11 and 06.11 recorded in `path-ecosystem-rules`.
 
 One self-hosted Supabase stack on our server in Germany (netcup, Nuremberg) serves every site and sales channel. No cloud services hold our data: database, files and backups stay on our servers (decision of 12.11). Analytics: [[adr-005-analytics|ADR-005]] (revised 12.11), self-hosted or none.
 
@@ -78,7 +78,7 @@ Rejected: the shared account and customer history would require a second shared 
 - Every product has exactly one `site_id`. There is no product-to-many-sites table.
 
 **Catalog contract**
-- The schema is built from the catalog standard, `05-shablony/katalog/katalog.schema.json` in `Path-platform-standards`, not designed separately. Mapping:
+- The schema is built from the catalog standard, `05-templates/catalog/catalog.schema.json` in `Path-platform-standards`, not designed separately. Mapping:
   - the file's top-level `catalog` is the code of the ecosystem catalog (the standard has one catalog for the ecosystem), not a site. A product's site comes from its category: `categories.site_id` ([[adr-012-reference-data|ADR-012]]);
   - `mode` (`merge` | `replace`) decides whether items absent from a `replace` file are archived;
   - `items[].sku` → `product_variants.sku`, unique across the ecosystem;
@@ -147,6 +147,14 @@ Rejected: the shared account and customer history would require a second shared 
 - External blockers: a working Supabase stack on the netcup server, the standby server, PayMesh credentials and a named maintainer for PayMesh (it is not deployed and has no maintainer as of 15.09), domains and DNS, a transactional email provider, the analytics decision (ADR-005), the legal entity for payments (O-3).
 
 ## Amendments
+
+### 2026-11-19
+
+Catalog contract in code; no change to the decision itself:
+
+- Catalog mapping extended with `brand_owner`: `own | stm | third_party`. `third_party` (another company's brand) is allowed only in categories marked `third_party_brands = yes` in the standard's `categories.csv` (rule 02, exception O-8: today only `drones`). The unified schema must accept the same three values and the same restriction.
+- The standard is available in code as the package `@repo/catalog` (`packages/catalog`): a vendored copy of the schema and categories, TypeScript types, the checks of `catalog.py` (same reports, tested against its output) and CSV ↔ JSON conversion. The schema in `packages/db` (roadmap stage 2) is built from this package.
+- Standard file names updated after the rename in `Path-platform-standards` of 16.11 (`RENAMES.md`): `05-shablony/katalog/katalog.schema.json` → `05-templates/catalog/catalog.schema.json`. The 2026-11-10 entry below keeps the old name as written then.
 
 ### 2026-11-12 (later the same day)
 
