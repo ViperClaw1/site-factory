@@ -43,6 +43,10 @@ jobs:
   guard:
     name: Guards (allowlist + release tag)
     runs-on: ubuntu-latest
+    # Без checkout у gh нет контекста репозитория — задаём явно, иначе
+    # `gh release view` падает с «no repository» и гейт ложно срабатывает.
+    env:
+      GH_REPO: ${{ github.repository }}
     outputs:
       app: ${{ steps.parse.outputs.app }}
       project: ${{ steps.parse.outputs.project }}
@@ -138,13 +142,16 @@ jobs:
         if: inputs.action == 'deploy'
         env:
           PROJECT: ${{ needs.guard.outputs.project }}
+          VERSION: ${{ needs.guard.outputs.version }}
           DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
           DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
         run: |
           set -euo pipefail
+          # Версия уходит в сервер как APP_VERSION (build arg) — её показывает
+          # /api/health и футер (требование ADR-009: version in health).
           ssh -i "$HOME/.ssh/deploy_key" -p "${DEPLOY_PORT:-57777}" \
               -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=20 \
-              "ci-${PROJECT}@${DEPLOY_HOST}" deploy < "$RUNNER_TEMP/site-src.tgz"
+              "ci-${PROJECT}@${DEPLOY_HOST}" "deploy ${VERSION}" < "$RUNNER_TEMP/site-src.tgz"
 
       - name: Rollback to the previous snapshot
         if: inputs.action == 'rollback'
@@ -173,11 +180,26 @@ jobs:
             echo "::error::STAGE_DOMAIN (repository variable) is not set"
             exit 1
           fi
-          BODY=$(curl -sS --max-time 25 -u "$BASIC_AUTH" "https://$DOMAIN/api/health")
-          echo "health: $BODY"
+          # Сразу после деплоя Traefik может ещё не выпустить сертификат на новый
+          # домен и отдавать чужой — поэтому проверяем с повторами.
+          BODY=""
+          for i in $(seq 1 12); do
+            if BODY=$(curl -sS --max-time 25 -u "$BASIC_AUTH" "https://$DOMAIN/api/health" 2>/tmp/curl.err); then
+              echo "attempt $i: $BODY"
+              break
+            fi
+            echo "attempt $i failed: $(tail -1 /tmp/curl.err)"
+            sleep 15
+          done
+          echo "health: ${BODY:-<empty>}"
           python3 - "$BODY" <<'PY'
           import json, sys
-          data = json.loads(sys.argv[1])
+          raw = sys.argv[1]
+          if not raw.strip():
+              raise SystemExit("no response from /api/health after retries")
+          data = json.loads(raw)
           assert data.get("status") == "ok", f"status is not ok: {data}"
           print("version:", data.get("version"))
+          if data.get("version") in (None, "", "unknown"):
+              print("::warning::health reports an unknown version; the build did not receive APP_VERSION")
           PY

@@ -1,6 +1,8 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
+import { supabaseSchemaOptions } from "./supabase-schema";
+
 export function createSupabaseServerClient() {
   const cookieStore = cookies();
 
@@ -8,6 +10,7 @@ export function createSupabaseServerClient() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      ...supabaseSchemaOptions(),
       cookies: {
         get(name: string) {
           return cookieStore.get(name)?.value;
@@ -16,7 +19,7 @@ export function createSupabaseServerClient() {
           try {
             cookieStore.set({ name, value, ...options });
           } catch {
-            // Called from a Server Component with no request context — safe to ignore
+            // Called from a Server Component with no request context вЂ” safe to ignore
             // when middleware is refreshing the session.
           }
         },
