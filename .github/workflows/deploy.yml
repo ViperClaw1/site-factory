@@ -43,6 +43,10 @@ jobs:
   guard:
     name: Guards (allowlist + release tag)
     runs-on: ubuntu-latest
+    # Без checkout у gh нет контекста репозитория — задаём явно, иначе
+    # `gh release view` падает с «no repository» и гейт ложно срабатывает.
+    env:
+      GH_REPO: ${{ github.repository }}
     outputs:
       app: ${{ steps.parse.outputs.app }}
       project: ${{ steps.parse.outputs.project }}
