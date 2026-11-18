@@ -1,0 +1,11 @@
+code,name,fields,third_party_brands
+drones,Дроны и роботы,flight_time_min camera max_range_km payload_kg,yes
+apparel,Одежда,size color material,
+toys,Игрушки,age_from_years material batteries,
+courses,Курсы,lessons access_months course_language,
+services,Услуги,duration_min format,
+knives,Ножи,blade_length_mm overall_length_mm opening_mechanism blade_edges blade_type,
+sprays,Спреи самообороны,active_agent volume_ml oc_content_pct range_m,
+airsoft,Страйкбол,muzzle_energy_j caliber_mm full_auto,
+lasers,Лазерные указки,laser_class output_mw wavelength_nm,
+stun_devices,Электрошокеры,output_ma,
