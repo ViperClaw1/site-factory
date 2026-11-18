@@ -3,6 +3,7 @@ import { localeMiddleware } from "@repo/i18n/middleware";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { can, requiredPermission, roleOf } from "@/lib/rbac";
+import { supabaseSchemaOptions } from "@repo/lib/supabase-schema";
 
 // Language first, then the Supabase session and route gate (lib/rbac.ts).
 // Guests are sent to /<lang>/login?next=<path>.

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { supabaseSchemaOptions } from "@repo/lib/supabase-schema";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 // Service-role client. Never import this from a client component — `server-only`
@@ -13,6 +14,7 @@ export function supabaseAdmin(): SupabaseClient {
     throw new Error("Catalog admin requires SUPABASE_SERVICE_ROLE_KEY at runtime.");
   }
   client ??= createClient(url, serviceKey, {
+    ...supabaseSchemaOptions(),
     auth: { persistSession: false, autoRefreshToken: false },
     // Next.js caches fetch() in the Data Cache. A cached product list survives
     // both router.refresh() and a full reload after a delete.

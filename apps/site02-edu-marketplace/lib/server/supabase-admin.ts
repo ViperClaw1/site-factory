@@ -1,5 +1,6 @@
 import "server-only";
 
+import { supabaseSchemaOptions } from "@repo/lib/supabase-schema";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 let client: SupabaseClient | null = null;
@@ -11,6 +12,7 @@ export function supabaseAdmin(): SupabaseClient {
     throw new Error("Course admin requires SUPABASE_SERVICE_ROLE_KEY at runtime.");
   }
   client ??= createClient(url, serviceKey, {
+    ...supabaseSchemaOptions(),
     auth: { persistSession: false, autoRefreshToken: false },
     global: {
       fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),

@@ -11,6 +11,7 @@
     ".": "./src/index.ts",
     "./directus": "./src/directus.ts",
     "./supabase-server": "./src/supabase-server.ts",
+    "./supabase-schema": "./src/supabase-schema.ts",
     "./r2": "./src/r2.ts"
   },
   "dependencies": {
