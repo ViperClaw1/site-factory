@@ -4,7 +4,7 @@
 // files; tests compare the reports line by line with catalog.py's own output.
 import Ajv2020, { type ErrorObject } from "ajv/dist/2020";
 import schema from "../standard/catalog.schema.json";
-import { CATEGORIES } from "./categories";
+import { attrTypeOk, CATEGORIES } from "./categories";
 import { FILE_ITEM_WARN, pyStr, type Issue, type Rule, type SchemaRule, type Severity } from "./issues";
 import { CATALOG_LANGS } from "./types";
 
@@ -230,8 +230,14 @@ function semanticChecks(doc: unknown, add: Add): void {
       const category = CATEGORIES.get(item.category as string);
       if (!category) add("warning", "unknown_category", where, { category: item.category });
       else {
-        const extra = [...new Set(pyKeys(item.attributes ?? {}).map(String))].filter((key) => !category.fields.has(key)).sort();
+        const attributes = isObject(item.attributes) ? item.attributes : {};
+        const extra = Object.keys(attributes).filter((key) => !category.fields.has(key)).sort();
         if (extra.length > 0) add("warning", "unknown_attributes", where, { fields: extra, category: item.category });
+        // A known field holds a value of its categories.csv type.
+        for (const [name, value] of Object.entries(attributes)) {
+          const kind = category.fields.get(name);
+          if (kind && !attrTypeOk(value, kind)) add("error", "attr_type", `${where}.attributes.${name}`, { kind, value });
+        }
       }
     }
 

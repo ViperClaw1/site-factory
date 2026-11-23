@@ -16,5 +16,6 @@
     "catalog": "example-store",
     "mode": "merge"
   },
+  { "name": "bad-typed", "files": ["fixtures/bad/typed.csv"], "catalog": "example-store", "mode": "merge" },
   { "name": "bad-excel", "files": ["fixtures/bad/excel.csv"], "catalog": "example-store", "mode": "merge" }
 ]

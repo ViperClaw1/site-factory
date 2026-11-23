@@ -3,10 +3,14 @@
 // from catalog.py, including its quirks, so both accept the same files with the same report.
 import { CATALOG_LANGS, type CatalogFile, type CatalogMode } from "./types";
 import type { Issue } from "./issues";
+import { CATEGORIES } from "./categories";
+import { readCsv } from "./csv-read";
+
+export { readCsv, type CsvRecord } from "./csv-read";
 
 export const CLEAR = "#clear";
 
-type ColumnKind = "str" | "int" | "list" | "map" | "bool";
+type ColumnKind = "str" | "int" | "number" | "list" | "map" | "bool";
 
 // catalog.csv columns in export order, with the kind of value they hold.
 const SCALAR_COLUMNS: Record<string, ColumnKind> = {
@@ -40,85 +44,12 @@ export interface CsvSource {
   text: string;
 }
 
-// --- Reading -----------------------------------------------------------------
-// RFC 4180 with Python csv's lenient defaults: a quote inside an unquoted value is literal,
-// text after a closing quote is appended, a blank line is skipped.
-
-function parseRows(text: string, delimiter: string): string[][] {
-  const rows: string[][] = [];
-  let row: string[] = [];
-  let field = "";
-  let quoted = false;
-  let atFieldStart = true;
-  let lineHasContent = false;
-  const endRow = () => {
-    if (lineHasContent) rows.push([...row, field]);
-    row = [];
-    field = "";
-    atFieldStart = true;
-    lineHasContent = false;
-  };
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i]!;
-    if (quoted) {
-      if (ch === '"' && text[i + 1] === '"') {
-        field += '"';
-        i++;
-      } else if (ch === '"') {
-        quoted = false;
-      } else {
-        field += ch;
-      }
-      continue;
-    }
-    if (ch === '"' && atFieldStart) {
-      quoted = true;
-      atFieldStart = false;
-      lineHasContent = true;
-    } else if (ch === delimiter) {
-      row.push(field);
-      field = "";
-      atFieldStart = true;
-      lineHasContent = true;
-    } else if (ch === "\r" || ch === "\n") {
-      if (ch === "\r" && text[i + 1] === "\n") i++;
-      endRow();
-    } else {
-      field += ch;
-      atFieldStart = false;
-      lineHasContent = true;
-    }
-  }
-  endRow();
-  return rows;
-}
-
-export interface CsvRecord {
-  /** Values by column; a missing trailing value reads as "". */
-  values: Map<string, string>;
-  /** Values beyond the header: a delimiter inside an unquoted value. */
-  extra: boolean;
-}
-
-/** DictReader equivalent. Excel with a European locale saves with ";", so the header decides. */
-export function readCsv(text: string): { records: CsvRecord[]; columns: string[] } {
-  const raw = text.startsWith("﻿") ? text.slice(1) : text;
-  const header = raw.split(/\r\n|\r|\n/, 1)[0] ?? "";
-  const delimiter = header.split(";").length > header.split(",").length ? ";" : ",";
-  const [columns = [], ...rows] = parseRows(raw, delimiter);
-  const records = rows.map((cells) => ({
-    values: new Map(columns.map((column, i) => [column, cells[i] ?? ""])),
-    extra: cells.length > columns.length,
-  }));
-  return { records, columns };
-}
-
 // --- Cell values -----------------------------------------------------------------
 
 type Converted = string | number | boolean | string[] | Record<string, number> | null;
 type ConvertResult =
   | { ok: true; value: Converted }
-  | { ok: false; rule: "csv_not_int" | "csv_not_bool" | "csv_bad_age_pair" | "csv_duplicate_country"; params: Record<string, unknown> };
+  | { ok: false; rule: "csv_not_int" | "csv_not_number" | "csv_not_bool" |"csv_bad_age_pair" | "csv_duplicate_country"; params: Record<string, unknown> };
 
 const ok = (value: Converted): ConvertResult => ({ ok: true, value });
 
@@ -130,6 +61,10 @@ function convert(value: string, kind: ColumnKind): ConvertResult {
   switch (kind) {
     case "int":
       return /^-?[0-9]+$/.test(value) ? ok(Number(value)) : { ok: false, rule: "csv_not_int", params: { value } };
+    case "number":
+      // Decimals use a point: a comma is the column delimiter.
+      if (/^-?[0-9]+$/.test(value) || /^-?[0-9]+\.[0-9]+$/.test(value)) return ok(Number(value));
+      return { ok: false, rule: "csv_not_number", params: { value } };
     case "bool":
       // Excel turns true into TRUE by itself, so case does not matter.
       if (!["true", "false"].includes(value.toLowerCase())) return { ok: false, rule: "csv_not_bool", params: { value } };
@@ -242,6 +177,26 @@ export function csvToDocument(
       if (values.includes(null)) item.dimensions_mm = null;
       else if (values.length === 3) item.dimensions_mm = dims;
       else issues.push(csvError("csv_partial_dimensions", { file, line }));
+    }
+
+    // attr.* is text in CSV; a category field is converted to its categories.csv type.
+    const attrs = item.attributes as Record<string, Converted> | undefined;
+    if (attrs && Object.keys(attrs).length > 0) {
+      if (!("category" in item)) issues.push(csvError("csv_attr_without_category", { file, line }));
+      else {
+        const fields = CATEGORIES.get(item.category as string)?.fields;
+        for (const [attr, value] of Object.entries(attrs)) {
+          const kind = fields?.get(attr);
+          if (!kind) continue;
+          const converted = convert(value as string, kind);
+          if (converted.ok) attrs[attr] = converted.value;
+          else {
+            // As with other columns, a value that does not convert stays out of the document.
+            delete attrs[attr];
+            issues.push(csvError(converted.rule, { file, line, column: `attr.${attr}`, ...converted.params }));
+          }
+        }
+      }
     }
 
     // Media: space-separated URLs with one rights record per kind of file.

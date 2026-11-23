@@ -29,8 +29,8 @@
       "sort": 10,
       "attributes": {
         "camera": "4K/60",
-        "flight_time_min": "34",
-        "max_range_km": "18"
+        "flight_time_min": 34,
+        "max_range_km": 18
       },
       "texts": {
         "en": {
@@ -121,8 +121,8 @@
       "weight_g": 6400,
       "sort": 20,
       "attributes": {
-        "flight_time_min": "55",
-        "payload_kg": "2.5"
+        "flight_time_min": 55,
+        "payload_kg": 2.5
       },
       "texts": {
         "en": {
@@ -341,9 +341,9 @@
       "country_of_origin": "CN",
       "sort": 50,
       "attributes": {
-        "caliber_mm": "6",
-        "full_auto": "false",
-        "muzzle_energy_j": "0.98"
+        "caliber_mm": 6,
+        "full_auto": false,
+        "muzzle_energy_j": 0.98
       },
       "texts": {
         "en": {
@@ -398,11 +398,11 @@
       "weight_g": 110,
       "sort": 60,
       "attributes": {
-        "blade_edges": "1",
-        "blade_length_mm": "90",
+        "blade_edges": 1,
+        "blade_length_mm": 90,
         "blade_type": "folding",
         "opening_mechanism": "manual",
-        "overall_length_mm": "210"
+        "overall_length_mm": 210
       },
       "texts": {
         "en": {

@@ -3,6 +3,9 @@
 // same lines in the standard's own checker. Another language is another formatter over the
 // same rule codes, so checks and tests do not change with it.
 
+import type { AttrKind } from "./categories";
+import { ATTR_KIND_NAMES } from "./categories";
+
 export type Severity = "error" | "warning";
 
 export type SchemaRule =
@@ -34,6 +37,7 @@ export type SemanticRule =
   | "third_party_category"
   | "unknown_category"
   | "unknown_attributes"
+  | "attr_type"
   | "no_images"
   | "no_video_audio"
   | "no_weight"
@@ -47,6 +51,8 @@ export type CsvRule =
   | "csv_extra_values"
   | "csv_not_int"
   | "csv_not_bool"
+  | "csv_not_number"
+  | "csv_attr_without_category"
   | "csv_bad_age_pair"
   | "csv_duplicate_country"
   | "csv_partial_dimensions"
@@ -177,6 +183,8 @@ function message(issue: Issue): string {
       return `категории ${pyRepr(p.category)} нет в categories.csv`;
     case "unknown_attributes":
       return `полей ${(p.fields as string[]).join(", ")} нет у категории ${pyStr(p.category)} в categories.csv`;
+    case "attr_type":
+      return `ожидается ${ATTR_KIND_NAMES[p.kind as AttrKind]} (тип поля в categories.csv), а не ${pyRepr(p.value)}`;
     case "no_images":
       return "у позиции в продаже нет фото";
     case "no_video_audio":
@@ -207,6 +215,13 @@ function message(issue: Issue): string {
       return `${pyStr(p.file)}, строка ${pyStr(p.line)}, ${pyStr(p.column)} — не целое число: ${pyRepr(p.value)}`;
     case "csv_not_bool":
       return `${pyStr(p.file)}, строка ${pyStr(p.line)}, ${pyStr(p.column)} — ожидается true или false: ${pyRepr(p.value)}`;
+    case "csv_not_number":
+      return (
+        `${pyStr(p.file)}, строка ${pyStr(p.line)}, ${pyStr(p.column)} — ` +
+        `не число (дробная часть через точку): ${pyRepr(p.value)}`
+      );
+    case "csv_attr_without_category":
+      return `${pyStr(p.file)}, строка ${pyStr(p.line)} — attr.* без category: тип поля задан категорией, заполните category`;
     case "csv_bad_age_pair":
       return (
         `${pyStr(p.file)}, строка ${pyStr(p.line)}, ${pyStr(p.column)} — ` +

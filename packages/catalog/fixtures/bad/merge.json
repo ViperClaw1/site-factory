@@ -24,6 +24,7 @@
     { "sku": "OB-L", "category": "apparel", "attributes": { "size": "M", "wingspan_mm": 3 } },
     { "sku": "OB-M-1", "group_id": "OB-M", "category": "apparel", "attributes": { "size": "M" } },
     { "sku": "OB-M-2", "group_id": "OB-M", "category": "toys", "attributes": { "size": "M" } },
-    { "sku": "OB-N", "delivery_restrictions": ["age_check_on_delivery"] }
+    { "sku": "OB-N", "delivery_restrictions": ["age_check_on_delivery"] },
+    { "sku": "OB-O", "category": "knives", "attributes": { "blade_length_mm": "90", "blade_edges": 1.5, "blade_type": 2 } }
   ]
 }

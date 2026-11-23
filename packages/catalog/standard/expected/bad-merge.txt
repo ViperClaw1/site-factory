@@ -3,6 +3,9 @@
 ОШИБКА  позиция 5, OB-D — min_buyer_age_by_country: SE — 18 не выше общего min_buyer_age 18: по стране возраст только повышается
 ОШИБКА  позиция 6, OB-E — delivery_restrictions: age_check_on_delivery без min_buyer_age и min_buyer_age_by_country — возраст, который проверять при вручении, не задан
 ОШИБКА  позиция 9, OB-H — чужая марка (third_party) в категории 'apparel': по правилу 02 допустима только в категориях с third_party_brands = yes в categories.csv
+ОШИБКА  позиция 17, OB-O: attributes.blade_length_mm — ожидается число (тип поля в categories.csv), а не '90'
+ОШИБКА  позиция 17, OB-O: attributes.blade_edges — ожидается целое число (тип поля в categories.csv), а не 1.5
+ОШИБКА  позиция 17, OB-O: attributes.blade_type — ожидается строка (тип поля в categories.csv), а не 2
 ОШИБКА  group_id OB-M — у вариантов разное поле category: ['apparel', 'toys']
 ОШИБКА  group_id OB-M — у двух вариантов одинаковые attributes — покупатель их не различит
 ВНИМАНИЕ позиция 2, OB-B — цена указана, но наличие on_request — покупатель увидит запрос предложения
@@ -15,4 +18,4 @@
 ВНИМАНИЕ позиция 12, OB-K — категории 'spaceships' нет в categories.csv
 ВНИМАНИЕ позиция 13, OB-L — полей wingspan_mm нет у категории apparel в categories.csv
 ВНИМАНИЕ позиция 15, OB-M-2 — полей size нет у категории toys в categories.csv
-Итог: ошибок 7, предупреждений 10
+Итог: ошибок 10, предупреждений 10

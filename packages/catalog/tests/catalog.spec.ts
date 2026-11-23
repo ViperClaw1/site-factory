@@ -77,6 +77,7 @@ const RULES_AT: Record<string, [number | string, Issue["rule"]][]> = {
     [12, "unknown_attributes"],
     ["group_id OB-M", "group_field_mismatch"],
     ["group_id OB-M", "group_same_attributes"],
+    [16, "attr_type"],
   ],
   "bad-replace": [
     [0, "no_images"],
@@ -180,5 +181,5 @@ test("catalog languages = schema languages = site languages, same order", () => 
 });
 
 test("embedded categories are the vendored categories.csv", () => {
-  expect(CATEGORIES_CSV).toBe(read("standard/categories.csv"));
+  expect(CATEGORIES_CSV).toBe(read("standard/categories.csv").replace(/\r\n/g, "\n"));
 });

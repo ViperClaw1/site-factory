@@ -1,7 +1,7 @@
 # Source of this copy
 
-Vendored from `Path-platform-standards/05-templates/catalog`, commit `b4d2a59e8d17ede49866cf142160a370bd41749b`.
-Synced 2026-11-18. Do not edit these files by hand.
+Vendored from `Path-platform-standards/05-templates/catalog`, commit `bb250121cd4ef933584c63311bb288adfc0912f8`.
+Synced 2026-11-23. Do not edit these files by hand.
 
 Files: `catalog.schema.json`, `categories.csv`, `example.json`, `catalog.csv`, `translations.csv`, `changes.csv`.
 
