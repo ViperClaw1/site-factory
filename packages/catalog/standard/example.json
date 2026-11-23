@@ -1,0 +1,258 @@
+{
+  "format": "path-catalog",
+  "version": "1.0",
+  "catalog": "example-store",
+  "mode": "replace",
+  "generated_at": "2026-10-26T12:00:00Z",
+  "items": [
+    {
+      "sku": "OB-DRN-AIR1",
+      "status": "active",
+      "type": "physical",
+      "category": "drones",
+      "brand": "OWN-BRAND",
+      "brand_owner": "own",
+      "price_usd": "1299.00",
+      "availability": "in_stock",
+      "quantity": 12,
+      "lead_time_days": 3,
+      "not_sold_to": ["KP"],
+      "radio_equipment": true,
+      "compliance_marks": ["FCC", "CE"],
+      "weight_g": 249,
+      "dimensions_mm": { "length": 148, "width": 94, "height": 64 },
+      "hs_code": "880621",
+      "country_of_origin": "CN",
+      "attributes": { "flight_time_min": 34, "camera": "4K/60", "max_range_km": 18 },
+      "images": [
+        { "url": "https://cdn.example.com/example/ob-drn-air1-1.webp", "rights": { "source": "own", "confirmed_by": "контент-редактор", "confirmed_at": "2026-10-26" } },
+        { "url": "https://cdn.example.com/example/ob-drn-air1-2.webp", "rights": { "source": "own", "confirmed_by": "контент-редактор", "confirmed_at": "2026-10-26" } }
+      ],
+      "videos": [
+        { "url": "https://cdn.example.com/example/ob-drn-air1.mp4", "rights": { "source": "generated", "confirmed_by": "контент-редактор", "confirmed_at": "2026-10-26" } }
+      ],
+      "audio": [
+        { "url": "https://cdn.example.com/example/ob-drn-air1.mp3", "rights": { "source": "generated", "confirmed_by": "контент-редактор", "confirmed_at": "2026-10-26" } }
+      ],
+      "texts": {
+        "en": {
+          "title": "OWN-BRAND Air 1 compact camera drone, 249 g",
+          "short": "Folding drone under 250 g with a 4K camera and 34 minutes of flight.",
+          "description": "A folding camera drone that weighs 249 g, so in many countries it needs no pilot registration. 4K video at 60 frames per second, up to 34 minutes of flight on one battery, range up to 18 km. Check local rules before flying.",
+          "image_alt": "Grey folding drone with the arms unfolded, seen from above",
+          "source": "human"
+        },
+        "de": {
+          "title": "OWN-BRAND Air 1 kompakte Kameradrohne, 249 g",
+          "short": "Faltbare Drohne unter 250 g mit 4K-Kamera und 34 Minuten Flugzeit.",
+          "description": "Eine faltbare Kameradrohne mit 249 g, die in vielen Ländern keine Pilotenregistrierung benötigt. 4K-Video mit 60 Bildern pro Sekunde, bis zu 34 Minuten Flugzeit mit einem Akku, Reichweite bis 18 km. Prüfen Sie vor dem Flug die örtlichen Regeln.",
+          "image_alt": "Graue faltbare Drohne mit ausgeklappten Armen, von oben",
+          "source": "machine"
+        },
+        "ru": {
+          "title": "OWN-BRAND Air 1 компактный дрон с камерой, 249 г",
+          "short": "Складной дрон легче 250 г с камерой 4K и 34 минутами полёта.",
+          "description": "Складной дрон с камерой весом 249 г: во многих странах не требует регистрации пилота. Видео 4K при 60 кадрах в секунду, до 34 минут полёта на одном аккумуляторе, дальность до 18 км. Перед полётом проверьте местные правила.",
+          "image_alt": "Серый складной дрон с разложенными лучами, вид сверху",
+          "source": "machine_checked"
+        }
+      },
+      "sort": 10
+    },
+    {
+      "sku": "OB-DRN-PRO",
+      "status": "active",
+      "type": "physical",
+      "category": "drones",
+      "brand": "OWN-BRAND",
+      "brand_owner": "stm",
+      "price_usd": null,
+      "availability": "on_request",
+      "lead_time_days": 30,
+      "not_sold_to": ["KP"],
+      "radio_equipment": true,
+      "compliance_marks": ["FCC", "CE", "RCM"],
+      "weight_g": 6400,
+      "attributes": { "flight_time_min": 55, "payload_kg": 2.5 },
+      "images": [
+        { "url": "https://cdn.example.com/example/ob-drn-pro-1.webp", "rights": { "source": "stm_supplier" } }
+      ],
+      "videos": [
+        { "url": "https://cdn.example.com/example/ob-drn-pro.mp4", "rights": { "source": "generated" } }
+      ],
+      "audio": [
+        { "url": "https://cdn.example.com/example/ob-drn-pro.mp3", "rights": { "source": "generated" } }
+      ],
+      "texts": {
+        "en": {
+          "title": "OWN-BRAND Pro industrial drone, price on request",
+          "description": "Industrial drone for inspection and mapping with a 2.5 kg payload and up to 55 minutes of flight. Configuration and price are agreed on request.",
+          "source": "human"
+        }
+      },
+      "sort": 20
+    },
+    {
+      "sku": "OB-JKT-01-M",
+      "status": "active",
+      "type": "physical",
+      "category": "apparel",
+      "group_id": "OB-JKT-01",
+      "brand": "OWN-BRAND",
+      "brand_owner": "stm",
+      "price_usd": "189.00",
+      "availability": "in_stock",
+      "quantity": 40,
+      "not_sold_to": ["AU-SA"],
+      "weight_g": 900,
+      "attributes": { "size": "M", "color": "olive", "material": "nylon 70D" },
+      "images": [
+        { "url": "https://cdn.example.com/example/ob-jkt-01.webp", "rights": { "source": "stm_supplier" } }
+      ],
+      "videos": [
+        { "url": "https://cdn.example.com/example/ob-jkt-01.mp4", "rights": { "source": "generated" } }
+      ],
+      "audio": [
+        { "url": "https://cdn.example.com/example/ob-jkt-01.mp3", "rights": { "source": "generated" } }
+      ],
+      "texts": {
+        "en": {
+          "title": "OWN-BRAND field jacket, olive, M",
+          "description": "Windproof field jacket with a hood and four pockets. Nylon 70D, water-repellent finish.",
+          "source": "human"
+        }
+      },
+      "sort": 30
+    },
+    {
+      "sku": "OB-JKT-01-L",
+      "status": "active",
+      "type": "physical",
+      "category": "apparel",
+      "group_id": "OB-JKT-01",
+      "brand": "OWN-BRAND",
+      "brand_owner": "stm",
+      "price_usd": "189.00",
+      "availability": "preorder",
+      "quantity": 0,
+      "lead_time_days": 21,
+      "weight_g": 950,
+      "attributes": { "size": "L", "color": "olive", "material": "nylon 70D" },
+      "images": [
+        { "url": "https://cdn.example.com/example/ob-jkt-01.webp", "rights": { "source": "stm_supplier" } }
+      ],
+      "videos": [
+        { "url": "https://cdn.example.com/example/ob-jkt-01.mp4", "rights": { "source": "generated" } }
+      ],
+      "audio": [
+        { "url": "https://cdn.example.com/example/ob-jkt-01.mp3", "rights": { "source": "generated" } }
+      ],
+      "texts": {
+        "en": {
+          "title": "OWN-BRAND field jacket, olive, L",
+          "description": "Windproof field jacket with a hood and four pockets. Nylon 70D, water-repellent finish.",
+          "source": "human"
+        }
+      },
+      "sort": 31
+    },
+    {
+      "sku": "OB-CRS-FPV",
+      "status": "active",
+      "type": "digital",
+      "category": "courses",
+      "brand": "OWN-BRAND",
+      "brand_owner": "own",
+      "price_usd": "49.00",
+      "availability": "in_stock",
+      "images": [
+        { "url": "https://cdn.example.com/example/ob-crs-fpv.webp", "rights": { "source": "generated" } }
+      ],
+      "videos": [
+        { "url": "https://cdn.example.com/example/ob-crs-fpv.mp4", "rights": { "source": "own" } }
+      ],
+      "audio": [
+        { "url": "https://cdn.example.com/example/ob-crs-fpv.mp3", "rights": { "source": "own" } }
+      ],
+      "texts": {
+        "en": {
+          "title": "First FPV flight: online course",
+          "description": "Eight video lessons from simulator to the first outdoor flight. Access for 12 months.",
+          "source": "human"
+        }
+      },
+      "sort": 40
+    },
+    {
+      "sku": "OB-AIR-SPR1",
+      "status": "active",
+      "type": "physical",
+      "category": "airsoft",
+      "brand": "OWN-BRAND",
+      "brand_owner": "stm",
+      "price_usd": "119.00",
+      "availability": "in_stock",
+      "quantity": 30,
+      "lead_time_days": 5,
+      "not_sold_to": ["AU", "NL", "SG", "CH"],
+      "min_buyer_age": 16,
+      "min_buyer_age_by_country": { "AT": 18, "DK": 18, "SE": 18 },
+      "delivery_restrictions": ["age_check_on_delivery"],
+      "buyer_id_check": ["AT"],
+      "label_languages": ["en", "de", "da", "sv"],
+      "weight_g": 1100,
+      "dimensions_mm": { "length": 720, "width": 60, "height": 190 },
+      "country_of_origin": "CN",
+      "attributes": { "muzzle_energy_j": 0.98, "caliber_mm": 6, "full_auto": false },
+      "images": [
+        { "url": "https://cdn.example.com/example/ob-air-spr1.webp", "rights": { "source": "stm_supplier" } }
+      ],
+      "videos": [
+        { "url": "https://cdn.example.com/example/ob-air-spr1.mp4", "rights": { "source": "generated" } }
+      ],
+      "audio": [
+        { "url": "https://cdn.example.com/example/ob-air-spr1.mp3", "rights": { "source": "generated" } }
+      ],
+      "texts": {
+        "en": {
+          "title": "OWN-BRAND spring-powered airsoft rifle, 6 mm, 0.98 J",
+          "description": "Spring-powered 6 mm airsoft rifle for sport and training use, muzzle energy 0.98 J, single shot. The order is accepted after the age check required in the delivery country.",
+          "source": "human"
+        }
+      },
+      "sort": 50
+    },
+    {
+      "sku": "OB-KNF-01",
+      "status": "active",
+      "type": "physical",
+      "category": "knives",
+      "brand": "OWN-BRAND",
+      "brand_owner": "stm",
+      "price_usd": "39.00",
+      "availability": "in_stock",
+      "quantity": 60,
+      "not_shown_in": ["DK"],
+      "weight_g": 110,
+      "dimensions_mm": { "length": 120, "width": 28, "height": 14 },
+      "attributes": { "blade_length_mm": 90, "overall_length_mm": 210, "opening_mechanism": "manual", "blade_edges": 1, "blade_type": "folding" },
+      "images": [
+        { "url": "https://cdn.example.com/example/ob-knf-01.webp", "rights": { "source": "stm_supplier" } }
+      ],
+      "videos": [
+        { "url": "https://cdn.example.com/example/ob-knf-01.mp4", "rights": { "source": "generated" } }
+      ],
+      "audio": [
+        { "url": "https://cdn.example.com/example/ob-knf-01.mp3", "rights": { "source": "generated" } }
+      ],
+      "texts": {
+        "en": {
+          "title": "OWN-BRAND folding pocket knife, 90 mm blade",
+          "description": "Manual folding knife for camping and everyday carry: 90 mm single-edge blade, steel handle. The card is not shown to visitors from Denmark.",
+          "source": "human"
+        }
+      },
+      "sort": 60
+    }
+  ]
+}

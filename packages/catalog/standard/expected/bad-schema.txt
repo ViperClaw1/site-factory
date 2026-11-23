@@ -1,0 +1,28 @@
+ОШИБКА  format — должно быть 'path-catalog'
+ОШИБКА  version — не по формату: '2.0'
+ОШИБКА  catalog — не по формату: 'Example'
+ОШИБКА  extra — неизвестное поле
+ОШИБКА  позиция 1, ok-lower: sku — не по формату: 'ok-lower'
+ОШИБКА  позиция 1, ok-lower: status — допустимо: active, hidden, archived
+ОШИБКА  позиция 1, ok-lower: price_usd — не по формату: '1 299,00'
+ОШИБКА  позиция 1, ok-lower: quantity — меньше 0
+ОШИБКА  позиция 2, OB-2: not_sold_to[1] — не по формату: 'au-sa' — ожидается код страны ISO 3166-1 (AU) или региона ISO 3166-2 (AU-SA), заглавными буквами
+ОШИБКА  позиция 2, OB-2: not_sold_to[2] — не по формату: 5 — ожидается код страны ISO 3166-1 (AU) или региона ISO 3166-2 (AU-SA), заглавными буквами
+ОШИБКА  позиция 2, OB-2: min_buyer_age — больше 99
+ОШИБКА  позиция 2, OB-2: weight_g — ожидается integer или null
+ОШИБКА  позиция 3, OB-3: texts.xx — допустимо: en, de, fr, es, pt, it, tr, ru, zh, ja, ko, ar, id, hi, vi, th, sw, ha, am
+ОШИБКА  позиция 3, OB-3: texts.en.title — пустое значение
+ОШИБКА  позиция 3, OB-3: texts.en.subtitle — неизвестное поле
+ОШИБКА  позиция 3, OB-3: attributes.Bad-Key — не по формату: 'Bad-Key'
+ОШИБКА  позиция 3, OB-3: attributes.ok_key — ожидается string или number или boolean
+ОШИБКА  позиция 4, OB-4: compliance_marks — повторяющиеся значения
+ОШИБКА  позиция 4, OB-4: images[0].rights — обязательное поле не заполнено
+ОШИБКА  позиция 4, OB-4: images[0].url — не по формату: 'http://cdn.example.com/a.webp'
+ОШИБКА  позиция 4, OB-4: min_buyer_age_by_country.se — не по формату: 'se'
+ОШИБКА  позиция 4, OB-4: min_buyer_age_by_country.NO — меньше 1
+ОШИБКА  позиция 5, ?: sku — обязательное поле не заполнено
+ОШИБКА  позиция 5, ?: brand_owner — допустимо: own, stm, third_party
+ОШИБКА  позиция 6, OB-6: dimensions_mm.height — обязательное поле не заполнено
+ОШИБКА  позиция 6, OB-6: hs_code — не по формату: '12-34'
+ОШИБКА  позиция 6, OB-6: radio_equipment — ожидается boolean
+Итог: ошибок 27, предупреждений 0

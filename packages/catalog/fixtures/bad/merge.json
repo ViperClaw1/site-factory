@@ -1,0 +1,30 @@
+{
+  "format": "path-catalog",
+  "version": "1.0",
+  "catalog": "example-store",
+  "mode": "merge",
+  "items": [
+    { "sku": "OB-A", "price_usd": null, "availability": "in_stock" },
+    { "sku": "OB-B", "price_usd": "10.00", "availability": "on_request" },
+    { "sku": "OB-A", "quantity": 3 },
+    { "sku": "OB-C", "not_sold_to": ["AU", "AU-SA"] },
+    { "sku": "OB-D", "min_buyer_age": 18, "min_buyer_age_by_country": { "SE": 18, "NO": 21 } },
+    {
+      "sku": "OB-E",
+      "delivery_restrictions": ["age_check_on_delivery"],
+      "min_buyer_age": null,
+      "min_buyer_age_by_country": null
+    },
+    { "sku": "OB-F", "not_shown_in": ["DK", "DK-84"], "not_sold_to": [] },
+    { "sku": "OB-G", "not_sold_to": ["SE"], "buyer_id_check": ["SE", "NO"] },
+    { "sku": "OB-H", "brand_owner": "third_party", "category": "apparel" },
+    { "sku": "OB-I", "brand_owner": "third_party" },
+    { "sku": "OB-J", "brand_owner": "third_party", "category": "drones" },
+    { "sku": "OB-K", "category": "spaceships" },
+    { "sku": "OB-L", "category": "apparel", "attributes": { "size": "M", "wingspan_mm": 3 } },
+    { "sku": "OB-M-1", "group_id": "OB-M", "category": "apparel", "attributes": { "size": "M" } },
+    { "sku": "OB-M-2", "group_id": "OB-M", "category": "toys", "attributes": { "size": "M" } },
+    { "sku": "OB-N", "delivery_restrictions": ["age_check_on_delivery"] },
+    { "sku": "OB-O", "category": "knives", "attributes": { "blade_length_mm": "90", "blade_edges": 1.5, "blade_type": 2 } }
+  ]
+}

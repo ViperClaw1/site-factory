@@ -1,0 +1,21 @@
+[
+  { "name": "example", "files": ["standard/example.json"] },
+  {
+    "name": "example-csv",
+    "files": ["standard/catalog.csv", "standard/translations.csv"],
+    "catalog": "example-store",
+    "mode": "replace"
+  },
+  { "name": "changes-csv", "files": ["standard/changes.csv"], "catalog": "example-store", "mode": "merge" },
+  { "name": "bad-schema", "files": ["fixtures/bad/schema.json"] },
+  { "name": "bad-merge", "files": ["fixtures/bad/merge.json"] },
+  { "name": "bad-replace", "files": ["fixtures/bad/replace.json"] },
+  {
+    "name": "bad-csv",
+    "files": ["fixtures/bad/catalog.csv", "fixtures/bad/translations.csv"],
+    "catalog": "example-store",
+    "mode": "merge"
+  },
+  { "name": "bad-typed", "files": ["fixtures/bad/typed.csv"], "catalog": "example-store", "mode": "merge" },
+  { "name": "bad-excel", "files": ["fixtures/bad/excel.csv"], "catalog": "example-store", "mode": "merge" }
+]

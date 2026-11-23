@@ -1,0 +1,5 @@
+ОШИБКА  typed.csv, строка 3, attr.blade_length_mm — не число (дробная часть через точку): '12x'
+ОШИБКА  typed.csv, строка 3, attr.blade_edges — не целое число: '1.5'
+ОШИБКА  typed.csv, строка 4, attr.full_auto — ожидается true или false: 'maybe'
+ОШИБКА  typed.csv, строка 5 — attr.* без category: тип поля задан категорией, заполните category
+Итог: ошибок 4, предупреждений 0

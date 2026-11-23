@@ -1,0 +1,33 @@
+{
+  "format": "path-catalog",
+  "version": "1.0",
+  "catalog": "example-store",
+  "mode": "replace",
+  "items": [
+    {
+      "sku": "OB-BARE",
+      "status": "active",
+      "type": "physical",
+      "category": "apparel",
+      "brand": "OWN-BRAND",
+      "brand_owner": "stm",
+      "price_usd": "10.00",
+      "availability": "in_stock",
+      "texts": { "en": { "title": "Bare item", "description": "No photo, no weight, no video." } }
+    },
+    { "sku": "OB-PARTIAL", "status": "active", "quantity": -1, "texts": { "en": { "title": "Partial" } } },
+    {
+      "sku": "OB-AGE",
+      "status": "hidden",
+      "type": "physical",
+      "category": "airsoft",
+      "brand": "OWN-BRAND",
+      "brand_owner": "stm",
+      "price_usd": "10.00",
+      "availability": "in_stock",
+      "delivery_restrictions": ["age_check_on_delivery"],
+      "not_shown_in": ["AU-VIC"],
+      "texts": { "en": { "title": "Age item", "description": "Age check without an age." } }
+    }
+  ]
+}
